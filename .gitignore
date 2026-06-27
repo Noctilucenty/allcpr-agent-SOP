@@ -1,0 +1,21 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Raw operational SOP/source folders are kept local.
+# They may contain private venue media, passcodes, contacts, or internal docs.
+/SOP/
+
+# Local runtime / editor noise
+.idea/
+.vscode/
+*.log
