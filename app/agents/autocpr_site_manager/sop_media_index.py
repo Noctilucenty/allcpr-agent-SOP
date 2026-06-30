@@ -26,6 +26,29 @@ IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 DOC_EXTENSIONS = {".docx", ".pptx"}
 
 SCENARIO_TAGS: Dict[str, set[str]] = {
+    "smart_manikin_site_inspection": {
+        "smart",
+        "manikin",
+        "site",
+        "inspection",
+        "equipment",
+        "placement",
+        "diagram",
+        "supplies",
+        "consumables",
+        "aed",
+        "pad",
+        "bvm",
+        "pocket",
+        "mask",
+        "ipad",
+        "tablet",
+        "巡检",
+        "器材",
+        "摆放",
+        "耗材",
+        "设备",
+    },
     "smart_manikin_troubleshooting": {
         "smart",
         "manikin",
@@ -110,7 +133,12 @@ def _tokenize_path(path: Path) -> set[str]:
 def _related_scenarios(path: Path, tags: set[str]) -> List[str]:
     related = []
     path_text = path.as_posix().lower()
-    if {"smart", "manikin"} <= tags or "smart manikin" in path_text:
+    is_inspection = "inspection" in path_text or "巡检" in tags
+    if is_inspection:
+        # Inspection media (e.g. the page-3 equipment placement diagram) belongs to
+        # the inspection scenario, not generic device troubleshooting.
+        related.append("smart_manikin_site_inspection")
+    elif {"smart", "manikin"} <= tags or "smart manikin" in path_text:
         related.append("smart_manikin_troubleshooting")
     if tags & SCENARIO_TAGS["venue_access_issue"]:
         related.append("venue_access_issue")
@@ -129,6 +157,8 @@ def _safe_description(source: Path, embedded: bool) -> str:
 
 
 def _title(source: Path, related: Sequence[str], embedded: bool) -> str:
+    if "smart_manikin_site_inspection" in related:
+        return "Smart Manikin 专员分点巡检 SOP — equipment placement diagram"
     if "smart_manikin_troubleshooting" in related:
         return "Smart Manikin source image"
     if "venue_access_issue" in related:
@@ -243,6 +273,17 @@ def _query_tags(question: str, scenario: str) -> set[str]:
         "门",
         "门禁",
         "大门",
+        "equipment",
+        "placement",
+        "supplies",
+        "consumables",
+        "aed",
+        "bvm",
+        "pocket",
+        "巡检",
+        "器材",
+        "摆放",
+        "耗材",
     ):
         if token in q:
             tags.add(token)

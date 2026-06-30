@@ -10,6 +10,98 @@ import web_app
 @pytest.fixture(autouse=True)
 def isolated_incident_log(monkeypatch, tmp_path):
     monkeypatch.setenv("ALLCPR_INCIDENT_LOG_PATH", str(tmp_path / "incident_logs.jsonl"))
+    monkeypatch.setenv("ALLCPR_INSPECTION_LOG_PATH", str(tmp_path / "inspection_logs.jsonl"))
+
+
+def _completed_inspection_payload(**overrides):
+    payload = {
+        "site": "Santa Clara",
+        "staff": "Alex",
+        "started_at": "2026-06-30T09:00:00.000Z",
+        "completed_at": "2026-06-30T09:30:00.000Z",
+        "inspection_warning_acknowledged": True,
+        "acknowledged_at": "2026-06-30T09:00:00.000Z",
+        "before_photo_checks": {"whole_room": True, "smart_manikin": True, "supplies": True, "door": True},
+        "site_checklist_items": [
+            {"item": "hygiene", "status": "ok"},
+            {"item": "camera", "status": "ok"},
+        ],
+        "post_photo_checks": {"whole_room": True, "smart_manikin": True},
+        "weekly_report_completed": True,
+        "upload_completed": True,
+        "problems_found": [],
+        "fixed_on_site_count": 0,
+        "needs_support_count": 0,
+        "language": "en",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_inspection_log_create_and_acknowledgement_stored():
+    client = TestClient(web_app.app)
+    resp = client.post("/api/inspection-logs", json=_completed_inspection_payload())
+    assert resp.status_code == 200
+    entry = resp.json()
+    assert entry["log_type"] == "inspection"
+    assert entry["status"] == "completed"
+    assert entry["inspection_warning_acknowledged"] is True
+    assert entry["acknowledged_at"]
+    assert entry["weekly_report_completed"] is True
+    assert entry["upload_completed"] is True
+    assert entry["before_photo_checks"]
+    assert entry["post_photo_checks"]
+
+    listed = client.get("/api/inspection-logs?limit=10").json()
+    assert listed[0]["id"] == entry["id"]
+    fetched = client.get(f"/api/inspection-logs/{entry['id']}")
+    assert fetched.status_code == 200
+    assert fetched.json()["site"] == "Santa Clara"
+
+
+def test_inspection_log_problem_marks_needs_support():
+    client = TestClient(web_app.app)
+    payload = _completed_inspection_payload(
+        site_checklist_items=[
+            {"item": "camera", "status": "problem", "issue": "camera offline", "needs_support": True},
+        ],
+        problems_found=["camera offline"],
+        needs_support_count=1,
+    )
+    resp = client.post("/api/inspection-logs", json=payload)
+    assert resp.status_code == 200
+    entry = resp.json()
+    assert entry["status"] == "needs_support"
+    assert entry["needs_support_count"] == 1
+    assert entry["problems_found"] == ["camera offline"]
+
+
+def test_inspection_log_patch_status_and_note():
+    client = TestClient(web_app.app)
+    created = client.post("/api/inspection-logs", json=_completed_inspection_payload())
+    log_id = created.json()["id"]
+    patched = client.patch(
+        f"/api/inspection-logs/{log_id}", json={"status": "needs_support", "note": "follow up camera"}
+    )
+    assert patched.status_code == 200
+    assert patched.json()["status"] == "needs_support"
+    assert patched.json()["notes"][-1]["text"] == "follow up camera"
+
+    bad = client.patch(f"/api/inspection-logs/{log_id}", json={"status": "deleted"})
+    assert bad.status_code == 400
+
+
+def test_inspection_log_does_not_store_local_paths_or_images():
+    client = TestClient(web_app.app)
+    payload = _completed_inspection_payload(
+        site="/Users/noctilucenteasteliq/Desktop/Developer/allcpr_agent/SOP",
+        notes="photo saved at /Users/noctilucenteasteliq/Pictures/img.png",
+    )
+    client.post("/api/inspection-logs", json=payload)
+    log = client.get("/api/inspection-logs").json()[0]
+    blob = str(log)
+    assert "/Users/" not in blob
+    assert "noctilucenteasteliq" not in blob
 
 
 def test_health_ok():
@@ -48,6 +140,55 @@ def test_root_and_agent_serve_bilingual_ui():
         assert "/api/incident-logs" in body
 
 
+def test_ui_has_staff_access_unlock_controls():
+    client = TestClient(web_app.app)
+    body = client.get("/agent").text
+    # Staff-access control, PIN form, and bilingual copy keys present.
+    assert 'id="staff-access"' in body
+    assert 'id="sa-toggle"' in body
+    assert 'id="sa-pin"' in body
+    assert "/api/staff-access/unlock" in body
+    assert "sessionStorage" in body
+    assert "localStorage" not in body  # token must not be stored in localStorage
+    for label in ("staffAccess:", "staffUnlockBtn:", "staffPinLabel:", "staffUnlocked:", "staffPinInvalid:"):
+        assert body.count(label) >= 2  # en + zh
+
+
+def test_ui_has_guided_inspection_workflow():
+    client = TestClient(web_app.app)
+    body = client.get("/agent").text
+    # Entry point + bilingual label
+    assert 'id="start-inspection"' in body
+    assert "Start Inspection" in body
+    assert "开始巡检" in body
+    # Acknowledgement modal exists and gates the flow (flow hidden until ack)
+    assert 'id="insp-ack"' in body
+    assert 'id="insp-flow" hidden' in body
+    assert "Important inspection reminder" in body
+    assert "巡检前重要提醒" in body
+    assert "I understand" in body and "我已知晓" in body
+    # Acknowledgement reminder must NOT contain fine/penalty wording (en + zh)
+    for banned in ("fine", "penalty", "罚款", "扣款"):
+        assert banned not in body
+    # Before / site checklist / after / report / upload / do-not sections present
+    assert "inspBeforeItems:" in body
+    assert "inspAfterItems:" in body
+    assert "inspUploadItems:" in body
+    assert "inspReportItems:" in body
+    assert "inspDoNotItems:" in body
+    # Site checklist covers the full SOP item set
+    for item in ("Hygiene", "Trash", "Disinfect", "power cables", "Camera online", "Wi-Fi normal", "Signage", "safety hazards"):
+        assert item in body
+    # Do-not-repair warning present
+    assert "Do not dismantle or repair Smart Manikin" in body
+    # Inspection decision chips present
+    for chip in ("ciFrequency:", "ciBefore:", "ciChecklist:", "ciUpload:", "ciDoNot:", "ciStart:"):
+        assert body.count(chip) >= 2  # en + zh
+    # Inspection log endpoint wired in the page
+    assert "/api/inspection-logs" in body
+    assert "inspection_warning_acknowledged" in body
+
+
 def test_ui_decision_tree_default_routing_keys_are_defined():
     """The sub-issue default-open map must reference real pill keys and labels,
     so a routed narrow query opens an existing panel (no undefined keys)."""
@@ -63,7 +204,7 @@ def test_ui_decision_tree_default_routing_keys_are_defined():
         assert body.count(label) >= 2
 
 
-def test_agent_api_returns_operational_references_for_matching_access_site():
+def test_agent_api_redacts_passcode_by_default():
     client = TestClient(web_app.app)
     resp = client.post(
         "/api/agents/autocpr-site-manager/ask",
@@ -74,8 +215,61 @@ def test_agent_api_returns_operational_references_for_matching_access_site():
     refs = payload["operational_references"]
     assert refs
     joined = " ".join(item["value"] for ref in refs for item in ref["items"])
-    assert "2745" in joined
+    assert "2745" not in joined
+    assert "Restricted internal passcode" in joined
+    assert payload["passcode_ref_available"] is True
+    assert payload["passcode_revealed"] is False
+    assert payload["staff_access_unlocked"] is False
     assert payload["incident_log_id"]
+
+
+def test_staff_unlock_then_reveal_passcode_via_api(monkeypatch):
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "1234")
+    client = TestClient(web_app.app)
+
+    bad = client.post("/api/staff-access/unlock", json={"pin": "0000"})
+    assert bad.status_code == 401
+
+    unlock = client.post("/api/staff-access/unlock", json={"pin": "1234"})
+    assert unlock.status_code == 200
+    token = unlock.json()["token"]
+    assert token and token != "1234"
+
+    resp = client.post(
+        "/api/agents/autocpr-site-manager/ask",
+        json={
+            "question": "door locked, what is the room passcode?",
+            "context": {"site": "Santa Clara", "lang": "en"},
+            "staff_access_token": token,
+        },
+    )
+    assert resp.status_code == 200
+    payload = resp.json()
+    assert payload["staff_access_unlocked"] is True
+    assert payload["passcode_revealed"] is True
+    joined = " ".join(item["value"] for ref in payload["operational_references"] for item in ref["items"])
+    assert "2745" in joined
+
+
+def test_logs_never_store_raw_passcodes_even_when_unlocked(monkeypatch):
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "1234")
+    client = TestClient(web_app.app)
+    token = client.post("/api/staff-access/unlock", json={"pin": "1234"}).json()["token"]
+    client.post(
+        "/api/agents/autocpr-site-manager/ask",
+        json={
+            "question": "door locked, what is the room passcode?",
+            "context": {"site": "Santa Clara", "lang": "en"},
+            "staff_access_token": token,
+        },
+    )
+    log = client.get("/api/incident-logs").json()[0]
+    blob = str(log)
+    # No raw codes / Wi-Fi password anywhere in the persisted log entry.
+    for secret in ("2745", "224466", "6285", "DoBeUSA", "DoBesince2016"):
+        assert secret not in blob
+    assert log["passcode_revealed"] is True
+    assert log["staff_access_unlocked"] is True
 
 
 def test_ask_endpoint_creates_incident_log_entry():

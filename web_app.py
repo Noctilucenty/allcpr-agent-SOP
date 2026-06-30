@@ -19,7 +19,21 @@ from app.agents.autocpr_site_manager.incident_logs import (
     list_logs,
     patch_log,
 )
-from app.agents.autocpr_site_manager.schemas import AgentAnswer, AgentAskRequest, IncidentLogPatch
+from app.agents.autocpr_site_manager.inspection_logs import (
+    append_inspection_entry,
+    get_inspection_log,
+    list_inspection_logs,
+    patch_inspection_log,
+)
+from app.agents.autocpr_site_manager import staff_access
+from app.agents.autocpr_site_manager.schemas import (
+    AgentAnswer,
+    AgentAskRequest,
+    IncidentLogPatch,
+    InspectionLogPatch,
+    InspectionLogRequest,
+    StaffAccessUnlockRequest,
+)
 from app.agents.autocpr_site_manager.sop_media_index import MEDIA_ROOT
 
 ROOT = Path(__file__).resolve().parent
@@ -53,9 +67,25 @@ def health() -> dict[str, str]:
     }
 
 
+@app.post("/api/staff-access/unlock")
+def api_staff_access_unlock(req: StaffAccessUnlockRequest) -> dict:
+    """Exchange a valid staff PIN for a short-lived signed access token.
+
+    The PIN is never stored or logged; on success an HMAC-signed token (not the
+    PIN) is returned for the frontend to keep in sessionStorage for the session.
+    """
+    if not staff_access.staff_access_configured():
+        raise HTTPException(status_code=503, detail="staff access not configured")
+    if not staff_access.verify_pin(req.pin):
+        raise HTTPException(status_code=401, detail="invalid staff PIN")
+    return {"ok": True, "token": staff_access.issue_token()}
+
+
 @app.post("/api/agents/autocpr-site-manager/ask", response_model=AgentAnswer)
 def api_agent_site_manager_ask(req: AgentAskRequest) -> AgentAnswer:
-    answer = answer_question(req.question, req.context)
+    answer = answer_question(
+        req.question, req.context, staff_access_token=req.staff_access_token
+    )
     entry = append_answer_log(req.question, req.context, answer)
     answer.incident_log_id = str(entry.get("id", ""))
     return answer
@@ -94,6 +124,41 @@ def api_patch_incident_log(log_id: str, patch: IncidentLogPatch) -> dict:
         raise HTTPException(status_code=400, detail=str(exc))
     if entry is None:
         raise HTTPException(status_code=404, detail="incident log not found")
+    return entry
+
+
+@app.post("/api/inspection-logs")
+def api_create_inspection_log(req: InspectionLogRequest) -> dict:
+    payload = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+    return append_inspection_entry(payload)
+
+
+@app.get("/api/inspection-logs")
+def api_list_inspection_logs(limit: int = Query(default=50, ge=1, le=200)) -> list[dict]:
+    return list_inspection_logs(limit)
+
+
+@app.get("/api/inspection-logs/{log_id}")
+def api_get_inspection_log(log_id: str) -> dict:
+    entry = get_inspection_log(log_id)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="inspection log not found")
+    return entry
+
+
+@app.patch("/api/inspection-logs/{log_id}")
+def api_patch_inspection_log(log_id: str, patch: InspectionLogPatch) -> dict:
+    try:
+        entry = patch_inspection_log(
+            log_id,
+            status=patch.status,
+            note=patch.note,
+            created_by=patch.created_by or "staff",
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    if entry is None:
+        raise HTTPException(status_code=404, detail="inspection log not found")
     return entry
 
 

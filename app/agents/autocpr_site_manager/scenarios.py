@@ -21,6 +21,7 @@ SCENARIOS: List[str] = [
     "electricity_outage",
     "internet_outage",
     "venue_access_issue",
+    "smart_manikin_site_inspection",
     "smart_manikin_troubleshooting",
     "class_cannot_start",
     "instructor_no_show",
@@ -100,6 +101,22 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "passcode", "门密码", "房间密码", "door code", "gate code", "keypad",
         "wrong room", "wrong floor", "building entrance", "address mismatch",
         "门禁密码", "锁盒", "楼层不对", "房间不对", "地址不对",
+    )),
+    # Site Representative weekly inspection. Placed before smart_manikin_trouble-
+    # shooting so an inspection question that also mentions "Smart Manikin" routes
+    # here. Keywords are inspection-specific (the generic "网络/门禁/摄像头" terms
+    # stay shadowed by the earlier outage/access rules on purpose).
+    ("smart_manikin_site_inspection", (
+        "巡检", "分点巡检", "每周巡检", "每周分点巡检表", "巡检前", "巡检后",
+        "巡检拍照", "前照片", "后照片", "上传资料", "上传什么", "要上传", "耗材",
+        "消毒", "器材摆放", "摆放位置", "不得维修", "不得拆卸", "可以修吗",
+        "能修吗", "可以修", "设备坏", "site inspection", "weekly site check",
+        "weekly site check report", "site representative", "smart manikin inspection",
+        "before photo", "after photo", "pre-check", "post-check", "inspection photo",
+        "upload materials", "equipment placement", "do not repair", "do not dismantle",
+        "disinfect equipment", "consumables check", "inspection frequency",
+        "现场检查", "现场要检查", "检查清单", "巡检检查", "site checklist",
+        "site check items", "check items", "inspection", "inspect", "巡视",
     )),
     ("smart_manikin_troubleshooting", (
         "smart manikin", "manikin", "假人", "黑屏", "black screen", "blank screen",

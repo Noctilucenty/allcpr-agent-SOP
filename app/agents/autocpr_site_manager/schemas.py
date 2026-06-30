@@ -29,6 +29,15 @@ class AgentAskRequest(BaseModel):
 
     question: str
     context: Optional[Dict[str, Any]] = None
+    # Optional short-lived staff token (from POST /api/staff-access/unlock). When
+    # valid, source-backed internal passcodes are revealed for that response only.
+    staff_access_token: Optional[str] = None
+
+
+class StaffAccessUnlockRequest(BaseModel):
+    """Request body for ``POST /api/staff-access/unlock``."""
+
+    pin: str
 
 
 class RetrievedChunk(BaseModel):
@@ -125,6 +134,13 @@ class AgentAnswer(BaseModel):
     issue_subtype: str = ""
     route_detail: str = ""
     policy_approval_required: bool = False
+    # Staff-access / passcode redaction state for this response.
+    # ``passcode_ref_available`` = a source-backed internal passcode matched;
+    # ``passcode_revealed`` = it was actually shown (requires a valid staff token);
+    # ``staff_access_unlocked`` = the request carried a valid staff token.
+    staff_access_unlocked: bool = False
+    passcode_ref_available: bool = False
+    passcode_revealed: bool = False
 
 
 class IncidentLogPatch(BaseModel):
@@ -133,4 +149,38 @@ class IncidentLogPatch(BaseModel):
     status: Optional[str] = None
     note: Optional[str] = None
     assigned_to: Optional[str] = None
+    created_by: Optional[str] = None
+
+
+class InspectionLogRequest(BaseModel):
+    """A completed (or in-progress) Smart Manikin site inspection record.
+
+    Stores checklist statuses and photo-step acknowledgements only — never raw
+    image bytes, local file paths, or passcodes.
+    """
+
+    site: Optional[str] = None
+    staff: Optional[str] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    inspection_warning_acknowledged: bool = False
+    acknowledged_at: Optional[str] = None
+    before_photo_checks: Any = None
+    site_checklist_items: List[Dict[str, Any]] = []
+    post_photo_checks: Any = None
+    weekly_report_completed: bool = False
+    upload_completed: bool = False
+    problems_found: List[str] = []
+    fixed_on_site_count: int = 0
+    needs_support_count: int = 0
+    status: Optional[str] = None
+    notes: Optional[str] = None
+    language: str = "en"
+
+
+class InspectionLogPatch(BaseModel):
+    """Small mutable fields for an inspection log entry."""
+
+    status: Optional[str] = None
+    note: Optional[str] = None
     created_by: Optional[str] = None

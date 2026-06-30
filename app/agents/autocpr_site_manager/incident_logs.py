@@ -66,19 +66,24 @@ def _created_at(context: Optional[Dict[str, Any]]) -> str:
 
 
 def _access_ref_flags(answer: AgentAnswer) -> Dict[str, bool]:
+    """Passcode/access flags for the log — never the codes themselves.
+
+    Values are taken from the answer's redaction state, not by inspecting item
+    values, so a raw passcode can never reach the log. ``passcode_ref_available``
+    means a source-backed internal passcode matched; ``passcode_revealed`` means
+    it was actually shown (only with a valid staff token).
+    """
     access_refs = [
         ref for ref in answer.operational_references
         if ref.scenario == "venue_access_issue"
     ]
-    passcode_items = [
-        item
-        for ref in access_refs
-        for item in ref.items
-        if item.fact_type == "access_code" and item.sensitivity == "internal"
-    ]
     return {
         "access_refs_shown": bool(access_refs),
-        "trusted_passcode_refs_shown": bool(passcode_items),
+        # Back-compat key: now reflects whether a source-backed passcode matched.
+        "trusted_passcode_refs_shown": bool(answer.passcode_ref_available),
+        "staff_access_unlocked": bool(answer.staff_access_unlocked),
+        "passcode_ref_available": bool(answer.passcode_ref_available),
+        "passcode_revealed": bool(answer.passcode_revealed),
     }
 
 

@@ -181,11 +181,23 @@ def test_coverage_gaps_now_return_refs(question, ctx, scenario, expected_ref):
     assert expected_ref in ids
 
 
-def test_chinese_passcode_matches_english_trusted_codes():
-    ans = answer_question("门禁密码是多少")
-    joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
-    assert "2745" in joined
-    assert "224466" in joined
+def test_chinese_passcode_redacted_by_default_revealed_when_unlocked(monkeypatch):
+    from app.agents.autocpr_site_manager import staff_access
+
+    # Default/public mode: codes redacted, redaction notice present.
+    locked = answer_question("门禁密码是多少")
+    locked_joined = " ".join(item.value for ref in locked.operational_references for item in ref.items)
+    assert "2745" not in locked_joined
+    assert "224466" not in locked_joined
+    assert "内部密码已隐藏" in locked_joined
+
+    # Staff unlock reveals the source-backed codes for that response only.
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "4321")
+    token = staff_access.issue_token()
+    unlocked = answer_question("门禁密码是多少", staff_access_token=token)
+    unlocked_joined = " ".join(item.value for ref in unlocked.operational_references for item in ref.items)
+    assert "2745" in unlocked_joined
+    assert "224466" in unlocked_joined
 
 
 def test_refund_reschedule_cancel_require_approval():

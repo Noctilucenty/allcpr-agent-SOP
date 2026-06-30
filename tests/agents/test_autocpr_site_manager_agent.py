@@ -366,13 +366,45 @@ def test_operational_refs_do_not_leak_local_absolute_paths():
     assert "noctilucenteasteliq" not in joined
 
 
-def test_generic_passcode_question_returns_trusted_private_codes():
+def test_generic_passcode_question_redacts_codes_by_default():
     ans = answer_question("what is the room passcode?")
     assert ans.scenario == "venue_access_issue"
+    assert ans.passcode_ref_available is True
+    assert ans.passcode_revealed is False
+    assert ans.staff_access_unlocked is False
+    joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
+    # No raw codes in the default/public response; a redaction notice instead.
+    assert "2745" not in joined
+    assert "224466" not in joined
+    assert "6285" not in joined
+    assert "Restricted internal passcode" in joined
+    # Redacted codes are never exposed in the human-readable answer text either.
+    assert "2745" not in ans.answer
+    assert "224466" not in ans.answer
+
+
+def test_generic_passcode_question_reveals_codes_with_valid_staff_token(monkeypatch):
+    from app.agents.autocpr_site_manager import staff_access
+
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "2468")
+    token = staff_access.issue_token()
+    ans = answer_question("what is the room passcode?", staff_access_token=token)
+    assert ans.staff_access_unlocked is True
+    assert ans.passcode_revealed is True
     joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
     assert "Suite 3: 2745" in joined
     assert "Suite 2018: 224466" in joined
     assert "Lockbox code at the 1st-floor front gate: 6285" in joined
+
+
+def test_invalid_staff_token_keeps_codes_redacted(monkeypatch):
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "2468")
+    ans = answer_question("what is the room passcode?", staff_access_token="bogus.token")
+    assert ans.staff_access_unlocked is False
+    assert ans.passcode_revealed is False
+    joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
+    assert "2745" not in joined
+    assert "224466" not in joined
 
 
 def test_nonmatching_explicit_site_does_not_receive_other_site_codes():
@@ -385,14 +417,23 @@ def test_nonmatching_explicit_site_does_not_receive_other_site_codes():
     assert "6285" not in joined
 
 
-def test_trusted_passcode_only_for_matching_access_site():
-    access = answer_question("door locked, what is the room passcode?", {"site": "Newark"})
+def test_trusted_passcode_only_for_matching_access_site(monkeypatch):
+    from app.agents.autocpr_site_manager import staff_access
+
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "1357")
+    token = staff_access.issue_token()
+    access = answer_question(
+        "door locked, what is the room passcode?", {"site": "Newark"}, staff_access_token=token
+    )
     assert access.scenario == "venue_access_issue"
     joined = " ".join(item.value for ref in access.operational_references for item in ref.items)
     assert "224466" in joined
     assert "6285" in joined
 
-    power = answer_question("power outage at Newark", {"site": "Newark", "lang": "en"})
+    # A non-access scenario never carries access codes, even when unlocked.
+    power = answer_question(
+        "power outage at Newark", {"site": "Newark", "lang": "en"}, staff_access_token=token
+    )
     assert power.scenario == "electricity_outage"
     joined_power = " ".join(item.value for ref in power.operational_references for item in ref.items)
     assert "224466" not in joined_power

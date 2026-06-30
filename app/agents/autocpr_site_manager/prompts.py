@@ -94,6 +94,7 @@ SCENARIO_META: Dict[str, Dict[str, object]] = {
     "internet_outage": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
     "venue_access_issue": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, SS_MANIKIN, NEEDS_OFFICIAL_SOP]},
     "smart_manikin_troubleshooting": {"severity": "medium", "phrases": [NEEDS_VENDOR], "source_status": [SS_MANIKIN, NEEDS_VENDOR]},
+    "smart_manikin_site_inspection": {"severity": "low", "phrases": [], "source_status": [SS_OFFICIAL]},
     "class_cannot_start": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
     "instructor_no_show": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
     "student_checkin_issue": {"severity": "medium", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
@@ -281,6 +282,44 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
         "next_actions": [
             "Collect the symptom and run the power/display/Bluetooth/tablet-PAD checks.",
             "If a documented fix doesn't resolve it, or the issue isn't covered by the source → escalate to engineer/vendor.",
+        ],
+    },
+    "smart_manikin_site_inspection": {
+        "issue_type": "Smart Manikin site inspection",
+        "lead": (
+            "Smart Manikin site representative inspection (per the Weekly Site Check Report): arrive and take before "
+            "photos before any cleaning, run the site checklist, fix what you can on site and photo/report what you "
+            "cannot to ALLCPR, take after photos, fill the Weekly Site Check Report, and upload materials to the site "
+            "Google Drive folder."
+        ),
+        "immediate_safety_check": ["Check visible water/electric/equipment safety hazards as part of the inspection."],
+        "steps": [
+            "Arrive and take before photos before any cleaning or organizing (whole room, Smart Manikin area, supplies/consumables area, door or signage, abnormal area if any).",
+            "Check hygiene, trash, disinfection supplies, equipment, power cables, access, camera, Wi-Fi, signage, and safety per the Weekly Site Check Report.",
+            "Fix issues that can be solved on site; photo and report unresolved issues to ALLCPR.",
+            "Take after photos from similar angles (whole room, Smart Manikin area, supplies area, door/signage, fixed-result photo if any).",
+            "Fill the Weekly Site Check Report and upload before photos, after photos, the completed report, and issue photos to the site Google Drive folder (same day recommended).",
+        ],
+        "information_to_collect": [
+            "Site, inspection date, inspector.",
+            "Problems found and actions taken.",
+            "Whether ALLCPR support is needed.",
+        ],
+        "evidence_requested": [
+            "Before photos (taken before cleaning).",
+            "After photos (taken after the site is arranged).",
+            "Issue photos, if any.",
+            "Completed Weekly Site Check Report.",
+        ],
+        "contacts": ["ALLCPR (report unresolved issues / request support)."],
+        "customer_communication": [],
+        "do_not_decide_without_approval": [
+            "Do not dismantle or repair Smart Manikin, iPad, camera, access control, or similar equipment without authorization.",
+            "Inspection records and photos must be real and complete — do not use old or staged replacement photos.",
+        ],
+        "next_actions": [
+            "Take before photos, then run the site checklist.",
+            "Take after photos, fill the Weekly Site Check Report, and upload materials to the site Google Drive folder.",
         ],
     },
     "class_cannot_start": {
@@ -629,6 +668,42 @@ GUIDANCE_ZH: Dict[str, Dict[str, object]] = {
         "customer_communication": ["如实告知学员设备正在排查；不要声称硬件损坏或给出未记录的诊断。"],
         "do_not_decide_without_approval": ["不要断言硬件损坏、根因、校准或任何源文件未记录的重置步骤。", "证书/完课规则只引用源文件支持的内容；其余 → needs official SOP source。"],
         "next_actions": ["收集症状并执行 供电/显示/蓝牙/平板-PAD 检查。", "若已知项的修复无效或问题未被源文件覆盖 → 上报工程师/厂商。"],
+    },
+    "smart_manikin_site_inspection": {
+        "issue_type": "Smart Manikin 分点巡检 / Smart Manikin site inspection",
+        "lead": (
+            "Smart Manikin 专员分点巡检（依据每周分点巡检表）：到场后先在清洁整理前拍巡检前照片，按检查清单逐项检查，"
+            "能现场解决的立即处理、无法解决的拍照并上报 ALLCPR，再拍巡检后照片、填写每周分点巡检表，并上传资料到对应分点的 Google Drive 文件夹。"
+        ),
+        "immediate_safety_check": ["巡检时检查可见的水/电/设备安全隐患。"],
+        "steps": [
+            "到场后，在任何清洁或整理前拍巡检前照片（整个房间、Smart Manikin 区域、耗材/用品区域、门或路牌、异常区域如有）。",
+            "按每周分点巡检表检查：卫生、垃圾、消毒用品、设备、电源线、门禁、摄像头、Wi-Fi、路牌、安全。",
+            "能现场解决的问题立即处理；无法解决的拍照并上报 ALLCPR。",
+            "拍巡检后照片，角度尽量与巡检前一致（整个房间、Smart Manikin 区域、耗材区域、门/路牌、修复结果照片如有）。",
+            "填写每周分点巡检表，并将巡检前照片、巡检后照片、已填写的巡检表和问题照片上传到对应分点 Google Drive 文件夹（建议当天完成）。",
+        ],
+        "information_to_collect": [
+            "分点、巡检日期、巡检人。",
+            "发现的问题与已采取的处理。",
+            "是否需要 ALLCPR 支持。",
+        ],
+        "evidence_requested": [
+            "巡检前照片（清洁前拍摄）。",
+            "巡检后照片（整理完成后拍摄）。",
+            "问题照片（如有）。",
+            "已填写的每周分点巡检表。",
+        ],
+        "contacts": ["ALLCPR（上报无法解决的问题 / 申请支持）。"],
+        "customer_communication": [],
+        "do_not_decide_without_approval": [
+            "未经授权不得拆卸或维修 Smart Manikin、iPad、摄像头、门禁或类似设备。",
+            "巡检记录和照片必须真实、完整——不得使用历史照片或补拍/替代照片。",
+        ],
+        "next_actions": [
+            "先拍巡检前照片，再按检查清单逐项检查。",
+            "拍巡检后照片、填写每周分点巡检表，并上传资料到对应分点 Google Drive 文件夹。",
+        ],
     },
     "class_cannot_start": {
         "issue_type": "课程无法开始 / Class cannot start",

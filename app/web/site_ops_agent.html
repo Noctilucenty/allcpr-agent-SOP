@@ -483,6 +483,8 @@
 	    display:grid;grid-template-columns:minmax(86px, .34fr) minmax(0,1fr);gap:5px 10px;
 	  }
 	  .opref.internal{background:#fff;border-color:var(--red-line)}
+	  .opref.restricted{background:var(--bg);border-color:var(--line);border-style:dashed}
+	  .opref.restricted .opref-v{color:var(--muted-2);font-style:italic}
 	  .opref.source_needed{background:var(--amber-soft);border-color:var(--amber-line)}
 	  .opref-k{font-size:10.5px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.04em}
 	  .opref-v{font-size:12.8px;color:var(--ink-soft);line-height:1.45;word-break:break-word}
@@ -493,6 +495,78 @@
 	    font-size:11.5px;font-weight:750;margin:8px 0;
 	  }
 	  .secure-note svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px}
+	  /* ---------- staff access ---------- */
+	  .staff-access{border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-bottom:14px;background:var(--bg)}
+	  .sa-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+	  .sa-label{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:var(--ink)}
+	  .sa-label svg{width:14px;height:14px;color:var(--muted-2)}
+	  .sa-badge{font-size:10.5px;font-weight:800;color:#0a7a37;background:#e7f6ec;border:1px solid #bce4c9;border-radius:999px;padding:2px 8px}
+	  .sa-btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 11px;font:inherit;font-size:12px;font-weight:750;color:var(--ink);cursor:pointer}
+	  .sa-btn:hover{border-color:var(--red);color:var(--red)}
+	  .sa-btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+	  .sa-btn.primary:hover{filter:brightness(.95);color:#fff}
+	  .sa-controls{margin-top:9px}
+	  .sa-form{margin-top:9px;display:grid;gap:7px}
+	  .sa-form label{font-size:11px;font-weight:750;color:var(--muted-2)}
+	  .sa-form input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px}
+	  .sa-form input:focus{outline:none;border-color:var(--red)}
+	  .sa-actions{display:flex;gap:7px}
+	  .sa-err{font-size:11.5px;font-weight:700;color:#8a1417;margin:0}
+	  /* ---------- start-inspection CTA ---------- */
+	  .inspect-cta{margin-top:14px;width:100%;display:flex;align-items:center;gap:11px;border:1px solid var(--red-line);background:var(--red-soft);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+	  .inspect-cta:hover{border-color:var(--red);box-shadow:var(--shadow)}
+	  .inspect-cta .ic-ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--red);color:#fff;flex:0 0 auto}
+	  .inspect-cta .ic-ico svg{width:18px;height:18px}
+	  .inspect-cta .ic-tx{display:flex;flex-direction:column;flex:1}
+	  .inspect-cta .ic-name{font-weight:800;font-size:14px;color:var(--ink)}
+	  .inspect-cta .ic-sub{font-size:11.5px;color:var(--muted-2);font-weight:600}
+	  .inspect-cta .ic-arrow{color:var(--red)}
+	  .inspect-cta .ic-arrow svg{width:18px;height:18px}
+	  /* ---------- inspection modal ---------- */
+	  .insp-overlay{position:fixed;inset:0;background:rgba(20,18,18,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;z-index:50;overflow-y:auto}
+	  .insp-overlay[hidden]{display:none}
+	  .insp-modal{background:#fff;border-radius:16px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:20px 20px 16px;margin:auto}
+	  .insp-ack-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+	  .insp-ack-ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--amber-soft);color:#9a6700;flex:0 0 auto}
+	  .insp-ack-ico svg{width:19px;height:19px}
+	  .insp-ack-head h2,.insp-flow-head h2{font-size:17px;margin:0;font-weight:800}
+	  .insp-ack-body{font-size:13px;line-height:1.6;color:var(--ink-soft);margin:0 0 16px}
+	  .insp-ack-actions,.insp-foot{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+	  .insp-flow-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+	  .insp-x{border:none;background:none;font-size:24px;line-height:1;cursor:pointer;color:var(--muted-2)}
+	  .insp-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+	  .insp-meta label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:750;color:var(--muted-2)}
+	  .insp-meta input{border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;font-size:13px}
+	  .insp-progress{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+	  .insp-progress-label{font-size:11px;font-weight:800;color:var(--muted-2);white-space:nowrap}
+	  .insp-bar{flex:1;height:7px;background:var(--bg);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+	  .insp-bar-fill{display:block;height:100%;width:0;background:var(--red);transition:width .2s ease}
+	  .insp-sec{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px}
+	  .insp-sec-title{display:flex;align-items:center;gap:7px;font-weight:800;font-size:13.5px;margin:0 0 4px}
+	  .insp-sec-warn{font-size:11.5px;color:#9a6700;font-weight:700;margin:0 0 8px}
+	  .insp-sec.donot{background:var(--red-soft);border-color:var(--red-line)}
+	  .insp-sec.donot li{color:#8a1417}
+	  .insp-check{display:flex;align-items:flex-start;gap:9px;padding:6px 0;font-size:13px;color:var(--ink-soft);cursor:pointer}
+	  .insp-check input{margin-top:2px;width:16px;height:16px;flex:0 0 auto;accent-color:var(--red)}
+	  .insp-item{padding:7px 0;border-top:1px solid var(--line)}
+	  .insp-item:first-child{border-top:none}
+	  .insp-item-name{font-size:13px;color:var(--ink);font-weight:650;margin-bottom:5px}
+	  .insp-statuses{display:flex;gap:6px;flex-wrap:wrap}
+	  .insp-st{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 9px;font:inherit;font-size:11.5px;font-weight:700;color:var(--ink-soft);cursor:pointer}
+	  .insp-st.sel-ok{border-color:#0a7a37;background:#e7f6ec;color:#0a7a37}
+	  .insp-st.sel-fixed{border-color:#9a6700;background:var(--amber-soft);color:#9a6700}
+	  .insp-st.sel-problem{border-color:var(--red);background:var(--red-soft);color:#8a1417}
+	  .insp-issue{margin-top:7px}
+	  .insp-issue[hidden]{display:none}
+	  .insp-issue input{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;font-size:12.5px}
+	  .insp-issue .insp-photo-note{font-size:11px;color:var(--muted-2);margin:5px 0 0}
+	  .insp-sec ul{margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);line-height:1.5}
+	  .insp-note-row{font-size:11.5px;color:var(--muted-2);margin:7px 0 0}
+	  .insp-save-msg{margin:0;font-size:12.5px;font-weight:750;flex:1}
+	  .insp-save-msg.ok{color:#0a7a37}
+	  .insp-save-msg.support{color:#9a6700}
+	  .insp-save-msg.err{color:#8a1417}
+	  @media (max-width:620px){ .insp-meta{grid-template-columns:1fr} }
 	  .tp-draft{margin-top:9px}
   .tp-draft textarea{
     width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:inherit;
@@ -581,6 +655,15 @@
           <div class="qa-grid" id="chips" aria-label="Incident shortcuts"></div>
         </div>
 
+        <button type="button" class="inspect-cta" id="start-inspection">
+          <span class="ic-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span>
+          <span class="ic-tx">
+            <span class="ic-name" data-i18n="startInspection">Start Inspection</span>
+            <span class="ic-sub" data-i18n="startInspectionSub">Guided weekly site check</span>
+          </span>
+          <span class="ic-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </button>
+
         <details class="advanced">
           <summary>
             <span class="adv-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M7 12h10M11 18h2"/></svg></span>
@@ -616,6 +699,27 @@
 
     <aside class="col-side">
       <div class="panel side-panel">
+        <div class="staff-access" id="staff-access">
+          <div class="sa-row">
+            <span class="sa-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+              <span data-i18n="staffAccess">Staff access</span>
+            </span>
+            <span class="sa-badge" id="sa-badge" hidden data-i18n="staffUnlocked">Staff access unlocked</span>
+          </div>
+          <div class="sa-controls" id="sa-controls">
+            <button type="button" class="sa-btn" id="sa-toggle" data-i18n="staffUnlockBtn">Unlock staff access</button>
+            <button type="button" class="sa-btn" id="sa-lock" data-i18n="staffLock" hidden>Lock</button>
+          </div>
+          <div class="sa-form" id="sa-form" hidden>
+            <label for="sa-pin" data-i18n="staffPinLabel">Enter staff PIN</label>
+            <input id="sa-pin" type="password" autocomplete="off" inputmode="numeric" />
+            <div class="sa-actions">
+              <button type="button" class="sa-btn primary" id="sa-submit" data-i18n="staffUnlockGo">Unlock</button>
+            </div>
+            <p class="sa-err" id="sa-err" hidden data-i18n="staffPinInvalid">Invalid staff PIN</p>
+          </div>
+        </div>
         <p class="side-title" data-i18n="providesTitle">What this assistant provides</p>
 
         <div class="prov">
@@ -654,6 +758,40 @@
 
   <div id="out"></div>
 </main>
+
+<div class="insp-overlay" id="insp-overlay" hidden aria-hidden="true">
+  <div class="insp-modal" role="dialog" aria-modal="true" aria-labelledby="insp-title">
+    <!-- Step 0: required acknowledgement (gate) -->
+    <div class="insp-ack" id="insp-ack">
+      <div class="insp-ack-head">
+        <span class="insp-ack-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/></svg></span>
+        <h2 id="insp-title" data-i18n="inspAckTitle">Important inspection reminder</h2>
+      </div>
+      <p class="insp-ack-body" id="insp-ack-body" data-i18n="inspAckBody"></p>
+      <div class="insp-ack-actions">
+        <button type="button" class="sa-btn" id="insp-ack-cancel" data-i18n="inspCancel">Cancel</button>
+        <button type="button" class="sa-btn primary" id="insp-ack-ok" data-i18n="inspUnderstand">I understand</button>
+      </div>
+    </div>
+    <!-- Steps 1-7: guided checklist (revealed only after acknowledgement) -->
+    <div class="insp-flow" id="insp-flow" hidden>
+      <div class="insp-flow-head">
+        <h2 data-i18n="startInspection">Start Inspection</h2>
+        <button type="button" class="insp-x" id="insp-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="insp-meta">
+        <label><span data-i18n="inspSite">Site</span><input id="insp-site" type="text" /></label>
+        <label><span data-i18n="inspStaff">Inspector</span><input id="insp-staff" type="text" /></label>
+      </div>
+      <div class="insp-progress"><span class="insp-progress-label" id="insp-progress-label"></span><span class="insp-bar"><span class="insp-bar-fill" id="insp-bar-fill"></span></span></div>
+      <div class="insp-sections" id="insp-sections"></div>
+      <div class="insp-foot">
+        <p class="insp-save-msg" id="insp-save-msg" hidden></p>
+        <button type="button" class="sa-btn primary" id="insp-finish" data-i18n="inspFinish">Finish inspection</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <footer>
   <div class="foot-inner">
@@ -828,6 +966,9 @@ const COPY = {
     // access
 	    aAccess:'Access instruction', accessWhen:['You cannot get into the building or room.'],
 	    aPasscode:'Passcode', passcodeTitle:'Internal SOP passcode', trustedPasscode:'Use only for the matching site/building/room.', noTrustedPasscode:'No source-backed passcode extracted for this site/query. Check the SOP image/reference or contact venue/property.',
+	    // staff access
+	    staffAccess:'Staff access', staffUnlockBtn:'Unlock staff access', staffPinLabel:'Enter staff PIN', staffUnlockGo:'Unlock', staffLock:'Lock', staffUnlocked:'Staff access unlocked', staffPinInvalid:'Invalid staff PIN',
+	    staffLockedHint:'Restricted internal passcode — unlock staff access to view.', staffUnlockWarning:'Internal use only. Verify site/building/room before using.', staffNotConfigured:'Staff access is not configured on this server.',
     accessDont:['Do not guess a code from images.','If no source-backed code, contact venue/property.'],
     accessImgNote:'SOP image reference available — the assistant does not read codes from images.',
     // smart manikin
@@ -850,6 +991,42 @@ const COPY = {
     provenanceShort:'General operations guidance — not official SOP. Refunds, reschedules, and policy decisions need human approval.',
     sopMedia:'SOP source images',
     noAnalysis:'Images are source references matched from SOP filenames, folders, and document names. The assistant does not analyze image content.',
+    // ---- guided inspection workflow ----
+    startInspection:'Start Inspection', startInspectionSub:'Guided weekly site check',
+    inspAckTitle:'Important inspection reminder',
+    inspAckBody:'Before photos must be taken before any cleaning or organizing. After photos must be taken after the site is fully arranged. Inspection records and photos must be real and complete. Do not use old photos or staged replacement photos. Failure to follow this may make the inspection record invalid and require review or explanation to ALLCPR.',
+    inspUnderstand:'I understand', inspCancel:'Cancel', inspClose:'Close',
+    inspSite:'Site', inspStaff:'Inspector',
+    inspBeforeTitle:'Before photos', inspBeforeWarn:'Take before photos before cleaning or moving anything.',
+    inspBeforeItems:['Whole room','Smart Manikin area','Supplies / consumables area','Door or signage','Abnormal / problem area, if any'],
+    inspChecklistTitle:'Site checklist',
+    inspChecklistItems:['Hygiene / site cleanliness','Trash and trash bag','Disinfection supplies enough for one week','Disinfect teaching equipment','Smart Manikin, iPad, AED Pads, BVM, Pocket Mask complete and normal','Equipment placed in standard position','iPad and Smart Manikin connected to power cables','Door / access / Lockbox / Access Code normal','Camera online','Wi-Fi normal','Signage complete and clear','Visible water/electric/equipment safety hazards'],
+    inspOk:'OK', inspFixed:'Fixed on site', inspProblem:'Problem / needs support',
+    inspIssueDesc:'Issue description', inspPhotoReminder:'Photograph the issue.', inspNeedSupport:'Needs ALLCPR support',
+    inspAfterTitle:'After photos', inspAfterNote:'Try to keep photo angles consistent with before photos.',
+    inspAfterItems:['Whole room after photo','Smart Manikin area after photo','Supplies area after photo','Door / signage after photo','Fixed issue result photo, if any'],
+    inspReportTitle:'Weekly Site Check Report',
+    inspReportItems:['Site check result','Problems found','Actions taken','Whether ALLCPR support is needed'],
+    inspReportDone:'Weekly Site Check Report completed',
+    inspUploadTitle:'Upload materials',
+    inspUploadItems:['Before photos','After photos','Completed Weekly Site Check Report','Issue photos, if any'],
+    inspUploadNote:'Upload to the corresponding site Google Drive folder, preferably the same day.',
+    inspUploadDone:'Materials uploaded',
+    inspDoNotTitle:'Do not',
+    inspDoNotItems:['Do not dismantle or repair Smart Manikin, iPad, camera, access control, or similar equipment without authorization.','If it cannot be solved on site, take photos and report to ALLCPR.','Inspection records and photos must be real and complete.','Do not use old photos or fake replacement photos.'],
+    inspFinish:'Finish inspection',
+    inspProgress:'Progress',
+    inspSavedCompleted:'Inspection recorded — completed',
+    inspSavedNeedsSupport:'Inspection recorded — ALLCPR support needed',
+    inspSaveError:'Could not save the inspection. Please try again.',
+    // inspection decision chips
+    ciFrequency:'Frequency', ciBefore:'Before photos', ciChecklist:'Site checklist', ciEquip:'Equipment / supplies',
+    ciAccess:'Access / camera / Wi-Fi', ciSafety:'Safety hazards', ciAfter:'After photos', ciReport:'Weekly report',
+    ciUpload:'Upload materials', ciDoNot:'Do not repair', ciReportAllcpr:'Report to ALLCPR', ciStart:'Start inspection',
+    ciSafetyItems:['Check visible water / electric / equipment safety hazards.'],
+    ciReportAllcprItems:['Fix what you can on site.','If it cannot be solved on site, take photos and report to ALLCPR.'],
+    ciFrequencyItems:['Each site at least once per week.','Increase frequency if ALLCPR notifies, students complain, or there is a site abnormality.'],
+    ciEquipItems:['Smart Manikin, iPad, AED Pads, BVM, Pocket Mask complete and in standard positions.','iPad and Smart Manikin connected to power cables.','Consumables (wipes, gloves, mask adaptors) stocked.'],
     error:'Unable to reach the assistant service'
   },
   zh: {
@@ -979,6 +1156,9 @@ const COPY = {
 	    aPower:'电力 / 安全', aNetwork:'网络 / 平台', aClassStart:'课程开始', aSafety:'安全优先', aApprovalPrep:'审批准备', aOpRef:'SOP 参考',
 	    aAccess:'门禁说明', accessWhen:['你无法进入建筑或房间。'],
 	    aPasscode:'密码', passcodeTitle:'内部 SOP 密码', trustedPasscode:'仅用于匹配的站点 / 建筑 / 房间。', noTrustedPasscode:'此站点/问题没有已提取的来源支持密码。请查看 SOP 图片/参考，或联系场地/物业。',
+	    // staff access
+	    staffAccess:'员工权限', staffUnlockBtn:'解锁员工权限', staffPinLabel:'输入员工 PIN', staffUnlockGo:'解锁', staffLock:'锁定', staffUnlocked:'员工权限已解锁', staffPinInvalid:'员工密码无效',
+	    staffLockedHint:'内部密码已隐藏——解锁员工权限后查看。', staffUnlockWarning:'仅限内部使用。使用前请确认地点/楼栋/房间一致。', staffNotConfigured:'此服务器未配置员工权限。',
     accessDont:['不要从图片猜测密码。','若无来源支持的密码，联系场地 / 物业。'],
     accessImgNote:'有 SOP 图片参考 —— 本助手不从图片读取密码。',
 	    aIpad:'iPad / PAD', aBt:'蓝牙 / 供电', aTrainingNoData:'训练无数据', aPhoto:'完成截图', aRoom:'走错房间 / 楼层', aBlack:'黑屏', aFixFailed:'修复无效', aVendor:'工程师 / 厂商', aDeviceFix:'设备修复',
@@ -998,6 +1178,42 @@ const COPY = {
     provenanceShort:'通用运营建议，非官方 SOP；退款、改期及政策类决定需人工批准。',
     sopMedia:'SOP 来源图片',
     noAnalysis:'图片为来源参考，依据 SOP 文件名、文件夹与文档名匹配得出。本助手不分析图片内容。',
+    // ---- guided inspection workflow ----
+    startInspection:'开始巡检', startInspectionSub:'引导式每周分点巡检',
+    inspAckTitle:'巡检前重要提醒',
+    inspAckBody:'巡检前照片必须在开始清洁或整理前拍摄；巡检后照片必须在完成整理后拍摄。巡检记录和照片必须真实、完整，不得补拍或使用历史照片代替。未按要求完成可能导致巡检记录无效，并需要重新审核或向 ALLCPR 说明。',
+    inspUnderstand:'我已知晓', inspCancel:'取消', inspClose:'关闭',
+    inspSite:'分点', inspStaff:'巡检人',
+    inspBeforeTitle:'巡检前拍照', inspBeforeWarn:'开始清洁或整理前必须先拍巡检前照片。',
+    inspBeforeItems:['整个房间','Smart Manikin 区域','耗材 / 用品区域','门或路牌','异常 / 问题区域（如有）'],
+    inspChecklistTitle:'现场检查',
+    inspChecklistItems:['卫生 / 现场清洁','垃圾与垃圾袋','消毒用品够用一周','对教学设备进行消毒','Smart Manikin、iPad、AED Pads、BVM、Pocket Mask 齐全且正常','设备摆放在标准位置','iPad 与 Smart Manikin 已连接电源线','门禁 / Lockbox / Access Code 正常','摄像头在线','Wi-Fi 正常','路牌完整清晰','可见的水/电/设备安全隐患'],
+    inspOk:'正常', inspFixed:'现场已处理', inspProblem:'问题 / 需支持',
+    inspIssueDesc:'问题描述', inspPhotoReminder:'请拍下问题照片。', inspNeedSupport:'需要 ALLCPR 支持',
+    inspAfterTitle:'巡检后拍照', inspAfterNote:'尽量保持巡检前后照片角度一致。',
+    inspAfterItems:['整个房间（巡检后）','Smart Manikin 区域（巡检后）','耗材区域（巡检后）','门 / 路牌（巡检后）','修复结果照片（如有）'],
+    inspReportTitle:'每周分点巡检表',
+    inspReportItems:['现场检查结果','发现的问题','已采取的处理','是否需要 ALLCPR 支持'],
+    inspReportDone:'已填写每周分点巡检表',
+    inspUploadTitle:'上传资料',
+    inspUploadItems:['巡检前照片','巡检后照片','已填写的每周分点巡检表','问题照片（如有）'],
+    inspUploadNote:'上传至对应分点 Google Drive 文件夹，建议巡检当天完成。',
+    inspUploadDone:'资料已上传',
+    inspDoNotTitle:'注意事项',
+    inspDoNotItems:['未经授权不得拆卸或维修 Smart Manikin、iPad、摄像头、门禁或类似设备。','无法现场解决的，拍照并上报 ALLCPR。','巡检记录和照片必须真实、完整。','不得使用历史照片或补拍/替代照片。'],
+    inspFinish:'完成巡检',
+    inspProgress:'进度',
+    inspSavedCompleted:'巡检已记录——已完成',
+    inspSavedNeedsSupport:'巡检已记录——需要 ALLCPR 支持',
+    inspSaveError:'保存巡检失败，请重试。',
+    // inspection decision chips
+    ciFrequency:'巡检频率', ciBefore:'巡检前拍照', ciChecklist:'现场检查项', ciEquip:'设备/耗材',
+    ciAccess:'门禁/监控/网络', ciSafety:'安全隐患', ciAfter:'巡检后拍照', ciReport:'填写巡检表',
+    ciUpload:'上传资料', ciDoNot:'不得维修', ciReportAllcpr:'上报 ALLCPR', ciStart:'开始巡检',
+    ciSafetyItems:['检查可见的水 / 电 / 设备安全隐患。'],
+    ciReportAllcprItems:['能现场解决的立即处理。','无法现场解决的，拍照并上报 ALLCPR。'],
+    ciFrequencyItems:['每个分点至少每周一次。','如 ALLCPR 通知、学员投诉或现场异常则增加频率。'],
+    ciEquipItems:['Smart Manikin、iPad、AED Pads、BVM、Pocket Mask 齐全并在标准位置。','iPad 与 Smart Manikin 已连接电源线。','耗材（湿巾、手套、面罩转接头）充足。'],
     error:'无法连接到助手服务'
   }
 };
@@ -1189,7 +1405,9 @@ function refEntries(refs, pred, limit=10){
 
 const CODE_ITEM_RE = /passcode|password|code|lockbox|wi-?fi|密码|门禁|大门|房间密码/i;
 function isCodeItem(item){
-  return item && item.sensitivity === 'internal' && CODE_ITEM_RE.test(`${item.label || ''} ${item.value || ''}`);
+  // 'restricted' = a redacted internal code (locked); 'internal' = revealed code.
+  return item && (item.sensitivity === 'internal' || item.sensitivity === 'restricted')
+    && CODE_ITEM_RE.test(`${item.label || ''} ${item.value || ''}`);
 }
 
 function sourceFromRefs(refs, fallback){
@@ -1267,11 +1485,13 @@ function buildTree(data, c){
       doNow:accessEntries.length ? [] : (accessSteps.length ? accessSteps : steps.slice(0, 4)),
       doNot:c.accessDont, source:src,
       note:(data.sop_images || []).length ? c.accessImgNote : ''}});
+    const pcLocked = !!data.passcode_ref_available && !data.staff_access_unlocked;
+    const pcUnlocked = !!data.staff_access_unlocked && codeEntries.length > 0;
     A.push({key:'passcode', icon:'lock', label:c.aPasscode, sub:codeEntries.length ? c.subDoc : c.subSop, defaultOpen:codeEntries.length > 0, panel:{
       title:c.passcodeTitle,
-      secure:codeEntries.length ? c.trustedPasscode : '',
+      secure:pcUnlocked ? c.staffUnlockWarning : (codeEntries.length && !pcLocked ? c.trustedPasscode : ''),
       refEntries:codeEntries.length ? codeEntries : sourceNeeded,
-      note:codeEntries.length ? '' : c.noTrustedPasscode,
+      note:pcLocked ? c.staffLockedHint : (codeEntries.length ? '' : c.noTrustedPasscode),
       doNot:c.accessDont,
       source:sourceFromRefs(accessRefs, src)}});
     A.push({key:'supervisor', icon:'flag', label:c.toSupervisor, sub:c.subApproval, panel:{
@@ -1334,6 +1554,35 @@ function buildTree(data, c){
       sendTo:(data.contacts || []).slice(0, 3),
       doNot:(data.do_not_decide_without_approval || []).slice(0, 3),
       source:sourceFromRefs(mismatchRefs, src)}});
+  }
+
+  if(sc === 'smart_manikin_site_inspection'){
+    refs.filter(r => r.scenario === 'smart_manikin_site_inspection').forEach(r => usedRefIds.add(r.id));
+    const sub = data.issue_subtype || '';
+    const ssrc = c.ssOfficial;
+    const INSP_DEFAULT = {
+      pre_check_photos:'ci_before', post_check_photos:'ci_after', upload_materials:'ci_upload',
+      do_not_repair:'ci_donot', inspection_frequency:'ci_freq', equipment_placement:'ci_equip',
+      equipment_check:'ci_equip', access_camera_wifi_signage_safety:'ci_access',
+      weekly_site_check_report:'ci_report'
+    };
+    const inspDefKey = INSP_DEFAULT[sub] || 'ci_checklist';
+    const ci = (key, icon, label, items, doNot) => A.push({
+      key, icon, label, sub:c.subSop, defaultOpen:key === inspDefKey,
+      panel:{title:label, doNow:items, doNot:doNot || [], source:ssrc}
+    });
+    ci('ci_freq', 'report', c.ciFrequency, c.ciFrequencyItems);
+    ci('ci_before', 'image', c.ciBefore, c.inspBeforeItems);
+    ci('ci_checklist', 'clip', c.ciChecklist, c.inspChecklistItems);
+    ci('ci_equip', 'tablet', c.ciEquip, c.ciEquipItems);
+    ci('ci_access', 'lock', c.ciAccess, [c.inspChecklistItems[7], c.inspChecklistItems[8], c.inspChecklistItems[9], c.inspChecklistItems[10]]);
+    ci('ci_safety', 'alert', c.ciSafety, c.ciSafetyItems);
+    ci('ci_after', 'image', c.ciAfter, c.inspAfterItems);
+    ci('ci_report', 'report', c.ciReport, c.inspReportItems);
+    ci('ci_upload', 'flag', c.ciUpload, c.inspUploadItems);
+    ci('ci_donot', 'alert', c.ciDoNot, [], c.inspDoNotItems);
+    ci('ci_reportallcpr', 'flag', c.ciReportAllcpr, c.ciReportAllcprItems);
+    A.push({key:'ci_start', icon:'steps', label:c.ciStart, sub:c.subRef});  // opens guided modal
   }
 
   // Generic operational-reference paths for sourced topics that do not need
@@ -1565,6 +1814,7 @@ $('#out').addEventListener('click', event => {
   const pill = event.target.closest('.pill[data-act]');
   if(!pill) return;
   const out = $('#out');
+  if(pill.dataset.act === 'ci_start'){ openInspection(); return; }
   if(pill.dataset.act === 'sopimg'){
     const sec = out.querySelector('#sop-images');
     if(sec) sec.scrollIntoView({behavior:'smooth', block:'center'});
@@ -1729,12 +1979,16 @@ async function ask(){
   if($('#ctime').value.trim()) ctx.class_time = $('#ctime').value.trim();
   if($('#att').value.trim()) ctx.attachments = [{type:'note', description:$('#att').value.trim()}];
 
+  const body = {question:q, context:ctx};
+  const tok = staffToken();
+  if(tok) body.staff_access_token = tok;
+
   setBusy(true);
   try{
     const resp = await fetch(API_BASE + '/api/agents/autocpr-site-manager/ask', {
       method:'POST',
       headers:{'content-type':'application/json'},
-      body:JSON.stringify({question:q, context:ctx})
+      body:JSON.stringify(body)
     });
 	    if(!resp.ok) throw new Error('HTTP ' + resp.status);
 	    const data = await resp.json();
@@ -1752,6 +2006,227 @@ $('#go').onclick = ask;
 $('#q').addEventListener('keydown', event => {
   if((event.metaKey || event.ctrlKey) && event.key === 'Enter') ask();
 });
+
+/* ---------- guided inspection workflow ----------
+   A required acknowledgement gates the checklist. The reminder only states that an
+   incomplete/invalid record may require review or explanation to ALLCPR (no legal
+   wording). Only checklist statuses and photo-step acknowledgements are saved;
+   no images or local paths. */
+let inspState = null;
+function newInspState(){
+  return {acknowledged:false, acknowledgedAt:'', startedAt:'', before:{}, after:{}, report:false, upload:{}, items:[]};
+}
+function openInspection(){
+  inspState = newInspState();
+  const c = copy();
+  if($('#insp-ack-body')) $('#insp-ack-body').textContent = c.inspAckBody;
+  if($('#insp-ack')) $('#insp-ack').hidden = false;
+  if($('#insp-flow')) $('#insp-flow').hidden = true;     // flow cannot start until acknowledged
+  if($('#insp-save-msg')) $('#insp-save-msg').hidden = true;
+  const ov = $('#insp-overlay');
+  if(ov){ ov.hidden = false; ov.setAttribute('aria-hidden', 'false'); }
+}
+function closeInspection(){
+  const ov = $('#insp-overlay');
+  if(ov){ ov.hidden = true; ov.setAttribute('aria-hidden', 'true'); }
+}
+function acknowledgeInspection(){
+  if(!inspState) inspState = newInspState();
+  inspState.acknowledged = true;
+  inspState.acknowledgedAt = new Date().toISOString();
+  inspState.startedAt = new Date().toISOString();
+  if($('#insp-ack')) $('#insp-ack').hidden = true;
+  if($('#insp-flow')) $('#insp-flow').hidden = false;
+  // prefill site/staff from the context fields if present
+  if($('#insp-site') && $('#site') && $('#site').value.trim()) $('#insp-site').value = $('#site').value.trim();
+  renderInspectionSections();
+}
+function inspSec(title, icon, inner, cls){
+  return `<div class="insp-sec ${cls||''}"><p class="insp-sec-title">${svg(icon)}${esc(title)}</p>${inner}</div>`;
+}
+function inspCheckList(items, group){
+  return items.map((label, i) =>
+    `<label class="insp-check"><input type="checkbox" data-insp-check="${group}" data-i="${i}" /><span>${esc(label)}</span></label>`
+  ).join('');
+}
+function renderInspectionSections(){
+  const c = copy();
+  const wrap = $('#insp-sections');
+  if(!wrap) return;
+  if(!inspState.items.length){
+    inspState.items = (c.inspChecklistItems || []).map(() => ({status:'', issue:''}));
+  }
+  const before = inspSec(c.inspBeforeTitle, 'image',
+    `<p class="insp-sec-warn">${svg('alert')} ${esc(c.inspBeforeWarn)}</p>${inspCheckList(c.inspBeforeItems, 'before')}`);
+  const checklist = inspSec(c.inspChecklistTitle, 'clip',
+    (c.inspChecklistItems || []).map((label, i) => {
+      const st = inspState.items[i] || {status:''};
+      const btn = (val, lab, selcls) =>
+        `<button type="button" class="insp-st${st.status === val ? ' '+selcls : ''}" data-insp-status="${i}" data-val="${val}">${esc(lab)}</button>`;
+      return `<div class="insp-item">
+        <div class="insp-item-name">${esc(label)}</div>
+        <div class="insp-statuses">
+          ${btn('ok', c.inspOk, 'sel-ok')}${btn('fixed', c.inspFixed, 'sel-fixed')}${btn('problem', c.inspProblem, 'sel-problem')}
+        </div>
+        <div class="insp-issue" data-insp-issue="${i}" ${st.status === 'problem' ? '' : 'hidden'}>
+          <input type="text" data-insp-issue-input="${i}" placeholder="${esc(c.inspIssueDesc)}" value="${esc(st.issue || '')}" />
+          <p class="insp-photo-note">${esc(c.inspPhotoReminder)} · ${esc(c.inspNeedSupport)}</p>
+        </div>
+      </div>`;
+    }).join(''));
+  const after = inspSec(c.inspAfterTitle, 'image',
+    `<p class="insp-sec-warn">${esc(c.inspAfterNote)}</p>${inspCheckList(c.inspAfterItems, 'after')}`);
+  const report = inspSec(c.inspReportTitle, 'report',
+    `<ul>${(c.inspReportItems || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+     <label class="insp-check"><input type="checkbox" data-insp-report /><span>${esc(c.inspReportDone)}</span></label>`);
+  const upload = inspSec(c.inspUploadTitle, 'flag',
+    `${inspCheckList(c.inspUploadItems, 'upload')}<p class="insp-note-row">${esc(c.inspUploadNote)}</p>`);
+  const donot = inspSec(c.inspDoNotTitle, 'alert',
+    `<ul>${(c.inspDoNotItems || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>`, 'donot');
+  wrap.innerHTML = before + checklist + after + report + upload + donot;
+  updateInspProgress();
+}
+function updateInspProgress(){
+  const c = copy();
+  const before = Object.values(inspState.before).filter(Boolean).length;
+  const after = Object.values(inspState.after).filter(Boolean).length;
+  const upload = Object.values(inspState.upload).filter(Boolean).length;
+  const itemsDone = inspState.items.filter(i => i.status).length;
+  const done = before + after + upload + itemsDone + (inspState.report ? 1 : 0);
+  const total = (c.inspBeforeItems||[]).length + (c.inspAfterItems||[]).length + (c.inspUploadItems||[]).length
+    + (c.inspChecklistItems||[]).length + 1;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  if($('#insp-bar-fill')) $('#insp-bar-fill').style.width = pct + '%';
+  if($('#insp-progress-label')) $('#insp-progress-label').textContent = `${c.inspProgress}: ${pct}%`;
+}
+async function finishInspection(){
+  const c = copy();
+  const enItems = COPY.en.inspChecklistItems || [];
+  const mapChecks = (group, labelsEn) => {
+    const out = {};
+    labelsEn.forEach((lab, i) => { out[lab] = !!inspState[group][i]; });
+    return out;
+  };
+  const items = (inspState.items || []).map((it, i) => ({
+    item: enItems[i] || ('item_' + i),
+    status: it.status || 'pending',
+    issue: it.issue || '',
+    fixed_on_site: it.status === 'fixed',
+    needs_support: it.status === 'problem'
+  }));
+  const problems = items.filter(i => i.needs_support).map(i => i.issue || i.item);
+  const payload = {
+    site: ($('#insp-site') && $('#insp-site').value.trim()) || '',
+    staff: ($('#insp-staff') && $('#insp-staff').value.trim()) || '',
+    started_at: inspState.startedAt,
+    completed_at: new Date().toISOString(),
+    inspection_warning_acknowledged: !!inspState.acknowledged,
+    acknowledged_at: inspState.acknowledgedAt,
+    before_photo_checks: mapChecks('before', COPY.en.inspBeforeItems || []),
+    site_checklist_items: items,
+    post_photo_checks: mapChecks('after', COPY.en.inspAfterItems || []),
+    weekly_report_completed: !!inspState.report,
+    upload_completed: (COPY.en.inspUploadItems || []).every((_, i) => inspState.upload[i]),
+    problems_found: problems,
+    fixed_on_site_count: items.filter(i => i.fixed_on_site).length,
+    needs_support_count: items.filter(i => i.needs_support).length,
+    language: selectedLang
+  };
+  const msg = $('#insp-save-msg');
+  try{
+    const resp = await fetch(API_BASE + '/api/inspection-logs', {
+      method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(payload)
+    });
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const saved = await resp.json();
+    if(msg){
+      const needs = saved.status === 'needs_support';
+      msg.textContent = needs ? c.inspSavedNeedsSupport : c.inspSavedCompleted;
+      msg.className = 'insp-save-msg ' + (needs ? 'support' : 'ok');
+      msg.hidden = false;
+    }
+    const fin = $('#insp-finish');
+    if(fin){ fin.textContent = c.inspClose; fin.dataset.done = '1'; }
+  }catch(e){
+    if(msg){ msg.textContent = c.inspSaveError; msg.className = 'insp-save-msg err'; msg.hidden = false; }
+  }
+}
+(function wireInspection(){
+  const cta = $('#start-inspection');
+  if(cta) cta.onclick = openInspection;
+  const ackOk = $('#insp-ack-ok'), ackCancel = $('#insp-ack-cancel'), closeBtn = $('#insp-close'), finish = $('#insp-finish'), overlay = $('#insp-overlay');
+  if(ackOk) ackOk.onclick = acknowledgeInspection;
+  if(ackCancel) ackCancel.onclick = closeInspection;
+  if(closeBtn) closeBtn.onclick = closeInspection;
+  if(overlay) overlay.addEventListener('click', e => { if(e.target === overlay) closeInspection(); });
+  if(finish) finish.onclick = () => { if(finish.dataset.done === '1'){ closeInspection(); } else { finishInspection(); } };
+  const sections = $('#insp-sections');
+  if(sections) sections.addEventListener('click', e => {
+    const stBtn = e.target.closest('[data-insp-status]');
+    if(stBtn){
+      const i = +stBtn.dataset.inspStatus, val = stBtn.dataset.val;
+      inspState.items[i] = inspState.items[i] || {status:'', issue:''};
+      inspState.items[i].status = val;
+      renderInspectionSections();
+    }
+  });
+  if(sections) sections.addEventListener('input', e => {
+    const chk = e.target.closest('[data-insp-check]');
+    if(chk){ const g = chk.dataset.inspCheck; inspState[g][+chk.dataset.i] = chk.checked; updateInspProgress(); return; }
+    const rep = e.target.closest('[data-insp-report]');
+    if(rep){ inspState.report = rep.checked; updateInspProgress(); return; }
+    const issue = e.target.closest('[data-insp-issue-input]');
+    if(issue){ const i = +issue.dataset.inspIssueInput; if(inspState.items[i]) inspState.items[i].issue = issue.value; }
+  });
+})();
+
+/* ---------- staff access (passcode unlock) ----------
+   Token is kept in sessionStorage only (cleared when the tab closes); it is not
+   persisted across sessions, and the raw PIN is never stored. */
+const STAFF_TOKEN_KEY = 'allcpr_staff_token';
+function staffToken(){ try{ return sessionStorage.getItem(STAFF_TOKEN_KEY) || ''; }catch(e){ return ''; } }
+function setStaffToken(tok){
+  try{ if(tok) sessionStorage.setItem(STAFF_TOKEN_KEY, tok); else sessionStorage.removeItem(STAFF_TOKEN_KEY); }catch(e){}
+  updateStaffUI();
+}
+function updateStaffUI(){
+  const unlocked = !!staffToken();
+  const form = $('#sa-form');
+  const editing = !!form && form.dataset.editing === '1';
+  if($('#sa-badge')) $('#sa-badge').hidden = !unlocked;
+  if($('#sa-controls')) $('#sa-controls').hidden = editing;
+  if($('#sa-toggle')) $('#sa-toggle').hidden = unlocked || editing;
+  if($('#sa-lock')) $('#sa-lock').hidden = !unlocked;
+  if(form) form.hidden = !editing;
+}
+async function unlockStaff(){
+  const c = copy();
+  const pinEl = $('#sa-pin'), err = $('#sa-err');
+  const pin = pinEl ? pinEl.value.trim() : '';
+  if(err) err.hidden = true;
+  if(!pin){ if(pinEl) pinEl.focus(); return; }
+  try{
+    const resp = await fetch(API_BASE + '/api/staff-access/unlock', {
+      method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({pin})
+    });
+    if(resp.status === 503){ if(err){ err.textContent = c.staffNotConfigured; err.hidden = false; } return; }
+    if(!resp.ok){ if(err){ err.textContent = c.staffPinInvalid; err.hidden = false; } return; }
+    const data = await resp.json();
+    if(pinEl) pinEl.value = '';
+    const form = $('#sa-form'); if(form) form.dataset.editing = '0';
+    setStaffToken(data.token || '');   // calls updateStaffUI()
+    if($('#q').value.trim()) ask();    // refresh the current answer with codes revealed
+  }catch(e){ if(err){ err.textContent = c.staffPinInvalid; err.hidden = false; } }
+}
+(function wireStaffAccess(){
+  const toggle = $('#sa-toggle'), submit = $('#sa-submit'), lock = $('#sa-lock'), pin = $('#sa-pin'), form = $('#sa-form');
+  if(toggle) toggle.onclick = () => { if(form) form.dataset.editing = '1'; updateStaffUI(); if(pin) pin.focus(); };
+  if(submit) submit.onclick = unlockStaff;
+  if(lock) lock.onclick = () => { if(form) form.dataset.editing = '0'; setStaffToken(''); if($('#q').value.trim()) ask(); };
+  if(pin) pin.addEventListener('keydown', e => { if(e.key === 'Enter') unlockStaff(); });
+  updateStaffUI();
+})();
+
 document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => applyLanguage(btn.dataset.lang)));
 applyLanguage(selectedLang);
 loadLogs();

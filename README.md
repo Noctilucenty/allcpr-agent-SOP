@@ -41,6 +41,9 @@ The project is intentionally separate from `maps-scraper-intel`: opening
 | Agent UI | `/` |
 | Agent UI alias | `/agent` |
 | Structured API | `POST /api/agents/autocpr-site-manager/ask` |
+| Staff passcode unlock | `POST /api/staff-access/unlock` |
+| Incident logs | `GET/POST /api/incident-logs`, `GET/PATCH /api/incident-logs/{id}` |
+| Inspection logs | `GET/POST /api/inspection-logs`, `GET/PATCH /api/inspection-logs/{id}` |
 | Health check | `/health` |
 
 ## Assistant UI
@@ -176,6 +179,7 @@ need supervisor/registration approval. Smart Manikin keeps its own
 - `internet_outage`
 - `venue_access_issue`
 - `smart_manikin_troubleshooting`
+- `smart_manikin_site_inspection`
 - `class_cannot_start`
 - `instructor_no_show`
 - `student_checkin_issue`
@@ -246,6 +250,80 @@ For black-screen/app-restart issues, the agent says the source records the issue
 but no documented fix is recorded, and routes it to
 `needs engineer/vendor confirmation`.
 
+## Staff Access & Passcode Redaction
+
+Because a site may be used by **both students and staff**, source-backed internal
+passcodes are hidden by default. Redaction happens **backend-side** (not
+frontend-only), so the API response itself carries no secret values in the
+default/public mode.
+
+What is redacted by default (any operational-reference item marked
+`sensitivity: internal`):
+
+- Santa Clara lockbox / room passcode and weekend access-card code.
+- Newark Suite 2018 passcode and front-gate lockbox code.
+- Internal Wi-Fi credentials and internal instruction-video links.
+- Any future internal `access_code` / `password` / `keybox` / `door_code` /
+  `passcode` item.
+
+In the default mode the value is replaced with
+`Restricted internal passcode. Staff must unlock internal access to view it.`
+(Chinese: `内部密码已隐藏。员工需先解锁内部权限后查看。`).
+
+**Staff unlock** reveals source-backed codes for one session:
+
+1. Set a server PIN: `ALLCPR_STAFF_ACCESS_PIN=<pin>` (unset → unlock is impossible
+   and everything stays redacted).
+2. `POST /api/staff-access/unlock` with `{ "pin": "..." }` returns
+   `{ "ok": true, "token": "<expiry>.<hmac>" }`. The token is an HMAC signature,
+   **never the raw PIN**, and is short-lived.
+3. The UI stores the token in `sessionStorage` (not `localStorage`) and sends it
+   as `staff_access_token` on the next ask. With a valid token, codes are shown
+   with the warning `Internal use only. Verify site/building/room before using.`
+
+Logs never contain raw passcodes, PINs, or Wi-Fi credentials — only the booleans
+`staff_access_unlocked`, `passcode_ref_available`, and `passcode_revealed`.
+
+## Smart Manikin Site Representative Inspection SOP
+
+The `smart_manikin_site_inspection` scenario answers weekly site-check questions
+from the reviewed source
+`app/agents/autocpr_site_manager/smart_manikin_site_inspection_sop.json`
+(extracted from *Smart Manikin 专员分点巡检 SOP*, June 29 2026). Narrow questions
+route to focused sub-issues: `inspection_frequency`, `pre_check_photos`,
+`site_checklist`, `equipment_check`, `access_camera_wifi_signage_safety`,
+`post_check_photos`, `weekly_site_check_report`, `upload_materials`,
+`do_not_repair`, `issue_escalation`, `equipment_placement`.
+
+The page-3 equipment-placement diagram is indexed as a source image
+(`Smart Manikin 专员分点巡检 SOP — equipment placement diagram`) and surfaces for
+equipment-placement / 器材摆放 / supplies queries. No image content is analyzed.
+
+### Guided Inspection Workflow
+
+The Q&A page also offers **Start Inspection / 开始巡检** — a fast, mobile-friendly
+guided checklist, not a document dump:
+
+1. **Required acknowledgement** before the checklist unlocks: before photos must be
+   taken before any cleaning, after photos after the site is arranged, and records
+   must be real and complete. The reminder states only that an incomplete/invalid
+   record **may require review or explanation to ALLCPR** — the source SOP does not
+   state any fine/penalty, so the app uses no fine/penalty wording.
+2. **Before photos** checklist (whole room, Smart Manikin area, supplies, door/
+   signage, abnormal area).
+3. **Site checklist** (hygiene, trash, disinfection, equipment, power cables,
+   access, camera, Wi-Fi, signage, safety) with `OK` / `Fixed on site` /
+   `Problem — needs support` per item.
+4. **After photos** checklist (similar angles; fixed-result photo if any).
+5. **Weekly Site Check Report** reminder and **Upload materials** checklist
+   (corresponding site Google Drive folder, same day recommended).
+6. **Do-not** warnings (no unauthorized dismantle/repair; report unresolved issues
+   to ALLCPR; records must be real/complete).
+7. **Finish** writes an inspection log. The acknowledgement
+   (`inspection_warning_acknowledged` + `acknowledged_at`), checklist statuses, and
+   photo-step acknowledgements are stored — **never raw images or local paths**. If
+   any item is a problem the log status becomes `needs_support`.
+
 ## Repository Layout
 
 ```text
@@ -259,12 +337,16 @@ but no documented fix is recorded, and routes it to
 │       ├── scenarios.py
 │       ├── scenario_subissues.py
 │       ├── smart_manikin_subissues.py
+│       ├── smart_manikin_inspection.py
+│       ├── smart_manikin_site_inspection_sop.json
+│       ├── staff_access.py
 │       ├── schemas.py
 │       ├── retriever.py
 │       ├── kb_loader.py
 │       ├── sop_operational_refs.py
 │       ├── sop_operational_refs.json
 │       ├── incident_logs.py
+│       ├── inspection_logs.py
 │       ├── sop.md
 │       ├── kb_seed.md
 │       └── sop_source_analysis.md
@@ -319,9 +401,10 @@ Every `/api/agents/autocpr-site-manager/ask` call appends a lightweight internal
 incident log entry. The log records the user-entered site/location, class time,
 scenario, severity, first actions, evidence, escalation, SOP image count,
 matched operational references, the routed `issue_subtype`/`route_detail` and
-`policy_approval_required` flag, trusted-passcode-shown flags for access, and the
+`policy_approval_required` flag, the passcode-access booleans
+(`staff_access_unlocked` / `passcode_ref_available` / `passcode_revealed`), and the
 Smart Manikin sub-issue when relevant. It does not store uploaded image files,
-local filesystem paths, or the raw full answer payload.
+local filesystem paths, raw passcodes, or the raw full answer payload.
 
 Default local storage:
 
@@ -333,6 +416,27 @@ Override with:
 
 ```bash
 ALLCPR_INCIDENT_LOG_PATH=/path/to/incident_logs.jsonl
+```
+
+### Inspection Logs
+
+Completed guided inspections are stored separately (`log_type: inspection`) via
+`POST /api/inspection-logs`. Each entry records site, inspector, start/complete
+times, the acknowledgement, before/after photo-step checks, the site-checklist
+item statuses, weekly-report/upload completion, problems found, fixed/needs-support
+counts, and a status of `open` / `needs_support` / `completed`. It never stores raw
+image bytes, local filesystem paths, or passcodes.
+
+Default local storage:
+
+```text
+data/inspection_logs.jsonl
+```
+
+Override with:
+
+```bash
+ALLCPR_INSPECTION_LOG_PATH=/path/to/inspection_logs.jsonl
 ```
 
 Render note: this MVP stores logs locally on the running Render instance. For

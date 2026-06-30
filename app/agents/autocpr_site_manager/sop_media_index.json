@@ -1577,5 +1577,27 @@
       "smart_manikin_troubleshooting",
       "venue_access_issue"
     ]
+  },
+  {
+    "id": "50ff47d9ca77",
+    "source_file": "SOP/smart_manikin_site_inspection/equipment_placement_diagram.png",
+    "extracted_path": "app/web/static/sop_media/65e6ee1a6885.png",
+    "url": "/static/sop_media/65e6ee1a6885.png",
+    "media_type": "image",
+    "title": "Smart Manikin 专员分点巡检 SOP — equipment placement diagram",
+    "description": "Source image copied from SOP folder: equipment_placement_diagram.png. No image analysis was performed.",
+    "tags": [
+      "diagram.png",
+      "equipment",
+      "inspection",
+      "manikin",
+      "placement",
+      "site",
+      "smart",
+      "sop"
+    ],
+    "related_scenarios": [
+      "smart_manikin_site_inspection"
+    ]
   }
 ]

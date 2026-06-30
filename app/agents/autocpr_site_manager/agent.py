@@ -34,8 +34,10 @@ from .smart_manikin_subissues import (
     focused_guidance,
     is_documented_fix_failed_requested,
 )
+from . import smart_manikin_inspection
 from .sop_media_index import find_relevant_sop_media
 from .sop_operational_refs import find_operational_references
+from . import staff_access
 
 
 def _unique_sources(chunks: List[RetrievedChunk]) -> List[str]:
@@ -178,7 +180,13 @@ class SiteManagerAgent:
     def __init__(self, retriever: Optional[SiteManagerRetriever] = None) -> None:
         self._retriever = retriever or SiteManagerRetriever()
 
-    def answer(self, question: str, context: Optional[Dict[str, Any]] = None) -> AgentAnswer:
+    def answer(
+        self,
+        question: str,
+        context: Optional[Dict[str, Any]] = None,
+        *,
+        staff_access_token: Optional[str] = None,
+    ) -> AgentAnswer:
         question = question or ""
         lang = prompts.detect_language(question, context)
         scenario = classify(question, context)
@@ -222,6 +230,20 @@ class SiteManagerAgent:
         sources = _unique_sources(chunks)
         sop_images = find_relevant_sop_media(question, scenario, top_k=3)
         operational_references = find_operational_references(question, scenario, context, limit=3)
+        if scenario == smart_manikin_inspection.SCENARIO:
+            # The inspection SOP drives its own source-backed references.
+            operational_references = smart_manikin_inspection.inspection_operational_references(
+                question, lang
+            )
+        # Redact source-backed internal passcodes unless a valid staff token is
+        # presented. Redaction happens backend-side (never frontend-only) so the
+        # API response itself carries no secret values in the default mode.
+        staff_unlocked = staff_access.verify_token(staff_access_token)
+        operational_references, passcode_ref_available, passcode_revealed = (
+            staff_access.redact_references(
+                operational_references, unlocked=staff_unlocked, lang=lang
+            )
+        )
         smart_manikin_subissue = ""
         documented_fix_failed_requested = False
         has_documented_fix = False
@@ -251,6 +273,27 @@ class SiteManagerAgent:
                     focused.get("do_not_decide_without_approval", do_not_decide) or []
                 )
                 next_actions = list(focused.get("next_actions", next_actions) or [])
+        elif scenario == smart_manikin_inspection.SCENARIO:
+            # Route narrow inspection questions (frequency / before photos / site
+            # checklist / equipment / after photos / report / upload / do-not-repair)
+            # to a focused answer instead of the full overview block.
+            issue_subtype = smart_manikin_inspection.detect_inspection_subtype(question)
+            route_detail = smart_manikin_inspection.ROUTE_DETAIL
+            inspection_focused = smart_manikin_inspection.focused_guidance(issue_subtype, lang)
+            if inspection_focused:
+                lead_text = str(inspection_focused.get("lead", lead_text))
+                steps = list(inspection_focused.get("steps", steps) or [])
+                information_to_collect = list(
+                    inspection_focused.get("information_to_collect", information_to_collect) or []
+                )
+                evidence_requested = list(
+                    inspection_focused.get("evidence_requested", evidence_requested) or []
+                )
+                contacts = list(inspection_focused.get("contacts", contacts) or [])
+                do_not_decide = list(
+                    inspection_focused.get("do_not_decide_without_approval", do_not_decide) or []
+                )
+                next_actions = list(inspection_focused.get("next_actions", next_actions) or [])
         else:
             # General (non-Smart-Manikin) sub-issue routing: narrow access /
             # check-in / completion / outage queries get a focused block instead
@@ -331,6 +374,9 @@ class SiteManagerAgent:
             issue_subtype=issue_subtype,
             route_detail=route_detail,
             policy_approval_required=policy_approval_required,
+            staff_access_unlocked=staff_unlocked,
+            passcode_ref_available=passcode_ref_available,
+            passcode_revealed=passcode_revealed,
         )
 
 
@@ -346,6 +392,11 @@ def get_agent() -> SiteManagerAgent:
     return _AGENT
 
 
-def answer_question(question: str, context: Optional[Dict[str, Any]] = None) -> AgentAnswer:
+def answer_question(
+    question: str,
+    context: Optional[Dict[str, Any]] = None,
+    *,
+    staff_access_token: Optional[str] = None,
+) -> AgentAnswer:
     """Convenience entry point used by the API endpoint and tests."""
-    return get_agent().answer(question, context)
+    return get_agent().answer(question, context, staff_access_token=staff_access_token)
