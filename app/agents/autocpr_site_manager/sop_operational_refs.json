@@ -520,6 +520,62 @@
       ]
     },
     {
+      "id": "class_mismatch_checkin",
+      "scenario": "student_checkin_issue",
+      "title": "Class / course mismatch handling",
+      "applies_to": [
+        "class mismatch",
+        "wrong class",
+        "wrong class time",
+        "wrong course",
+        "course mismatch",
+        "BLS vs CPR",
+        "roster",
+        "check-in",
+        "走错班",
+        "走错班级",
+        "错班",
+        "课程不匹配",
+        "选错课",
+        "选错课程",
+        "签到",
+        "名单"
+      ],
+      "source_status": "official SOP source + source analysis",
+      "priority": 95,
+      "items": [
+        {
+          "label": "Verify roster",
+          "value": "Verify the student's name against the registration/roster and confirm the scheduled class, time, and site.",
+          "sensitivity": "normal",
+          "fact_type": "checkin_mismatch"
+        },
+        {
+          "label": "Confirm mismatch type",
+          "value": "Check whether the student is at the wrong class, wrong time, wrong place, or selected the wrong course type such as BLS vs CPR.",
+          "sensitivity": "normal",
+          "fact_type": "checkin_mismatch"
+        },
+        {
+          "label": "Record details",
+          "value": "Record the student name, expected class/course, actual class/course on site, time, roster screenshot, and what the student says happened.",
+          "sensitivity": "normal",
+          "fact_type": "evidence"
+        },
+        {
+          "label": "Escalate",
+          "value": "Escalate not-on-roster, wrong class/time/place, or wrong-course anomalies to supervisor / registration back-office. The source does not provide a self-service fix for wrong course choice.",
+          "sensitivity": "normal",
+          "fact_type": "escalation"
+        }
+      ],
+      "media_tags": [],
+      "do_not": [
+        "Do not self-decide whether to admit, back-fill, switch course type, refund, or reschedule.",
+        "Do not promise certificate eligibility until supervisor / registration confirms."
+      ]
+    },
+    {
       "id": "approval_prep_refund_reschedule",
       "scenario": "escalation_guidance",
       "title": "Refund / reschedule approval prep",

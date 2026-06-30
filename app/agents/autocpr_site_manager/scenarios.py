@@ -112,7 +112,11 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "签到", "check-in", "checkin", "check in", "roster", "名单", "考勤",
         "student checkin", "学员名单", "学生名单", "报名名单", "sign-in",
         "签不了到", "签到不了", "attendance list", "名册", "签到表",
-        "不在名单", "not on the roster", "not on roster",
+        "不在名单", "not on the roster", "not on roster", "class mismatch",
+        "wrong class", "wrong class time", "wrong time", "wrong place",
+        "wrong course", "course mismatch", "chose wrong course", "bls vs cpr",
+        "走错班", "走错班级", "错班", "课程不匹配", "选错课", "选错课程",
+        "走错时间", "走错地点", "走错教室",
     )),
     ("completion_or_certificate_issue", (
         "completion", "certificate", "证书", "不计分", "没完成", "完课", "结业",

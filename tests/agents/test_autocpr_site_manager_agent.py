@@ -230,6 +230,21 @@ def test_outages_do_not_return_unrelated_operational_refs():
         assert ans.operational_references == []
 
 
+def test_class_mismatch_returns_helpful_checkin_reference():
+    ans = answer_question("student came to the wrong class time", {"lang": "en"})
+    assert ans.scenario == "student_checkin_issue"
+    ids = {ref.id for ref in ans.operational_references}
+    assert "class_mismatch_checkin" in ids
+    joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
+    assert "registration/roster" in joined
+    assert "wrong class" in joined
+    assert "wrong time" in joined
+    assert "wrong place" in joined
+    assert "supervisor / registration back-office" in joined
+    assert "does not provide a self-service fix for wrong course choice" in joined
+    assert any("Do not self-decide" in item for ref in ans.operational_references for item in ref.do_not)
+
+
 def test_operational_refs_do_not_leak_local_absolute_paths():
     ans = answer_question("door locked at Newark", {"site": "Newark"})
     joined = " ".join(

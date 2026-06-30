@@ -820,7 +820,8 @@ const COPY = {
     venueCollect:['Arrival / issue time','Communication log (call / message)','Evidence photo (if safe)'],
     venueDont:['Do not operate or repair equipment yourself.','Do not force entry or change unauthorized equipment.'],
     // customer message
-    aCustomer:'Customer message', custDont:['Do not promise a refund/reschedule, amount, or a recovery time.'],
+	    aCustomer:'Customer message', custDont:['Do not promise a refund/reschedule, amount, or a recovery time.'],
+	    aClassMismatch:'Class mismatch',
     // access
 	    aAccess:'Access instruction', accessWhen:['You cannot get into the building or room.'],
 	    aPasscode:'Passcode', passcodeTitle:'Internal SOP passcode', trustedPasscode:'Use only for the matching site/building/room.', noTrustedPasscode:'No source-backed passcode extracted for this site/query. Check the SOP image/reference or contact venue/property.',
@@ -963,7 +964,8 @@ const COPY = {
     venueDo:['请其开门/确认进入，或复位/检查问题。','确认原因 + 预计恢复时间。'],
     venueCollect:['到场 / 问题时间','沟通记录（通话 / 消息）','证据照片（安全前提下）'],
     venueDont:['不要自行操作或维修设备。','不要强行进入或改动未授权设备。'],
-    aCustomer:'学员沟通', custDont:['不要承诺退款/改期、金额或恢复时间。'],
+	    aCustomer:'学员沟通', custDont:['不要承诺退款/改期、金额或恢复时间。'],
+	    aClassMismatch:'班级/课程不匹配',
 	    aAccess:'门禁说明', accessWhen:['你无法进入建筑或房间。'],
 	    aPasscode:'密码', passcodeTitle:'内部 SOP 密码', trustedPasscode:'仅用于匹配的站点 / 建筑 / 房间。', noTrustedPasscode:'此站点/问题没有已提取的来源支持密码。请查看 SOP 图片/参考，或联系场地/物业。',
     accessDont:['不要从图片猜测密码。','若无来源支持的密码，联系场地 / 物业。'],
@@ -1263,6 +1265,18 @@ function buildTree(data, c){
     A.push({key:'mblack', icon:'alert', label:c.aBlack, sub:c.subNoFix, panel:{
       title:c.blackTitle, refEntries:blackEntries, doNow:blackEntries.length ? [] : c.blackDo, sendTo:[c.toVendor], doNot:c.blackDont,
       note:black || '', source:c.ssNeedVendor}});
+  }
+  if(sc === 'student_checkin_issue'){
+    const mismatchRefs = refs.filter(r => r.id === 'class_mismatch_checkin');
+    const mismatchEntries = refEntries(mismatchRefs, null, 8);
+    A.push({key:'classmatch', icon:'user', label:c.aClassMismatch, sub:c.subSop, panel:{
+      title:c.aClassMismatch,
+      refEntries:mismatchEntries,
+      doNow:mismatchEntries.length ? [] : steps.slice(0, 4),
+      collect:(data.information_to_collect || []).slice(0, 4),
+      sendTo:(data.contacts || []).slice(0, 3),
+      doNot:(data.do_not_decide_without_approval || []).slice(0, 3),
+      source:sourceFromRefs(mismatchRefs, src)}});
   }
 
   // Approval decision paths.
