@@ -94,6 +94,23 @@ def test_ask_endpoint_creates_incident_log_entry():
     assert entries[0]["attachment_description"] == "door keypad shows red light"
     assert entries[0]["first_action"]
     assert entries[0]["operational_reference_titles"]
+    assert entries[0]["access_refs_shown"] is True
+    assert entries[0]["trusted_passcode_refs_shown"] is True
+
+
+def test_incident_log_marks_no_passcode_when_source_not_matching_site():
+    client = TestClient(web_app.app)
+    resp = client.post(
+        "/api/agents/autocpr-site-manager/ask",
+        json={
+            "question": "door locked, what is the passcode?",
+            "context": {"site": "Palo Alto", "lang": "en"},
+        },
+    )
+    assert resp.status_code == 200
+    log = client.get("/api/incident-logs").json()[0]
+    assert log["access_refs_shown"] is True
+    assert log["trusted_passcode_refs_shown"] is False
 
 
 def test_incident_log_get_and_patch_status_and_note():

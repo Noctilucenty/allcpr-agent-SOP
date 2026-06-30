@@ -223,11 +223,37 @@ def test_smart_manikin_returns_documented_operational_refs():
     assert "Place the manikin on a firm surface" in joined
 
 
-def test_outages_do_not_return_unrelated_operational_refs():
+def test_outages_return_only_matching_operational_refs():
     for q in ("停电怎么办？", "教室没网怎么办？"):
         ans = answer_question(q)
         assert ans.scenario in {"electricity_outage", "internet_outage"}
-        assert ans.operational_references == []
+        assert ans.operational_references
+        assert all(ref.scenario == ans.scenario for ref in ans.operational_references)
+        ids = {ref.id for ref in ans.operational_references}
+        assert not {"santa_clara_access", "newark_access", "smart_manikin_ipad_pad_setup"} & ids
+
+
+@pytest.mark.parametrize(
+    "question, scenario, expected_ref",
+    [
+        ("power outage, no electricity", "electricity_outage", "power_outage_handling"),
+        ("internet down, platform not loading", "internet_outage", "internet_outage_handling"),
+        ("class cannot start", "class_cannot_start", "class_cannot_start_triage"),
+        ("unsafe injury on site", "safety_or_emergency", "safety_emergency_handling"),
+        ("generate incident report template", "incident_report", "incident_report_template"),
+        ("need reschedule approval", "escalation_guidance", "approval_prep_refund_reschedule"),
+    ],
+)
+def test_audited_incident_types_return_operational_refs(question, scenario, expected_ref):
+    ans = answer_question(question, {"lang": "en"})
+    assert ans.scenario == scenario
+    assert any(ref.id == expected_ref for ref in ans.operational_references)
+    joined = " ".join(
+        [ref.title + " " + ref.source_status for ref in ans.operational_references]
+        + [item.value for ref in ans.operational_references for item in ref.items]
+    )
+    assert "/Users/" not in joined
+    assert "/Desktop/" not in joined
 
 
 def test_class_mismatch_returns_helpful_checkin_reference():
@@ -309,7 +335,11 @@ def test_power_outage_does_not_receive_unrelated_images_or_refs():
     ans = answer_question("What should I do if the power goes out?", {"site": "Santa Clara", "lang": "en"})
     assert ans.scenario == "electricity_outage"
     assert ans.sop_images == []
-    assert ans.operational_references == []
+    ids = {ref.id for ref in ans.operational_references}
+    assert "power_outage_handling" in ids
+    assert "santa_clara_access" not in ids
+    joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
+    assert "2745" not in joined
 
 
 def test_sop_media_index_exposes_web_paths_not_local_paths():

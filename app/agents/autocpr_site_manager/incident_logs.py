@@ -65,6 +65,23 @@ def _created_at(context: Optional[Dict[str, Any]]) -> str:
     return _now_iso()
 
 
+def _access_ref_flags(answer: AgentAnswer) -> Dict[str, bool]:
+    access_refs = [
+        ref for ref in answer.operational_references
+        if ref.scenario == "venue_access_issue"
+    ]
+    passcode_items = [
+        item
+        for ref in access_refs
+        for item in ref.items
+        if item.fact_type == "access_code" and item.sensitivity == "internal"
+    ]
+    return {
+        "access_refs_shown": bool(access_refs),
+        "trusted_passcode_refs_shown": bool(passcode_items),
+    }
+
+
 def build_log_entry(
     question: str,
     context: Optional[Dict[str, Any]],
@@ -95,6 +112,7 @@ def build_log_entry(
         "source_status": answer.source_status,
         "sop_image_count": len(answer.sop_images),
         "operational_reference_titles": [ref.title for ref in answer.operational_references[:3]],
+        **_access_ref_flags(answer),
         "status": "open",
         "created_by": created_by or "staff",
         "assigned_to": "",

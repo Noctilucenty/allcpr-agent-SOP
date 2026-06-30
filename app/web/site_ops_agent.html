@@ -737,6 +737,10 @@ const COPY = {
 	    unknownSite:'Unknown site',
 	    imagesCount:'SOP images',
 	    refsCount:'References',
+	    accessRefs:'Access refs',
+	    passcodeRefs:'Trusted passcode refs',
+	    yes:'yes',
+	    no:'no',
 	    footer:'Internal decision-support assistant. Safety comes first. Official policy, refunds, reschedules, certificates, and customer notices require human approval.',
     examples:['Power outage','Internet down','Door locked','Smart Manikin issue','Instructor no-show','Incident report'],
     exampleSubs:['Class can’t run','No connectivity','Can’t access room','Tablet / pad fault','Class can’t start','Draft a report'],
@@ -822,6 +826,7 @@ const COPY = {
     // customer message
 	    aCustomer:'Customer message', custDont:['Do not promise a refund/reschedule, amount, or a recovery time.'],
 	    aClassMismatch:'Class mismatch',
+	    aPower:'Power / safety', aNetwork:'Network / platform', aClassStart:'Class start', aSafety:'Safety first', aApprovalPrep:'Approval prep', aOpRef:'SOP reference',
     // access
 	    aAccess:'Access instruction', accessWhen:['You cannot get into the building or room.'],
 	    aPasscode:'Passcode', passcodeTitle:'Internal SOP passcode', trustedPasscode:'Use only for the matching site/building/room.', noTrustedPasscode:'No source-backed passcode extracted for this site/query. Check the SOP image/reference or contact venue/property.',
@@ -887,6 +892,10 @@ const COPY = {
 	    unknownSite:'未知站点',
 	    imagesCount:'SOP 图片',
 	    refsCount:'参考',
+	    accessRefs:'门禁参考',
+	    passcodeRefs:'可信密码参考',
+	    yes:'是',
+	    no:'否',
 	    footer:'内部决策支持助手。安全优先。正式政策、退款、改期、证书及客户通知均需人工批准。',
     examples:['停电','断网','门锁问题','Smart Manikin 故障','老师未到','事故报告'],
     exampleSubs:['无法上课','现场没有网络','进不去教室','平板 / 设备故障','无法开课','起草报告'],
@@ -966,6 +975,7 @@ const COPY = {
     venueDont:['不要自行操作或维修设备。','不要强行进入或改动未授权设备。'],
 	    aCustomer:'学员沟通', custDont:['不要承诺退款/改期、金额或恢复时间。'],
 	    aClassMismatch:'班级/课程不匹配',
+	    aPower:'电力 / 安全', aNetwork:'网络 / 平台', aClassStart:'课程开始', aSafety:'安全优先', aApprovalPrep:'审批准备', aOpRef:'SOP 参考',
 	    aAccess:'门禁说明', accessWhen:['你无法进入建筑或房间。'],
 	    aPasscode:'密码', passcodeTitle:'内部 SOP 密码', trustedPasscode:'仅用于匹配的站点 / 建筑 / 房间。', noTrustedPasscode:'此站点/问题没有已提取的来源支持密码。请查看 SOP 图片/参考，或联系场地/物业。',
     accessDont:['不要从图片猜测密码。','若无来源支持的密码，联系场地 / 物业。'],
@@ -1183,6 +1193,23 @@ function sourceFromRefs(refs, fallback){
   return statuses.length ? Array.from(new Set(statuses)).join('; ') : fallback;
 }
 
+function refActionMeta(ref, c){
+  const id = ref.id || '';
+  if(id.includes('power_outage')) return {label:c.aPower, icon:'bolt', sub:c.subSop};
+  if(id.includes('internet_outage')) return {label:c.aNetwork, icon:'wifi', sub:c.subSop};
+  if(id.includes('class_cannot_start')) return {label:c.aClassStart, icon:'flag', sub:c.subSop};
+  if(id.includes('safety_emergency')) return {label:c.aSafety, icon:'alert', sub:c.subSop};
+  if(id.includes('approval_prep')) return {label:c.aApprovalPrep, icon:'report', sub:c.subApproval};
+  if(id.includes('completion_photo')) return {label:c.aPhoto, icon:'clip', sub:c.subDoc};
+  if(id.includes('incident_report')) return {label:c.aIncident, icon:'report', sub:c.subDraft};
+  if(id.includes('instructor_no_show')) return {label:c.toSupervisor, icon:'user', sub:c.subSop};
+  return {label:ref.title || c.aOpRef, icon:'flag', sub:c.subSop};
+}
+
+function actionKeyForRef(ref){
+  return 'ref_' + String(ref.id || ref.title || 'opref').replace(/[^a-z0-9]+/gi, '_').slice(0, 48);
+}
+
 function refEntriesHTML(entries){
   if(!entries || !entries.length) return '';
   return `<div class="oprefs">${entries.map(({ref, item}) =>
@@ -1219,11 +1246,13 @@ function buildTree(data, c){
   const steps = data.steps || [];
   const src = srcStatusLabel(data, c);
   const refs = opRefs(data);
+  const usedRefIds = new Set();
   const A = [];
 
   // Scenario-primary paths first.
   if(sc === 'venue_access_issue'){
     const accessRefs = refs.filter(r => r.scenario === 'venue_access_issue');
+    accessRefs.forEach(r => usedRefIds.add(r.id));
     const codeEntries = refEntries(accessRefs, item => isCodeItem(item), 8);
     const accessEntries = refEntries(accessRefs, item => !isCodeItem(item) && !(codeEntries.length && item.sensitivity === 'source_needed'), 8);
     const sourceNeeded = refEntries(accessRefs, item => item.sensitivity === 'source_needed', 2);
@@ -1248,6 +1277,7 @@ function buildTree(data, c){
   }
   if(sc === 'smart_manikin_troubleshooting' && steps.length){
     const manikinRefs = refs.filter(r => r.scenario === 'smart_manikin_troubleshooting');
+    manikinRefs.forEach(r => usedRefIds.add(r.id));
     const entriesById = id => refEntries(manikinRefs.filter(r => r.id === id), null, 8);
     const find = re => steps.find(s => re.test(s));
     const bt = find(/bluetooth|蓝牙|power strip|插线板|供电/i);
@@ -1268,6 +1298,7 @@ function buildTree(data, c){
   }
   if(sc === 'student_checkin_issue'){
     const mismatchRefs = refs.filter(r => r.id === 'class_mismatch_checkin');
+    mismatchRefs.forEach(r => usedRefIds.add(r.id));
     const mismatchEntries = refEntries(mismatchRefs, null, 8);
     A.push({key:'classmatch', icon:'user', label:c.aClassMismatch, sub:c.subSop, panel:{
       title:c.aClassMismatch,
@@ -1278,6 +1309,19 @@ function buildTree(data, c){
       doNot:(data.do_not_decide_without_approval || []).slice(0, 3),
       source:sourceFromRefs(mismatchRefs, src)}});
   }
+
+  // Generic operational-reference paths for sourced topics that do not need
+  // scenario-specific UI (power, internet, class-start, safety, reports, etc.).
+  refs.filter(r => !usedRefIds.has(r.id)).forEach(ref => {
+    const entries = refEntries([ref], null, 8);
+    if(!entries.length) return;
+    const meta = refActionMeta(ref, c);
+    A.push({key:actionKeyForRef(ref), icon:meta.icon, label:meta.label, sub:meta.sub, panel:{
+      title:ref.title || meta.label,
+      refEntries:entries,
+      doNot:(ref.do_not || []).slice(0, 4),
+      source:ref.source_status || src}});
+  });
 
   // Approval decision paths.
   if(needsApproval(data)){
@@ -1553,6 +1597,7 @@ function renderLogDetail(log){
       <span class="ld-k">${esc(c.classTime)}</span><span class="ld-v">${esc(log.class_time || '—')}</span>
       <span class="ld-k">${esc(c.guidanceGenerated)}</span><span class="ld-v">${esc(fmtTime(log.created_at))} · ${esc(statusLabel(log.status || 'open', c))}</span>
       <span class="ld-k">${esc(c.imagesCount)}</span><span class="ld-v">${esc(log.sop_image_count || 0)} · ${esc(c.refsCount)} ${esc((log.operational_reference_titles || []).length)}</span>
+      <span class="ld-k">${esc(c.accessRefs)}</span><span class="ld-v">${esc(log.access_refs_shown ? c.yes : c.no)} · ${esc(c.passcodeRefs)} ${esc(log.trusted_passcode_refs_shown ? c.yes : c.no)}</span>
     </div>
     ${listBlock(first)}
     ${listBlock(ev)}

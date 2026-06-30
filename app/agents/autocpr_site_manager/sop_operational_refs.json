@@ -576,6 +576,188 @@
       ]
     },
     {
+      "id": "class_cannot_start_triage",
+      "scenario": "class_cannot_start",
+      "title": "Class cannot start triage",
+      "applies_to": [
+        "class cannot start",
+        "can't start class",
+        "cannot start the class",
+        "class can't begin",
+        "无法开课",
+        "开不了课",
+        "课程无法开始"
+      ],
+      "source_status": "general operations guidance, not official SOP + needs official SOP source",
+      "priority": 85,
+      "items": [
+        {
+          "label": "Find root cause",
+          "value": "Identify the blocking cause first: access, power, internet, instructor, device, roster/check-in, or safety.",
+          "sensitivity": "normal",
+          "fact_type": "triage"
+        },
+        {
+          "label": "Record status",
+          "value": "Record class time, site/room, start-delay time, headcount waiting, and what has already been tried.",
+          "sensitivity": "normal",
+          "fact_type": "evidence"
+        },
+        {
+          "label": "Decision owner",
+          "value": "Supervisor decides class continuation, substitute, reschedule, refund, or customer wording.",
+          "sensitivity": "normal",
+          "fact_type": "approval"
+        }
+      ],
+      "media_tags": [],
+      "do_not": [
+        "Do not self-decide cancellation, refund, reschedule, substitute, or compensation.",
+        "Do not promise students an outcome before approval."
+      ]
+    },
+    {
+      "id": "power_outage_handling",
+      "scenario": "electricity_outage",
+      "title": "Power outage handling",
+      "applies_to": [
+        "power outage",
+        "no electricity",
+        "breaker",
+        "lights out",
+        "停电",
+        "没电",
+        "电闸",
+        "跳闸"
+      ],
+      "source_status": "general operations guidance, not official SOP + needs official SOP source",
+      "priority": 85,
+      "items": [
+        {
+          "label": "Safety first",
+          "value": "Confirm no fire, smoke, burning smell, shock risk, injury, or unsafe dark-room movement before collecting photos.",
+          "sensitivity": "normal",
+          "fact_type": "safety"
+        },
+        {
+          "label": "Confirm scope",
+          "value": "Check whether power is out in one room, the whole building, or the surrounding area.",
+          "sensitivity": "normal",
+          "fact_type": "triage"
+        },
+        {
+          "label": "Venue/property",
+          "value": "Ask venue/property to inspect or reset authorized electrical equipment and provide estimated restore time.",
+          "sensitivity": "normal",
+          "fact_type": "venue_contact"
+        },
+        {
+          "label": "Escalation packet",
+          "value": "Record outage start time, class/site, affected headcount, evidence, venue response, and whether class can continue.",
+          "sensitivity": "normal",
+          "fact_type": "evidence"
+        }
+      ],
+      "media_tags": [],
+      "do_not": [
+        "Do not operate breakers or repair electrical equipment yourself.",
+        "Do not promise restore time, refund, reschedule, or compensation before approval."
+      ]
+    },
+    {
+      "id": "internet_outage_handling",
+      "scenario": "internet_outage",
+      "title": "Internet / platform outage handling",
+      "applies_to": [
+        "internet down",
+        "Wi-Fi",
+        "wifi",
+        "platform not loading",
+        "router",
+        "no network",
+        "断网",
+        "网络故障",
+        "平台加载失败",
+        "加载失败"
+      ],
+      "source_status": "general operations guidance, not official SOP + needs official SOP source",
+      "priority": 85,
+      "items": [
+        {
+          "label": "Confirm scope",
+          "value": "Determine whether the issue affects one device, the whole room/building network, or the course/platform.",
+          "sensitivity": "normal",
+          "fact_type": "triage"
+        },
+        {
+          "label": "Basic authorized check",
+          "value": "If authorized, confirm the site network device has power; otherwise contact venue/property or tech support.",
+          "sensitivity": "normal",
+          "fact_type": "network_note"
+        },
+        {
+          "label": "Evidence",
+          "value": "Capture screenshots of Wi-Fi/network errors, platform loading failures, and exact error text.",
+          "sensitivity": "normal",
+          "fact_type": "evidence"
+        },
+        {
+          "label": "Escalation",
+          "value": "Contact venue/property for site-network issues and supervisor/tech for platform/system issues.",
+          "sensitivity": "normal",
+          "fact_type": "escalation"
+        }
+      ],
+      "media_tags": [],
+      "do_not": [
+        "Do not change unauthorized network equipment.",
+        "Do not self-decide refund, reschedule, or customer compensation."
+      ]
+    },
+    {
+      "id": "safety_emergency_handling",
+      "scenario": "safety_or_emergency",
+      "title": "Safety / emergency handling",
+      "applies_to": [
+        "injury",
+        "emergency",
+        "unsafe",
+        "danger",
+        "medical emergency",
+        "受伤",
+        "紧急",
+        "安全问题",
+        "危险"
+      ],
+      "source_status": "general operations guidance, not official SOP + needs official SOP source",
+      "priority": 100,
+      "items": [
+        {
+          "label": "People first",
+          "value": "Move people away from immediate danger and call 911 when there is injury, fire, smoke, shock risk, or medical emergency.",
+          "sensitivity": "normal",
+          "fact_type": "safety"
+        },
+        {
+          "label": "Notify",
+          "value": "Notify supervisor immediately after emergency response is underway.",
+          "sensitivity": "normal",
+          "fact_type": "escalation"
+        },
+        {
+          "label": "Evidence only when safe",
+          "value": "Record time, location, witnesses, and photos only when it is safe and does not delay response.",
+          "sensitivity": "normal",
+          "fact_type": "evidence"
+        }
+      ],
+      "media_tags": [],
+      "do_not": [
+        "Do not prioritize photos or reports over safety.",
+        "Do not continue class in an unsafe environment."
+      ]
+    },
+    {
       "id": "approval_prep_refund_reschedule",
       "scenario": "escalation_guidance",
       "title": "Refund / reschedule approval prep",
