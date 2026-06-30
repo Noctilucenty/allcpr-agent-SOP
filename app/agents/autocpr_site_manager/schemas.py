@@ -57,6 +57,28 @@ class SopMediaItem(BaseModel):
     related_scenarios: List[str] = []
 
 
+class OperationalReferenceItem(BaseModel):
+    """One reviewed SOP-derived operational detail for staff use."""
+
+    label: str
+    value: str
+    sensitivity: str = "normal"  # "normal" | "internal" | "source_needed"
+    fact_type: Optional[str] = None
+
+
+class OperationalReference(BaseModel):
+    """A structured, source-backed operational reference matched to an answer."""
+
+    id: str
+    title: str
+    scenario: str
+    source_status: str
+    priority: int = 0
+    items: List[OperationalReferenceItem] = []
+    media_tags: List[str] = []
+    do_not: List[str] = []
+
+
 class AgentAnswer(BaseModel):
     """Structured answer envelope returned by the agent and the endpoint.
 
@@ -91,3 +113,14 @@ class AgentAnswer(BaseModel):
     attachments_note: str = ""
     answer_summary: str = ""
     sop_images: List[SopMediaItem] = []
+    operational_references: List[OperationalReference] = []
+    incident_log_id: str = ""
+
+
+class IncidentLogPatch(BaseModel):
+    """Small mutable fields for a live incident log entry."""
+
+    status: Optional[str] = None
+    note: Optional[str] = None
+    assigned_to: Optional[str] = None
+    created_by: Optional[str] = None

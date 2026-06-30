@@ -203,9 +203,40 @@
   .prov .p-txt{display:flex;flex-direction:column;min-width:0}
   .prov .p-name{font-weight:750;font-size:13.5px;line-height:1.3}
   .prov .p-sub{font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px}
-  .trust{border-top:1px solid var(--line);margin-top:5px;padding:13px 0 14px;display:flex;flex-direction:column;gap:9px}
-  .trust .t-row{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink-soft)}
-  .trust .t-row svg{width:15px;height:15px;color:var(--red);flex:0 0 auto}
+	  .trust{border-top:1px solid var(--line);margin-top:5px;padding:13px 0 14px;display:flex;flex-direction:column;gap:9px}
+	  .trust .t-row{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+	  .trust .t-row svg{width:15px;height:15px;color:var(--red);flex:0 0 auto}
+	  .live-log{border-top:1px solid var(--line);padding:13px 0 6px}
+	  .log-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+	  .log-title{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);margin:0}
+	  .log-refresh{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 8px;font:inherit;font-size:11px;font-weight:750;color:var(--muted);cursor:pointer}
+	  .log-refresh:hover{border-color:var(--red);color:var(--red)}
+	  .log-list{display:flex;flex-direction:column;gap:7px}
+	  .log-empty{border:1px dashed var(--line);border-radius:8px;padding:9px 10px;color:var(--muted-2);font-size:12.5px;background:var(--bg)}
+	  .log-card{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 9px;text-align:left;cursor:pointer;box-shadow:var(--shadow-sm)}
+	  .log-card:hover,.log-card.active{border-color:var(--red);box-shadow:0 0 0 1px var(--red-line) inset}
+	  .log-card.new{background:var(--red-soft);border-color:var(--red-line)}
+	  .log-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:10.5px;color:var(--muted);font-weight:750}
+	  .log-dot{width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block}
+	  .log-q{font-size:12.5px;font-weight:750;line-height:1.35;margin:5px 0 0;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+	  .log-status{border:1px solid var(--line);border-radius:999px;padding:1px 6px;background:var(--bg);font-size:10px;text-transform:uppercase}
+	  .log-status.escalated{background:var(--red-soft);border-color:var(--red-line);color:#8a1417}
+	  .log-status.resolved{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
+	  .log-status.watching{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber)}
+	  .log-detail{display:none;margin-top:9px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px}
+	  .log-detail.open{display:block}
+	  .ld-title{margin:0 0 7px;font-weight:800;font-size:13px}
+	  .ld-grid{display:grid;grid-template-columns:72px 1fr;gap:4px 8px;font-size:12px}
+	  .ld-k{font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.04em;font-size:10px}
+	  .ld-v{color:var(--ink-soft);word-break:break-word}
+	  .ld-list{margin:7px 0 0;padding-left:17px}
+	  .ld-list li{font-size:12px;color:var(--ink-soft);margin:3px 0}
+	  .log-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+	  .log-actions button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 8px;font:inherit;font-size:11px;font-weight:750;cursor:pointer}
+	  .log-actions button:hover{border-color:var(--red);color:var(--red)}
+	  .note-row{display:flex;gap:6px;margin-top:8px}
+	  .note-row input{min-width:0;flex:1;padding:7px 8px;font-size:12px;border-radius:7px}
+	  .note-row button{border:1px solid var(--line);background:var(--red);color:#fff;border-radius:7px;padding:6px 9px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
 
   /* ---------- results ---------- */
   #out{display:none;margin-top:24px}
@@ -446,9 +477,25 @@
   .tp-row ul{margin:0;padding-left:16px;flex:1}
   .tp-row li{margin:2px 0;font-size:12.8px;color:var(--ink-soft);line-height:1.45}
   .tp-src{margin:9px 0 0;font-size:11px;color:var(--muted);font-weight:600}
-  .tp-note{display:flex;gap:7px;align-items:flex-start;margin:9px 0 0;font-size:11px;color:var(--amber)}
-  .tp-note svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px;color:var(--amber)}
-  .tp-draft{margin-top:9px}
+	  .tp-note{display:flex;gap:7px;align-items:flex-start;margin:9px 0 0;font-size:11px;color:var(--amber)}
+	  .tp-note svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px;color:var(--amber)}
+	  .oprefs{display:grid;gap:7px;margin:8px 0}
+	  .opref{
+	    border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:8px 10px;
+	    display:grid;grid-template-columns:minmax(86px, .34fr) minmax(0,1fr);gap:5px 10px;
+	  }
+	  .opref.internal{background:#fff;border-color:var(--red-line)}
+	  .opref.source_needed{background:var(--amber-soft);border-color:var(--amber-line)}
+	  .opref-k{font-size:10.5px;font-weight:800;color:var(--muted-2);text-transform:uppercase;letter-spacing:.04em}
+	  .opref-v{font-size:12.8px;color:var(--ink-soft);line-height:1.45;word-break:break-word}
+	  .opref-src{grid-column:1/-1;font-size:10.5px;color:var(--muted-2);font-weight:650}
+	  .secure-note{
+	    display:flex;gap:7px;align-items:flex-start;border:1px solid var(--red-line);
+	    background:var(--red-soft);color:#8a1417;border-radius:8px;padding:8px 10px;
+	    font-size:11.5px;font-weight:750;margin:8px 0;
+	  }
+	  .secure-note svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px}
+	  .tp-draft{margin-top:9px}
   .tp-draft textarea{
     width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:inherit;
     font-size:12px;color:var(--ink-soft);background:var(--bg);line-height:1.5;resize:vertical;
@@ -479,9 +526,11 @@
     .status{margin-right:0;justify-content:center}
     .primary{width:100%;justify-content:center}
     h1{font-size:24px}
-    .tp-row{flex-direction:column;gap:2px}
-    .tp-k{flex:none;padding-top:0}
-  }
+	    .tp-row{flex-direction:column;gap:2px}
+	    .tp-k{flex:none;padding-top:0}
+	    .opref{grid-template-columns:1fr}
+	    .opref-src{grid-column:auto}
+	  }
   @media (min-width:621px) and (max-width:780px){
     .media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   }
@@ -588,13 +637,21 @@
           <span class="p-txt"><span class="p-name" data-i18n="provSources">SOP sources</span><span class="p-sub" data-i18n="provSourcesSub">Local references, when available</span></span>
         </div>
 
-        <div class="trust">
-          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-i18n="statusLocal">Local SOP only</span></span>
-          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11l-4 4-2-2"/><circle cx="12" cy="12" r="9"/></svg><span data-i18n="statusReview">Human review for policy decisions</span></span>
-          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 4 9-.2 3.3-1.5 6.5-4 9-2.5-2.5-3.8-5.7-4-9 .2-3.3 1.5-6.5 4-9z"/></svg><span data-i18n="statusBilingual">Bilingual support</span></span>
-        </div>
-      </div>
-    </aside>
+	        <div class="trust">
+	          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-i18n="statusLocal">Local SOP only</span></span>
+	          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11l-4 4-2-2"/><circle cx="12" cy="12" r="9"/></svg><span data-i18n="statusReview">Human review for policy decisions</span></span>
+	          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 4 9-.2 3.3-1.5 6.5-4 9-2.5-2.5-3.8-5.7-4-9 .2-3.3 1.5-6.5 4-9z"/></svg><span data-i18n="statusBilingual">Bilingual support</span></span>
+	        </div>
+	        <div class="live-log" aria-live="polite">
+	          <div class="log-head">
+	            <p class="log-title" data-i18n="liveLog">Live site log</p>
+	            <button type="button" class="log-refresh" id="log-refresh" data-i18n="refreshLog">Refresh</button>
+	          </div>
+	          <div id="log-list" class="log-list"></div>
+	          <div id="log-detail" class="log-detail"></div>
+	        </div>
+	      </div>
+	    </aside>
   </div>
 
   <div id="out"></div>
@@ -612,6 +669,9 @@ const API_BASE = location.protocol === 'file:' ? 'http://localhost:8012' : '';
 const $ = sel => document.querySelector(sel);
 const esc = value => String(value ?? '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
 let selectedLang = 'en';
+let latestLogId = '';
+let selectedLogId = '';
+let logCache = [];
 
 /* Inline icons (no dependencies, consistent 24px / stroke 2). */
 const ICON = {
@@ -658,10 +718,26 @@ const COPY = {
     provEvidence:'Evidence checklist', provEvidenceSub:'What to photograph and record',
     provEscalation:'Escalation guidance', provEscalationSub:'Who to contact and when',
     provSources:'SOP sources', provSourcesSub:'Local references, when available',
-    statusLocal:'Local SOP only',
-    statusReview:'Human review for policy decisions',
-    statusBilingual:'Bilingual support',
-    footer:'Internal decision-support assistant. Safety comes first. Official policy, refunds, reschedules, certificates, and customer notices require human approval.',
+	    statusLocal:'Local SOP only',
+	    statusReview:'Human review for policy decisions',
+	    statusBilingual:'Bilingual support',
+	    liveLog:'Live site log',
+	    refreshLog:'Refresh',
+	    logOpen:'Open',
+	    logWatching:'Watching',
+	    logEscalated:'Escalated',
+	    logResolved:'Resolved',
+	    addNote:'Add note',
+	    markWatching:'Mark watching',
+	    markEscalated:'Mark escalated',
+	    markResolved:'Mark resolved',
+	    location:'Location',
+	    guidanceGenerated:'Guidance generated',
+	    noLogs:'No logs yet',
+	    unknownSite:'Unknown site',
+	    imagesCount:'SOP images',
+	    refsCount:'References',
+	    footer:'Internal decision-support assistant. Safety comes first. Official policy, refunds, reschedules, certificates, and customer notices require human approval.',
     examples:['Power outage','Internet down','Door locked','Smart Manikin issue','Instructor no-show','Incident report'],
     exampleSubs:['Class can’t run','No connectivity','Can’t access room','Tablet / pad fault','Class can’t start','Draft a report'],
     exampleIcons:['power','wifi','lock','tablet','user','report'],
@@ -717,8 +793,9 @@ const COPY = {
     pUseWhen:'Use when', pDoNow:'Do now', pCollect:'Collect', pSendTo:'Send to', pDoNot:'Do not', pSource:'Source status',
     copyDraft:'Copy draft', copied:'Copied',
     subApproval:'Needs approval', subSop:'SOP reference', subDoc:'Documented', subNoFix:'No documented fix', subDraft:'Draft', subRef:'Open reference',
-    toSupervisor:'Supervisor', toVenue:'Venue / property', toVendor:'Engineer / vendor',
-    ssOfficial:'Official SOP source', ssManikin:'Smart Manikin source', ssGeneral:'General operations guidance — not official SOP', ssNeedSop:'Official SOP source needed', ssNeedVendor:'Needs engineer/vendor confirmation',
+	    toSupervisor:'Supervisor', toVenue:'Venue / property', toVendor:'Engineer / vendor',
+	    supervisorWhen:['Access remains blocked or class is delayed.'], supervisorDont:['Do not self-decide refund/reschedule/cancellation.'],
+	    ssOfficial:'Official SOP source', ssManikin:'Smart Manikin source', ssGeneral:'General operations guidance — not official SOP', ssNeedSop:'Official SOP source needed', ssNeedVendor:'Needs engineer/vendor confirmation',
     collectShort:['Site / class / time','Affected students / count','Incident start–end','Evidence (screenshots / photos)'],
     // refund
     aRefund:'Refund', refundTitle:'Refund requires approval',
@@ -745,11 +822,12 @@ const COPY = {
     // customer message
     aCustomer:'Customer message', custDont:['Do not promise a refund/reschedule, amount, or a recovery time.'],
     // access
-    aAccess:'Access instruction', accessWhen:['You cannot get into the building or room.'],
+	    aAccess:'Access instruction', accessWhen:['You cannot get into the building or room.'],
+	    aPasscode:'Passcode', passcodeTitle:'Internal SOP passcode', trustedPasscode:'Use only for the matching site/building/room.', noTrustedPasscode:'No source-backed passcode extracted for this site/query. Check the SOP image/reference or contact venue/property.',
     accessDont:['Do not guess a code from images.','If no source-backed code, contact venue/property.'],
     accessImgNote:'SOP image reference available — the assistant does not read codes from images.',
     // smart manikin
-    aBt:'Bluetooth / power', aPhoto:'Completion photo', aRoom:'Wrong room / floor', aBlack:'Black screen', aVendor:'Engineer / vendor', aDeviceFix:'Device fix',
+	    aIpad:'iPad / PAD', aBt:'Bluetooth / power', aPhoto:'Completion photo', aRoom:'Wrong room / floor', aBlack:'Black screen', aVendor:'Engineer / vendor', aDeviceFix:'Device fix',
     blackTitle:'Black screen — no documented source fix',
     blackDo:['Collect a photo/video and the exact symptom.','Escalate to engineer/vendor.'],
     blackDont:['Do not invent a reset, calibration, or root cause.'],
@@ -789,10 +867,26 @@ const COPY = {
     provEvidence:'取证清单', provEvidenceSub:'需要拍照与记录的内容',
     provEscalation:'升级指引', provEscalationSub:'何时联系谁',
     provSources:'SOP 来源', provSourcesSub:'本地参考资料（如有）',
-    statusLocal:'仅本地 SOP',
-    statusReview:'政策决定需人工复核',
-    statusBilingual:'中英双语',
-    footer:'内部决策支持助手。安全优先。正式政策、退款、改期、证书及客户通知均需人工批准。',
+	    statusLocal:'仅本地 SOP',
+	    statusReview:'政策决定需人工复核',
+	    statusBilingual:'中英双语',
+	    liveLog:'现场记录',
+	    refreshLog:'刷新',
+	    logOpen:'处理中',
+	    logWatching:'关注中',
+	    logEscalated:'已升级',
+	    logResolved:'已解决',
+	    addNote:'添加备注',
+	    markWatching:'标记关注中',
+	    markEscalated:'标记已升级',
+	    markResolved:'标记已解决',
+	    location:'地点',
+	    guidanceGenerated:'已生成指引',
+	    noLogs:'暂无记录',
+	    unknownSite:'未知站点',
+	    imagesCount:'SOP 图片',
+	    refsCount:'参考',
+	    footer:'内部决策支持助手。安全优先。正式政策、退款、改期、证书及客户通知均需人工批准。',
     examples:['停电','断网','门锁问题','Smart Manikin 故障','老师未到','事故报告'],
     exampleSubs:['无法上课','现场没有网络','进不去教室','平板 / 设备故障','无法开课','起草报告'],
     exampleIcons:['power','wifi','lock','tablet','user','report'],
@@ -847,8 +941,9 @@ const COPY = {
     pUseWhen:'适用情况', pDoNow:'现在做', pCollect:'收集', pSendTo:'发送给', pDoNot:'不要做', pSource:'来源状态',
     copyDraft:'复制草稿', copied:'已复制',
     subApproval:'需要批准', subSop:'SOP 参考', subDoc:'已记录', subNoFix:'无记录修复', subDraft:'草稿', subRef:'打开参考',
-    toSupervisor:'主管', toVenue:'场地 / 物业', toVendor:'工程师 / 厂商',
-    ssOfficial:'官方 SOP 来源', ssManikin:'Smart Manikin 来源', ssGeneral:'通用运营建议，非官方 SOP', ssNeedSop:'需官方 SOP 来源', ssNeedVendor:'需工程师/厂商确认',
+	    toSupervisor:'主管', toVenue:'场地 / 物业', toVendor:'工程师 / 厂商',
+	    supervisorWhen:['仍无法进入，或课程已经延误。'], supervisorDont:['不要自行决定退款 / 改期 / 取消。'],
+	    ssOfficial:'官方 SOP 来源', ssManikin:'Smart Manikin 来源', ssGeneral:'通用运营建议，非官方 SOP', ssNeedSop:'需官方 SOP 来源', ssNeedVendor:'需工程师/厂商确认',
     collectShort:['站点 / 班级 / 时间','受影响学员 / 人数','事件起止','证据（截图 / 照片）'],
     aRefund:'退款', refundTitle:'退款需要批准',
     refundWhen:['学员询问退款，或课程无法继续。'],
@@ -869,10 +964,11 @@ const COPY = {
     venueCollect:['到场 / 问题时间','沟通记录（通话 / 消息）','证据照片（安全前提下）'],
     venueDont:['不要自行操作或维修设备。','不要强行进入或改动未授权设备。'],
     aCustomer:'学员沟通', custDont:['不要承诺退款/改期、金额或恢复时间。'],
-    aAccess:'门禁说明', accessWhen:['你无法进入建筑或房间。'],
+	    aAccess:'门禁说明', accessWhen:['你无法进入建筑或房间。'],
+	    aPasscode:'密码', passcodeTitle:'内部 SOP 密码', trustedPasscode:'仅用于匹配的站点 / 建筑 / 房间。', noTrustedPasscode:'此站点/问题没有已提取的来源支持密码。请查看 SOP 图片/参考，或联系场地/物业。',
     accessDont:['不要从图片猜测密码。','若无来源支持的密码，联系场地 / 物业。'],
     accessImgNote:'有 SOP 图片参考 —— 本助手不从图片读取密码。',
-    aBt:'蓝牙 / 供电', aPhoto:'完成截图', aRoom:'走错房间 / 楼层', aBlack:'黑屏', aVendor:'工程师 / 厂商', aDeviceFix:'设备修复',
+	    aIpad:'iPad / PAD', aBt:'蓝牙 / 供电', aPhoto:'完成截图', aRoom:'走错房间 / 楼层', aBlack:'黑屏', aVendor:'工程师 / 厂商', aDeviceFix:'设备修复',
     blackTitle:'黑屏 —— 无来源记录的修复',
     blackDo:['收集照片/视频与确切症状。','升级工程师 / 厂商。'],
     blackDont:['不要自行编造重置、校准或根因。'],
@@ -897,10 +993,11 @@ function applyLanguage(lang){
   const c = copy();
   document.documentElement.lang = selectedLang === 'zh' ? 'zh-CN' : 'en';
   document.querySelectorAll('[data-lang]').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === selectedLang));
-  document.querySelectorAll('[data-i18n]').forEach(el => { if(c[el.dataset.i18n] != null) el.textContent = c[el.dataset.i18n]; });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { if(c[el.dataset.i18nPlaceholder] != null) el.placeholder = c[el.dataset.i18nPlaceholder]; });
-  buildChips();
-}
+	  document.querySelectorAll('[data-i18n]').forEach(el => { if(c[el.dataset.i18n] != null) el.textContent = c[el.dataset.i18n]; });
+	  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { if(c[el.dataset.i18nPlaceholder] != null) el.placeholder = c[el.dataset.i18nPlaceholder]; });
+	  buildChips();
+	  renderLogs();
+	}
 
 function buildChips(){
   const wrap = $('#chips');
@@ -1060,6 +1157,40 @@ function srcStatusLabel(data, c){
   return '';
 }
 
+function opRefs(data){
+  return Array.isArray(data.operational_references) ? data.operational_references : [];
+}
+
+function refEntries(refs, pred, limit=10){
+  const out = [];
+  (refs || []).forEach(ref => {
+    (ref.items || []).forEach(item => {
+      if(!pred || pred(item, ref)) out.push({ref, item});
+    });
+  });
+  return out.slice(0, limit);
+}
+
+const CODE_ITEM_RE = /passcode|password|code|lockbox|wi-?fi|密码|门禁|大门|房间密码/i;
+function isCodeItem(item){
+  return item && item.sensitivity === 'internal' && CODE_ITEM_RE.test(`${item.label || ''} ${item.value || ''}`);
+}
+
+function sourceFromRefs(refs, fallback){
+  const statuses = (refs || []).map(r => r.source_status).filter(Boolean);
+  return statuses.length ? Array.from(new Set(statuses)).join('; ') : fallback;
+}
+
+function refEntriesHTML(entries){
+  if(!entries || !entries.length) return '';
+  return `<div class="oprefs">${entries.map(({ref, item}) =>
+    `<div class="opref ${esc(item.sensitivity || 'normal')}">
+      <span class="opref-k">${esc(item.label || '')}</span>
+      <span class="opref-v">${esc(item.value || '')}</span>
+      <span class="opref-src">${esc(ref.title || ref.id || '')}</span>
+    </div>`).join('')}</div>`;
+}
+
 /* Escalation-note draft: assembles existing fields + blank placeholders only. */
 function escDraft(data, c){
   const head = `[${data.issue_type || data.scenario}]`;
@@ -1085,28 +1216,52 @@ function buildTree(data, c){
   const sc = data.scenario || '';
   const steps = data.steps || [];
   const src = srcStatusLabel(data, c);
+  const refs = opRefs(data);
   const A = [];
 
   // Scenario-primary paths first.
   if(sc === 'venue_access_issue'){
+    const accessRefs = refs.filter(r => r.scenario === 'venue_access_issue');
+    const codeEntries = refEntries(accessRefs, item => isCodeItem(item), 8);
+    const accessEntries = refEntries(accessRefs, item => !isCodeItem(item) && !(codeEntries.length && item.sensitivity === 'source_needed'), 8);
+    const sourceNeeded = refEntries(accessRefs, item => item.sensitivity === 'source_needed', 2);
     const accessSteps = steps.filter(s => ACCESS_RE.test(s)).slice(0, 4);
     A.push({key:'access', icon:'lock', label:c.aAccess, sub:c.subSop, panel:{
       title:c.aAccess, useWhen:c.accessWhen,
-      doNow:(accessSteps.length ? accessSteps : steps.slice(0, 4)),
+      refEntries:accessEntries,
+      doNow:accessEntries.length ? [] : (accessSteps.length ? accessSteps : steps.slice(0, 4)),
       doNot:c.accessDont, source:src,
       note:(data.sop_images || []).length ? c.accessImgNote : ''}});
+    A.push({key:'passcode', icon:'lock', label:c.aPasscode, sub:codeEntries.length ? c.subDoc : c.subSop, panel:{
+      title:c.passcodeTitle,
+      secure:codeEntries.length ? c.trustedPasscode : '',
+      refEntries:codeEntries.length ? codeEntries : sourceNeeded,
+      note:codeEntries.length ? '' : c.noTrustedPasscode,
+      doNot:c.accessDont,
+      source:sourceFromRefs(accessRefs, src)}});
+    A.push({key:'supervisor', icon:'flag', label:c.toSupervisor, sub:c.subApproval, panel:{
+      title:c.toSupervisor, useWhen:c.supervisorWhen,
+      collect:c.collectShort, sendTo:[c.toSupervisor],
+      doNot:c.supervisorDont, source:src}});
   }
   if(sc === 'smart_manikin_troubleshooting' && steps.length){
+    const manikinRefs = refs.filter(r => r.scenario === 'smart_manikin_troubleshooting');
+    const entriesById = id => refEntries(manikinRefs.filter(r => r.id === id), null, 8);
     const find = re => steps.find(s => re.test(s));
     const bt = find(/bluetooth|蓝牙|power strip|插线板|供电/i);
     const photo = find(/completion photo|all session done|完成截图|support@allcpr/i);
     const room = find(/room|floor|signage|房间|楼层|指示牌|走错/i);
-    if(bt) A.push({key:'mbt', icon:'tablet', label:c.aBt, sub:c.subDoc, panel:{title:c.aBt, doNow:[bt], source:c.ssManikin}});
-    if(photo) A.push({key:'mphoto', icon:'clip', label:c.aPhoto, sub:c.subDoc, panel:{title:c.aPhoto, doNow:[photo], source:c.ssManikin}});
+    const ipadEntries = entriesById('smart_manikin_ipad_pad_setup');
+    const btEntries = entriesById('smart_manikin_bluetooth_power');
+    const photoEntries = entriesById('smart_manikin_completion_photo');
+    const blackEntries = entriesById('smart_manikin_black_screen_no_fix');
+    if(ipadEntries.length) A.push({key:'mipad', icon:'tablet', label:c.aIpad, sub:c.subDoc, panel:{title:c.aIpad, refEntries:ipadEntries, source:c.ssManikin}});
+    if(bt || btEntries.length) A.push({key:'mbt', icon:'tablet', label:c.aBt, sub:c.subDoc, panel:{title:c.aBt, refEntries:btEntries, doNow:btEntries.length ? [] : [bt], source:c.ssManikin}});
+    if(photo || photoEntries.length) A.push({key:'mphoto', icon:'clip', label:c.aPhoto, sub:c.subDoc, panel:{title:c.aPhoto, refEntries:photoEntries, doNow:photoEntries.length ? [] : [photo], source:c.ssManikin}});
     if(room) A.push({key:'mroom', icon:'lock', label:c.aRoom, sub:c.subDoc, panel:{title:c.aRoom, doNow:[room], source:c.ssManikin}});
     const black = steps.find(s => UNDOC_RE.test(s));
     A.push({key:'mblack', icon:'alert', label:c.aBlack, sub:c.subNoFix, panel:{
-      title:c.blackTitle, doNow:c.blackDo, sendTo:[c.toVendor], doNot:c.blackDont,
+      title:c.blackTitle, refEntries:blackEntries, doNow:blackEntries.length ? [] : c.blackDo, sendTo:[c.toVendor], doNot:c.blackDont,
       note:black || '', source:c.ssNeedVendor}});
   }
 
@@ -1162,6 +1317,8 @@ function buildTree(data, c){
 function treePanelHTML(key, p, c){
   const row = (label, items) => (items && items.length)
     ? `<div class="tp-row"><span class="tp-k">${esc(label)}</span><ul>${items.slice(0, 4).map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
+  const refs = p.refEntries ? refEntriesHTML(p.refEntries) : '';
+  const secure = p.secure ? `<p class="secure-note">${svg('shield')}<span>${esc(p.secure)}</span></p>` : '';
   let draft = '';
   if(p.draftText){
     const id = 'draft_' + key;
@@ -1170,10 +1327,12 @@ function treePanelHTML(key, p, c){
       <button type="button" class="tp-copy" data-copy="${id}">${svg('clip')}<span>${esc(c.copyDraft)}</span></button>
     </div>`;
   }
-  return `<div class="tree-panel" data-panel="${key}">
-    <p class="tp-title">${esc(p.title)}</p>
-    ${row(c.pUseWhen, p.useWhen)}
-    ${row(c.pDoNow, p.doNow)}
+	  return `<div class="tree-panel" data-panel="${key}">
+	    <p class="tp-title">${esc(p.title)}</p>
+	    ${row(c.pUseWhen, p.useWhen)}
+	    ${secure}
+	    ${refs}
+	    ${row(c.pDoNow, p.doNow)}
     ${row(c.pCollect, p.collect)}
     ${row(c.pSendTo, p.sendTo)}
     ${row(c.pDoNot, p.doNot)}
@@ -1321,6 +1480,134 @@ $('#out').addEventListener('click', event => {
   }
 });
 
+function statusLabel(status, c){
+  const map = {open:c.logOpen, watching:c.logWatching, escalated:c.logEscalated, resolved:c.logResolved};
+  return map[status] || status || c.logOpen;
+}
+
+function fmtTime(iso){
+  const d = new Date(iso || Date.now());
+  if(Number.isNaN(d.getTime())) return '';
+  return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function renderLogs(){
+  const c = copy();
+  const listEl = $('#log-list');
+  const detailEl = $('#log-detail');
+  if(!listEl || !detailEl) return;
+  if(!logCache.length){
+    listEl.innerHTML = `<div class="log-empty">${esc(c.noLogs)}</div>`;
+    detailEl.classList.remove('open');
+    detailEl.innerHTML = '';
+    return;
+  }
+  listEl.innerHTML = logCache.slice(0, 8).map(log => {
+    const active = log.id === selectedLogId ? ' active' : '';
+    const fresh = log.id === latestLogId ? ' new' : '';
+    const site = (!log.site || log.site === 'Unknown site') ? c.unknownSite : log.site;
+    return `<button type="button" class="log-card${active}${fresh}" data-log-id="${esc(log.id)}">
+      <span class="log-meta">
+        <span class="log-dot" aria-hidden="true"></span>
+        <span>${esc(fmtTime(log.created_at))}</span>
+        <span>${esc(site)}</span>
+        <span>${esc(shortLabel(log.issue_type || log.scenario || ''))}</span>
+        <span class="log-status ${esc(log.status || 'open')}">${esc(statusLabel(log.status || 'open', c))}</span>
+      </span>
+      <span class="log-q">${esc(log.question || '')}</span>
+    </button>`;
+  }).join('');
+  const selected = logCache.find(log => log.id === selectedLogId) || logCache[0];
+  if(selected){
+    selectedLogId = selected.id;
+    renderLogDetail(selected);
+  }
+}
+
+function renderLogDetail(log){
+  const c = copy();
+  const detailEl = $('#log-detail');
+  if(!detailEl) return;
+  const first = (log.first_action || []).slice(0, 3);
+  const ev = (log.evidence_requested || []).slice(0, 3);
+  const contacts = (log.contacts || []).slice(0, 3);
+  const notes = (log.notes || []).slice(-3);
+  const listBlock = (items) => items.length ? `<ul class="ld-list">${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  detailEl.innerHTML = `<p class="ld-title">${esc(shortLabel(log.issue_type || log.scenario || ''))}</p>
+    <div class="ld-grid">
+      <span class="ld-k">${esc(c.location)}</span><span class="ld-v">${esc((!log.site || log.site === 'Unknown site') ? c.unknownSite : log.site)}</span>
+      <span class="ld-k">${esc(c.classTime)}</span><span class="ld-v">${esc(log.class_time || '—')}</span>
+      <span class="ld-k">${esc(c.guidanceGenerated)}</span><span class="ld-v">${esc(fmtTime(log.created_at))} · ${esc(statusLabel(log.status || 'open', c))}</span>
+      <span class="ld-k">${esc(c.imagesCount)}</span><span class="ld-v">${esc(log.sop_image_count || 0)} · ${esc(c.refsCount)} ${esc((log.operational_reference_titles || []).length)}</span>
+    </div>
+    ${listBlock(first)}
+    ${listBlock(ev)}
+    ${listBlock(contacts)}
+    ${notes.length ? listBlock(notes.map(n => `${n.created_by || 'staff'}: ${n.text || ''}`)) : ''}
+    <div class="log-actions">
+      <button type="button" data-log-status="watching">${esc(c.markWatching)}</button>
+      <button type="button" data-log-status="escalated">${esc(c.markEscalated)}</button>
+      <button type="button" data-log-status="resolved">${esc(c.markResolved)}</button>
+    </div>
+    <div class="note-row">
+      <input id="log-note" type="text" placeholder="${esc(c.addNote)}" />
+      <button type="button" data-log-note>${esc(c.addNote)}</button>
+    </div>`;
+  detailEl.classList.add('open');
+}
+
+async function loadLogs(highlightId=''){
+  try{
+    const resp = await fetch(API_BASE + '/api/incident-logs?limit=50');
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    logCache = await resp.json();
+    if(highlightId) latestLogId = highlightId;
+    if(highlightId) selectedLogId = highlightId;
+    else if(!selectedLogId && logCache[0]) selectedLogId = logCache[0].id;
+    renderLogs();
+  }catch(err){
+    const c = copy();
+    const listEl = $('#log-list');
+    if(listEl) listEl.innerHTML = `<div class="log-empty">${esc(c.error)}: ${esc(err.message)}</div>`;
+  }
+}
+
+async function patchLog(logId, payload){
+  const resp = await fetch(API_BASE + '/api/incident-logs/' + encodeURIComponent(logId), {
+    method:'PATCH',
+    headers:{'content-type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  if(!resp.ok) throw new Error('HTTP ' + resp.status);
+  const updated = await resp.json();
+  logCache = logCache.map(log => log.id === updated.id ? updated : log);
+  selectedLogId = updated.id;
+  renderLogs();
+}
+
+$('#log-refresh').addEventListener('click', () => loadLogs());
+$('#log-list').addEventListener('click', event => {
+  const card = event.target.closest('[data-log-id]');
+  if(!card) return;
+  selectedLogId = card.dataset.logId;
+  renderLogs();
+});
+$('#log-detail').addEventListener('click', event => {
+  const statusBtn = event.target.closest('[data-log-status]');
+  const noteBtn = event.target.closest('[data-log-note]');
+  if(statusBtn && selectedLogId){
+    patchLog(selectedLogId, {status:statusBtn.dataset.logStatus}).catch(() => {});
+    return;
+  }
+  if(noteBtn && selectedLogId){
+    const box = $('#log-note');
+    const note = box ? box.value.trim() : '';
+    if(note){
+      patchLog(selectedLogId, {note}).then(() => { if(box) box.value = ''; }).catch(() => {});
+    }
+  }
+});
+
 function setBusy(on){
   const btn = $('#go');
   const status = $('#status');
@@ -1336,7 +1623,7 @@ function setBusy(on){
 async function ask(){
   const q = $('#q').value.trim();
   if(!q){ $('#q').focus(); return; }
-  const ctx = {lang:selectedLang, audience:'internal'};
+	  const ctx = {lang:selectedLang, audience:'internal', browser_timestamp:new Date().toISOString()};
   if($('#site').value.trim()) ctx.site = $('#site').value.trim();
   if($('#ctime').value.trim()) ctx.class_time = $('#ctime').value.trim();
   if($('#att').value.trim()) ctx.attachments = [{type:'note', description:$('#att').value.trim()}];
@@ -1348,8 +1635,10 @@ async function ask(){
       headers:{'content-type':'application/json'},
       body:JSON.stringify({question:q, context:ctx})
     });
-    if(!resp.ok) throw new Error('HTTP ' + resp.status);
-    render(await resp.json());
+	    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+	    const data = await resp.json();
+	    render(data);
+	    if(data.incident_log_id) await loadLogs(data.incident_log_id);
   }catch(err){
     $('#out').innerHTML = `<div class="err">${esc(copy().error)}: ${esc(err.message)}</div>`;
     $('#out').style.display = 'block';
@@ -1364,6 +1653,7 @@ $('#q').addEventListener('keydown', event => {
 });
 document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => applyLanguage(btn.dataset.lang)));
 applyLanguage(selectedLang);
+loadLogs();
 </script>
 </body>
 </html>

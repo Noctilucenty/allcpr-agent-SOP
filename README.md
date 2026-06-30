@@ -231,6 +231,9 @@ but no documented fix is recorded, and routes it to
 │       ├── schemas.py
 │       ├── retriever.py
 │       ├── kb_loader.py
+│       ├── sop_operational_refs.py
+│       ├── sop_operational_refs.json
+│       ├── incident_logs.py
 │       ├── sop.md
 │       ├── kb_seed.md
 │       └── sop_source_analysis.md
@@ -245,11 +248,12 @@ app for private auditing and future KB refresh work. Those raw folders are
 excluded from this public repository because they may contain private operational
 materials such as venue media, room instructions, contacts, or access details.
 
-The committed agent uses sanitized, source-derived markdown artifacts:
+The committed agent uses sanitized, source-derived artifacts:
 
 - `app/agents/autocpr_site_manager/sop.md`
 - `app/agents/autocpr_site_manager/kb_seed.md`
 - `app/agents/autocpr_site_manager/sop_source_analysis.md`
+- `app/agents/autocpr_site_manager/sop_operational_refs.json`
 
 If the team decides to publish raw SOP assets later, use a private repository or
 Git LFS after auditing the files for secrets and private venue details.
@@ -274,8 +278,34 @@ folder names, and document names. For example, Smart Manikin questions can match
 Smart Manikin instruction/quick-start images, while a general power outage does
 not receive random Smart Manikin images.
 
-Generated media and the JSON index are ignored by git because they may contain
-private SOP/venue material.
+Generated SOP media and the JSON index are committed for this private/internal
+deployment so Render can serve source-image references. The raw `SOP/` archive
+remains ignored.
+
+## Live Incident Logs
+
+Every `/api/agents/autocpr-site-manager/ask` call appends a lightweight internal
+incident log entry. The log records the user-entered site/location, class time,
+scenario, severity, first actions, evidence, escalation, SOP image count, and
+matched operational references. It does not store uploaded image files or the raw
+full answer payload.
+
+Default local storage:
+
+```text
+data/incident_logs.jsonl
+```
+
+Override with:
+
+```bash
+ALLCPR_INCIDENT_LOG_PATH=/path/to/incident_logs.jsonl
+```
+
+Render note: this MVP stores logs locally on the running Render instance. For
+production durability across restarts/redeploys, move the log path to a Render
+persistent disk or an external database. No external database is required for the
+current private MVP.
 
 ## Testing
 
@@ -291,7 +321,7 @@ Known-good local command used during setup:
 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12 -m pytest tests -q
 ```
 
-Expected result at handoff: `104 passed`.
+Expected result at handoff: run the current suite and confirm all tests pass.
 
 ## Deployment Notes
 

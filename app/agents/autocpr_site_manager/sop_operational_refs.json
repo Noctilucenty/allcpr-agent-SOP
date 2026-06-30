@@ -1,0 +1,547 @@
+{
+  "references": [
+    {
+      "id": "venue_access_general",
+      "scenario": "venue_access_issue",
+      "title": "Access triage before using any code",
+      "applies_to": [
+        "door locked",
+        "room access",
+        "keypad",
+        "lockbox",
+        "passcode",
+        "门禁",
+        "密码",
+        "房间",
+        "大门"
+      ],
+      "source_status": "official SOP source + Smart Manikin source",
+      "priority": 60,
+      "items": [
+        {
+          "label": "Confirm matching site",
+          "value": "Confirm the class address, building, floor, and room before using any access note or code.",
+          "sensitivity": "normal",
+          "fact_type": "access_note"
+        },
+        {
+          "label": "Access materials",
+          "value": "Check the site-specific room passcode, gate passcode or lockbox note, and instruction video if a matching site reference is available.",
+          "sensitivity": "normal",
+          "fact_type": "access_note"
+        },
+        {
+          "label": "Passcode availability",
+          "value": "No site-specific trusted passcode is shown until the question or context names a matching site/building/room. Use SOP image/reference or contact venue/property if no trusted text reference is returned.",
+          "sensitivity": "source_needed",
+          "fact_type": "access_code"
+        },
+        {
+          "label": "If access fails",
+          "value": "Contact venue/property to open or confirm the entry method, record arrival time and attempts, and escalate to a supervisor if class is delayed.",
+          "sensitivity": "normal",
+          "fact_type": "escalation"
+        }
+      ],
+      "media_tags": [
+        "door",
+        "keypad",
+        "lockbox",
+        "gate",
+        "building",
+        "room",
+        "access"
+      ],
+      "do_not": [
+        "Do not force the door.",
+        "Do not guess passcodes from images.",
+        "Do not share access codes outside internal operations."
+      ]
+    },
+    {
+      "id": "santa_clara_access",
+      "scenario": "venue_access_issue",
+      "title": "Santa Clara access instructions",
+      "applies_to": [
+        "Santa Clara",
+        "3200 Patrick Henry",
+        "Suite 3",
+        "room passcode",
+        "gate passcode",
+        "lockbox",
+        "door locked",
+        "门禁",
+        "房间密码"
+      ],
+      "site_aliases": [
+        "Santa Clara",
+        "3200 Patrick Henry",
+        "Patrick Henry",
+        "Suite 3",
+        "95054"
+      ],
+      "requires_site_match": true,
+      "source_status": "reviewed SOP text: Santa Clara Instruction.docx + Smart Manikin Instruction.docx",
+      "priority": 110,
+      "items": [
+        {
+          "label": "Building / room",
+          "value": "3200 Patrick Henry Dr, Santa Clara, CA 95054. The training point is in the office area on the second floor; use Suite 3.",
+          "sensitivity": "normal",
+          "fact_type": "location_note"
+        },
+        {
+          "label": "Business-hours access",
+          "value": "Mon-Fri 9:00 AM-7:00 PM: enter with the room passcode. The room is hard to find; use the instruction video.",
+          "sensitivity": "normal",
+          "fact_type": "access_note"
+        },
+        {
+          "label": "Instruction video",
+          "value": "https://youtube.com/shorts/1QTx_FfOc14?feature=share",
+          "sensitivity": "internal",
+          "fact_type": "instruction_link"
+        },
+        {
+          "label": "Room passcode",
+          "value": "Suite 3: 2745",
+          "sensitivity": "internal",
+          "fact_type": "access_code"
+        },
+        {
+          "label": "After-hours / weekend access",
+          "value": "Saturday/Sunday requires the access card. The card is inside the lockbox beside the main entrance; lockbox passcode: 2745.",
+          "sensitivity": "internal",
+          "fact_type": "access_code"
+        },
+        {
+          "label": "Wi-Fi",
+          "value": "No Wi-Fi is recorded for this site.",
+          "sensitivity": "normal",
+          "fact_type": "network_note"
+        }
+      ],
+      "media_tags": [
+        "santa",
+        "clara",
+        "door",
+        "lockbox",
+        "gate",
+        "room",
+        "building",
+        "access"
+      ],
+      "do_not": [
+        "Use only for the matching Santa Clara site/building/room.",
+        "Do not force the door or guess a different code.",
+        "Do not share access codes outside internal operations."
+      ]
+    },
+    {
+      "id": "newark_access",
+      "scenario": "venue_access_issue",
+      "title": "Newark access instructions",
+      "applies_to": [
+        "Newark",
+        "8407 Central",
+        "Dobe",
+        "Suite 2018",
+        "room passcode",
+        "gate passcode",
+        "lockbox",
+        "door locked",
+        "门禁",
+        "房间密码"
+      ],
+      "site_aliases": [
+        "Newark",
+        "8407 Central",
+        "Central Ave",
+        "Dobe",
+        "Suite 2018",
+        "2018",
+        "94560"
+      ],
+      "requires_site_match": true,
+      "source_status": "reviewed SOP text: Newark Instruction.docx",
+      "priority": 110,
+      "items": [
+        {
+          "label": "Building / room",
+          "value": "8407 Central Ave, Newark, CA 94560. The training point is inside the Dobe coworking area, second floor, room 2018; no elevator is recorded.",
+          "sensitivity": "normal",
+          "fact_type": "location_note"
+        },
+        {
+          "label": "Business-hours access",
+          "value": "Mon-Fri 9:30 AM-5:00 PM: staff can enter directly and only need the room passcode.",
+          "sensitivity": "normal",
+          "fact_type": "access_note"
+        },
+        {
+          "label": "Instruction video",
+          "value": "https://youtube.com/shorts/W86OzI2c2Lg?feature=share",
+          "sensitivity": "internal",
+          "fact_type": "instruction_link"
+        },
+        {
+          "label": "Room passcode",
+          "value": "Suite 2018: 224466",
+          "sensitivity": "internal",
+          "fact_type": "access_code"
+        },
+        {
+          "label": "Weekend / front-gate lockbox",
+          "value": "Lockbox code at the 1st-floor front gate: 6285. It contains a spare key; put the spare key back after use.",
+          "sensitivity": "internal",
+          "fact_type": "access_code"
+        },
+        {
+          "label": "Wi-Fi",
+          "value": "Username: DoBeUSA. Password: DoBesince2016.",
+          "sensitivity": "internal",
+          "fact_type": "network_note"
+        }
+      ],
+      "media_tags": [
+        "newark",
+        "central",
+        "door",
+        "lockbox",
+        "gate",
+        "room",
+        "building",
+        "access"
+      ],
+      "do_not": [
+        "Use only for the matching Newark site/building/room.",
+        "Return the spare key to the lockbox after use.",
+        "Do not share access codes outside internal operations."
+      ]
+    },
+    {
+      "id": "smart_manikin_ipad_pad_setup",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "Smart Manikin iPad / PAD setup",
+      "applies_to": [
+        "iPad",
+        "PAD",
+        "tablet",
+        "Smart Manikin",
+        "setup",
+        "平板",
+        "假人"
+      ],
+      "source_status": "reviewed SOP text: Smart Manikin Instruction.docx",
+      "priority": 95,
+      "items": [
+        {
+          "label": "Surface and tablet",
+          "value": "Place the manikin on a firm surface. Unplug the tablet charging cable and place the tablet on the floor.",
+          "sensitivity": "normal",
+          "fact_type": "ipad_setup"
+        },
+        {
+          "label": "Training supplies",
+          "value": "Prepare AED pads and place them on the floor. Prepare the pocket mask for CPR/First Aid or BVM for BLS, then place it on the floor.",
+          "sensitivity": "normal",
+          "fact_type": "ipad_setup"
+        },
+        {
+          "label": "Start course",
+          "value": "Disinfect the manikin, choose the correct module (First Aid/CPR/AED or BLS Healthcare Provider), then click Log In.",
+          "sensitivity": "normal",
+          "fact_type": "ipad_setup"
+        }
+      ],
+      "media_tags": [
+        "smart",
+        "manikin",
+        "tablet",
+        "pad",
+        "ipad",
+        "setup"
+      ],
+      "do_not": [
+        "Do not treat Wi-Fi/browser permissions as the documented device-session fix.",
+        "Do not move or disassemble equipment unless ALLCPR has approved it."
+      ]
+    },
+    {
+      "id": "smart_manikin_bluetooth_power",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "Smart Manikin Bluetooth / power fix",
+      "applies_to": [
+        "Bluetooth",
+        "power",
+        "power strip",
+        "connect",
+        "won't connect",
+        "PAD",
+        "蓝牙",
+        "插线板",
+        "连不上"
+      ],
+      "source_status": "Smart Manikin source",
+      "priority": 100,
+      "items": [
+        {
+          "label": "Documented fix",
+          "value": "If Bluetooth will not connect when unplugged, keep the manikin and PAD powered with a power strip.",
+          "sensitivity": "normal",
+          "fact_type": "device_fix"
+        },
+        {
+          "label": "If still not connecting",
+          "value": "If it still does not connect while plugged in, restart the manikin. This is the source-recorded fix.",
+          "sensitivity": "normal",
+          "fact_type": "device_fix"
+        },
+        {
+          "label": "Connected but no data",
+          "value": "When powered-but-unplugged, the PAD may show connected, but TRAINING receives no data.",
+          "sensitivity": "normal",
+          "fact_type": "device_note"
+        }
+      ],
+      "media_tags": [
+        "smart",
+        "manikin",
+        "bluetooth",
+        "pad",
+        "tablet",
+        "power"
+      ],
+      "do_not": [
+        "Do not invent unsupported reset, calibration, browser, or permission fixes."
+      ]
+    },
+    {
+      "id": "smart_manikin_completion_photo",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "Completion photo requirement",
+      "applies_to": [
+        "completion photo",
+        "All Session Done",
+        "Pass",
+        "certificate",
+        "support@allcpr.org",
+        "完成截图",
+        "证书"
+      ],
+      "source_status": "reviewed SOP text: Smart Manikin Instruction.docx",
+      "priority": 90,
+      "items": [
+        {
+          "label": "Completion marker",
+          "value": "Use the ALL Session Done and Pass screen as the completion marker.",
+          "sensitivity": "normal",
+          "fact_type": "completion_photo"
+        },
+        {
+          "label": "Required photo",
+          "value": "Take a photo of the completion screen and email it to support@allcpr.org as proof for certificate processing.",
+          "sensitivity": "normal",
+          "fact_type": "completion_email"
+        }
+      ],
+      "media_tags": [
+        "smart",
+        "manikin",
+        "completion",
+        "photo",
+        "certificate",
+        "pass"
+      ],
+      "do_not": [
+        "Do not invent certificate timelines, scoring rules, or re-issue policy."
+      ]
+    },
+    {
+      "id": "completion_photo_certificate",
+      "scenario": "completion_or_certificate_issue",
+      "title": "Completion photo requirement",
+      "applies_to": [
+        "completion photo",
+        "All Session Done",
+        "Pass",
+        "certificate",
+        "support@allcpr.org",
+        "完成截图",
+        "证书"
+      ],
+      "source_status": "reviewed SOP text: Smart Manikin Instruction.docx",
+      "priority": 100,
+      "items": [
+        {
+          "label": "Completion marker",
+          "value": "Confirm the student reached the ALL Session Done and Pass screen.",
+          "sensitivity": "normal"
+        },
+        {
+          "label": "Where to send",
+          "value": "Photograph that completion screen and email it to support@allcpr.org.",
+          "sensitivity": "normal"
+        },
+        {
+          "label": "If certificate/scoring still fails",
+          "value": "Record student name, class, session info, and the specific problem, then escalate to a supervisor. Other issuance/scoring rules need official SOP confirmation.",
+          "sensitivity": "normal"
+        }
+      ],
+      "media_tags": [
+        "completion",
+        "photo",
+        "certificate",
+        "pass"
+      ],
+      "do_not": [
+        "Do not invent certificate timelines, scoring rules, or re-issue policy."
+      ]
+    },
+    {
+      "id": "smart_manikin_black_screen_no_fix",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "Black screen / app restart",
+      "applies_to": [
+        "black screen",
+        "blank screen",
+        "restart",
+        "self-restart",
+        "progress lost",
+        "黑屏",
+        "自重启",
+        "进度丢失"
+      ],
+      "source_status": "Smart Manikin source + needs engineer/vendor confirmation",
+      "priority": 85,
+      "items": [
+        {
+          "label": "Source limit",
+          "value": "The source logs app self-restart / tablet black-screen causing progress loss, but records no fix.",
+          "sensitivity": "normal",
+          "fact_type": "unsupported_fix"
+        },
+        {
+          "label": "Escalation",
+          "value": "Collect the exact symptom, timing, screen/photo evidence, power/display/Bluetooth/tablet-PAD status, and escalate to engineer/vendor.",
+          "sensitivity": "normal",
+          "fact_type": "vendor_escalation"
+        }
+      ],
+      "media_tags": [
+        "smart",
+        "manikin",
+        "tablet",
+        "screen"
+      ],
+      "do_not": [
+        "Do not invent an undocumented restart, reset, recovery, calibration, or root-cause fix."
+      ]
+    },
+    {
+      "id": "instructor_no_show_escalation",
+      "scenario": "instructor_no_show",
+      "title": "Instructor no-show escalation prep",
+      "applies_to": [
+        "instructor",
+        "teacher",
+        "no-show",
+        "late",
+        "老师没到",
+        "老师迟到"
+      ],
+      "source_status": "general operations guidance, not official SOP",
+      "priority": 80,
+      "items": [
+        {
+          "label": "Immediate action",
+          "value": "Call/message the instructor immediately and log every attempt with time and result.",
+          "sensitivity": "normal"
+        },
+        {
+          "label": "Escalation packet",
+          "value": "Prepare class time/place, instructor name if known, waiting headcount, contact-attempt log, and impact on class start.",
+          "sensitivity": "normal"
+        },
+        {
+          "label": "Decision owner",
+          "value": "Supervisor/scheduling decides substitute, reschedule, or refund; staff should not promise those outcomes.",
+          "sensitivity": "normal"
+        }
+      ],
+      "media_tags": [],
+      "do_not": [
+        "Do not promise a substitute time, reschedule, refund, or compensation before approval."
+      ]
+    },
+    {
+      "id": "incident_report_template",
+      "scenario": "incident_report",
+      "title": "Incident report fields",
+      "applies_to": [
+        "incident report",
+        "report template",
+        "事故报告",
+        "现场记录"
+      ],
+      "source_status": "general operations guidance, not official SOP",
+      "priority": 80,
+      "items": [
+        {
+          "label": "Basics",
+          "value": "Record site/room, class time, event time, recorder, event type, and what happened.",
+          "sensitivity": "normal"
+        },
+        {
+          "label": "Impact and action",
+          "value": "Record affected classes/students/devices, immediate action taken, result, and current class status.",
+          "sensitivity": "normal"
+        },
+        {
+          "label": "Evidence and decision",
+          "value": "Attach evidence and mark any awaiting decision such as reschedule/refund/compensation.",
+          "sensitivity": "normal"
+        }
+      ],
+      "media_tags": [],
+      "do_not": [
+        "Do not turn the report into an official refund/reschedule decision."
+      ]
+    },
+    {
+      "id": "approval_prep_refund_reschedule",
+      "scenario": "escalation_guidance",
+      "title": "Refund / reschedule approval prep",
+      "applies_to": [
+        "refund",
+        "reschedule",
+        "cancel",
+        "compensation",
+        "approval",
+        "退款",
+        "改期",
+        "取消",
+        "补偿"
+      ],
+      "source_status": "general operations guidance, not official SOP + needs official SOP source",
+      "priority": 75,
+      "items": [
+        {
+          "label": "Prepare for approval",
+          "value": "Collect site/location, class date/time, affected student count, incident start/end, evidence, what staff already tried, and whether class could continue.",
+          "sensitivity": "normal"
+        },
+        {
+          "label": "Decision owner",
+          "value": "Supervisor or the official approval path decides refund, reschedule, cancellation, compensation, and wording.",
+          "sensitivity": "normal"
+        }
+      ],
+      "media_tags": [],
+      "do_not": [
+        "Do not promise a refund amount, reschedule time, cancellation, or compensation before approval."
+      ]
+    }
+  ]
+}

@@ -38,6 +38,7 @@ def test_answer_returns_valid_schema():
     assert isinstance(ans.source_status, list)
     assert ans.language in {"en", "zh"}
     assert isinstance(ans.sop_images, list)
+    assert isinstance(ans.operational_references, list)
     assert isinstance(ans.answer_summary, str)
     assert ans.answer.strip()
 
@@ -198,6 +199,72 @@ def test_smart_manikin_question_returns_sop_image_when_media_exists():
         assert "image analysis" in item.description.lower() or "no image analysis" in item.description.lower()
 
 
+def test_venue_access_returns_operational_refs():
+    ans = answer_question("门打不开怎么办？")
+    assert ans.scenario == "venue_access_issue"
+    assert ans.operational_references
+    assert any(ref.id == "venue_access_general" for ref in ans.operational_references)
+    joined = " ".join(
+        item.value
+        for ref in ans.operational_references
+        for item in ref.items
+    )
+    assert "Confirm the class address" in joined
+
+
+def test_smart_manikin_returns_documented_operational_refs():
+    ans = answer_question("Smart Manikin iPad not working, Bluetooth won't connect")
+    assert ans.scenario == "smart_manikin_troubleshooting"
+    ids = {ref.id for ref in ans.operational_references}
+    assert "smart_manikin_bluetooth_power" in ids
+    assert "smart_manikin_ipad_pad_setup" in ids
+    joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
+    assert "power strip" in joined
+    assert "Place the manikin on a firm surface" in joined
+
+
+def test_outages_do_not_return_unrelated_operational_refs():
+    for q in ("停电怎么办？", "教室没网怎么办？"):
+        ans = answer_question(q)
+        assert ans.scenario in {"electricity_outage", "internet_outage"}
+        assert ans.operational_references == []
+
+
+def test_operational_refs_do_not_leak_local_absolute_paths():
+    ans = answer_question("door locked at Newark", {"site": "Newark"})
+    joined = " ".join(
+        [ref.title + " " + ref.source_status for ref in ans.operational_references]
+        + [item.value for ref in ans.operational_references for item in ref.items]
+    )
+    assert "/Users/" not in joined
+    assert "/Desktop/" not in joined
+    assert "noctilucenteasteliq" not in joined
+
+
+def test_generic_passcode_question_does_not_invent_or_dump_codes():
+    ans = answer_question("what is the room passcode?")
+    assert ans.scenario == "venue_access_issue"
+    joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
+    assert "No site-specific trusted passcode" in joined
+    assert "2745" not in joined
+    assert "224466" not in joined
+    assert "6285" not in joined
+
+
+def test_trusted_passcode_only_for_matching_access_site():
+    access = answer_question("door locked, what is the room passcode?", {"site": "Newark"})
+    assert access.scenario == "venue_access_issue"
+    joined = " ".join(item.value for ref in access.operational_references for item in ref.items)
+    assert "224466" in joined
+    assert "6285" in joined
+
+    power = answer_question("power outage at Newark", {"site": "Newark", "lang": "en"})
+    assert power.scenario == "electricity_outage"
+    joined_power = " ".join(item.value for ref in power.operational_references for item in ref.items)
+    assert "224466" not in joined_power
+    assert "6285" not in joined_power
+
+
 def test_venue_access_returns_sop_images_when_media_exists():
     media = build_media_index()
     ans = answer_question("门打不开怎么办？")
@@ -212,6 +279,13 @@ def test_electricity_outage_does_not_return_random_smart_manikin_image():
     ans = answer_question("What should I do if the power goes out?", {"lang": "en"})
     assert ans.scenario == "electricity_outage"
     assert ans.sop_images == []
+
+
+def test_power_outage_does_not_receive_unrelated_images_or_refs():
+    ans = answer_question("What should I do if the power goes out?", {"site": "Santa Clara", "lang": "en"})
+    assert ans.scenario == "electricity_outage"
+    assert ans.sop_images == []
+    assert ans.operational_references == []
 
 
 def test_sop_media_index_exposes_web_paths_not_local_paths():

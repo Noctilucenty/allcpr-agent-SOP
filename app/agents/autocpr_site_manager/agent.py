@@ -23,6 +23,7 @@ from .retriever import SiteManagerRetriever
 from .scenarios import classify, requires_review
 from .schemas import AgentAnswer, RetrievedChunk
 from .sop_media_index import find_relevant_sop_media
+from .sop_operational_refs import find_operational_references
 
 
 def _unique_sources(chunks: List[RetrievedChunk]) -> List[str]:
@@ -207,6 +208,7 @@ class SiteManagerAgent:
         source_status = _glist(guidance, "source_status")
         sources = _unique_sources(chunks)
         sop_images = find_relevant_sop_media(question, scenario, top_k=3)
+        operational_references = find_operational_references(question, scenario, context, limit=3)
 
         attach_ack = _summarize_attachments(context, lang)
         answer_summary = _answer_summary(lang, issue_type, severity, review)
@@ -258,6 +260,7 @@ class SiteManagerAgent:
             attachments_note=attach_ack,
             answer_summary=answer_summary,
             sop_images=sop_images,
+            operational_references=operational_references,
         )
 
 

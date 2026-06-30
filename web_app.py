@@ -8,12 +8,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.agents.autocpr_site_manager import answer_question
-from app.agents.autocpr_site_manager.schemas import AgentAnswer, AgentAskRequest
+from app.agents.autocpr_site_manager.incident_logs import (
+    append_answer_log,
+    get_log,
+    list_logs,
+    patch_log,
+)
+from app.agents.autocpr_site_manager.schemas import AgentAnswer, AgentAskRequest, IncidentLogPatch
 from app.agents.autocpr_site_manager.sop_media_index import MEDIA_ROOT
 
 ROOT = Path(__file__).resolve().parent
@@ -46,7 +52,46 @@ def health() -> dict[str, str]:
 
 @app.post("/api/agents/autocpr-site-manager/ask", response_model=AgentAnswer)
 def api_agent_site_manager_ask(req: AgentAskRequest) -> AgentAnswer:
-    return answer_question(req.question, req.context)
+    answer = answer_question(req.question, req.context)
+    entry = append_answer_log(req.question, req.context, answer)
+    answer.incident_log_id = str(entry.get("id", ""))
+    return answer
+
+
+@app.post("/api/incident-logs")
+def api_create_incident_log(req: AgentAskRequest) -> dict:
+    answer = answer_question(req.question, req.context)
+    return append_answer_log(req.question, req.context, answer)
+
+
+@app.get("/api/incident-logs")
+def api_list_incident_logs(limit: int = Query(default=50, ge=1, le=200)) -> list[dict]:
+    return list_logs(limit)
+
+
+@app.get("/api/incident-logs/{log_id}")
+def api_get_incident_log(log_id: str) -> dict:
+    entry = get_log(log_id)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="incident log not found")
+    return entry
+
+
+@app.patch("/api/incident-logs/{log_id}")
+def api_patch_incident_log(log_id: str, patch: IncidentLogPatch) -> dict:
+    try:
+        entry = patch_log(
+            log_id,
+            status=patch.status,
+            note=patch.note,
+            assigned_to=patch.assigned_to,
+            created_by=patch.created_by or "staff",
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    if entry is None:
+        raise HTTPException(status_code=404, detail="incident log not found")
+    return entry
 
 
 @app.get("/", response_class=HTMLResponse)
