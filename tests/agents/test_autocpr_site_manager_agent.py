@@ -241,11 +241,20 @@ def test_operational_refs_do_not_leak_local_absolute_paths():
     assert "noctilucenteasteliq" not in joined
 
 
-def test_generic_passcode_question_does_not_invent_or_dump_codes():
+def test_generic_passcode_question_returns_trusted_private_codes():
     ans = answer_question("what is the room passcode?")
     assert ans.scenario == "venue_access_issue"
     joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
-    assert "No site-specific trusted passcode" in joined
+    assert "Suite 3: 2745" in joined
+    assert "Suite 2018: 224466" in joined
+    assert "Lockbox code at the 1st-floor front gate: 6285" in joined
+
+
+def test_nonmatching_explicit_site_does_not_receive_other_site_codes():
+    ans = answer_question("what is the room passcode?", {"site": "Palo Alto", "lang": "en"})
+    assert ans.scenario == "venue_access_issue"
+    joined = " ".join(item.value for ref in ans.operational_references for item in ref.items)
+    assert "If no listed site-specific trusted passcode matches" in joined
     assert "2745" not in joined
     assert "224466" not in joined
     assert "6285" not in joined

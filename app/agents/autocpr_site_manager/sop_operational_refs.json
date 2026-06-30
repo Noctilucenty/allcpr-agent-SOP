@@ -32,7 +32,7 @@
         },
         {
           "label": "Passcode availability",
-          "value": "No site-specific trusted passcode is shown until the question or context names a matching site/building/room. Use SOP image/reference or contact venue/property if no trusted text reference is returned.",
+          "value": "If no listed site-specific trusted passcode matches the actual site/building/room, check the SOP image/reference or contact venue/property.",
           "sensitivity": "source_needed",
           "fact_type": "access_code"
         },
@@ -70,7 +70,12 @@
         "gate passcode",
         "lockbox",
         "door locked",
+        "locked",
+        "door",
         "门禁",
+        "门打不开",
+        "进不去",
+        "密码",
         "房间密码"
       ],
       "site_aliases": [
@@ -150,7 +155,12 @@
         "gate passcode",
         "lockbox",
         "door locked",
+        "locked",
+        "door",
         "门禁",
+        "门打不开",
+        "进不去",
+        "密码",
         "房间密码"
       ],
       "site_aliases": [

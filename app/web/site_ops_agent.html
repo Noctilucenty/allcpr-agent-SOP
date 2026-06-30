@@ -1232,7 +1232,7 @@ function buildTree(data, c){
       doNow:accessEntries.length ? [] : (accessSteps.length ? accessSteps : steps.slice(0, 4)),
       doNot:c.accessDont, source:src,
       note:(data.sop_images || []).length ? c.accessImgNote : ''}});
-    A.push({key:'passcode', icon:'lock', label:c.aPasscode, sub:codeEntries.length ? c.subDoc : c.subSop, panel:{
+    A.push({key:'passcode', icon:'lock', label:c.aPasscode, sub:codeEntries.length ? c.subDoc : c.subSop, defaultOpen:codeEntries.length > 0, panel:{
       title:c.passcodeTitle,
       secure:codeEntries.length ? c.trustedPasscode : '',
       refEntries:codeEntries.length ? codeEntries : sourceNeeded,
@@ -1314,7 +1314,7 @@ function buildTree(data, c){
   return A;
 }
 
-function treePanelHTML(key, p, c){
+function treePanelHTML(key, p, c, open=false){
   const row = (label, items) => (items && items.length)
     ? `<div class="tp-row"><span class="tp-k">${esc(label)}</span><ul>${items.slice(0, 4).map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>` : '';
   const refs = p.refEntries ? refEntriesHTML(p.refEntries) : '';
@@ -1327,7 +1327,7 @@ function treePanelHTML(key, p, c){
       <button type="button" class="tp-copy" data-copy="${id}">${svg('clip')}<span>${esc(c.copyDraft)}</span></button>
     </div>`;
   }
-	  return `<div class="tree-panel" data-panel="${key}">
+  return `<div class="tree-panel${open ? ' open' : ''}" data-panel="${key}">
 	    <p class="tp-title">${esc(p.title)}</p>
 	    ${row(c.pUseWhen, p.useWhen)}
 	    ${secure}
@@ -1346,11 +1346,11 @@ function treeHTML(data, c){
   const actions = buildTree(data, c);
   if(!actions.length) return '';
   const menu = `<div class="tree-menu">${actions.map(a =>
-    `<button type="button" class="pill" data-act="${a.key}">
+    `<button type="button" class="pill${a.defaultOpen ? ' open' : ''}" data-act="${a.key}">
       <span class="pill-ic" aria-hidden="true">${svg(a.icon)}</span>
       <span class="pill-tx"><span class="pill-lb">${esc(a.label)}</span>${a.sub ? `<span class="pill-sb">${esc(a.sub)}</span>` : ''}</span>
     </button>`).join('')}</div>`;
-  const panels = actions.filter(a => a.panel).map(a => treePanelHTML(a.key, a.panel, c)).join('');
+  const panels = actions.filter(a => a.panel).map(a => treePanelHTML(a.key, a.panel, c, !!a.defaultOpen)).join('');
   return section(c.treeTitle, 'steps', menu + `<div class="tree-panels">${panels}</div>`);
 }
 

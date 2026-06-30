@@ -62,6 +62,10 @@ def _has_site_match(raw: Dict[str, Any], question: str, context: Optional[Dict[s
     return any(_contains(haystack, alias) for alias in raw.get("site_aliases", []) or [])
 
 
+def _has_site_context(context: Optional[Dict[str, Any]]) -> bool:
+    return bool(_context_text(context).strip())
+
+
 def _specific_match_count(raw: Dict[str, Any], question: str, context: Optional[Dict[str, Any]]) -> int:
     haystack = _norm(f"{question} {_context_text(context)}")
     count = 0
@@ -106,10 +110,15 @@ def find_operational_references(
             continue
 
         site_match = _has_site_match(raw, question, context)
-        if raw.get("requires_site_match") and not site_match:
+        matches = _specific_match_count(raw, question, context)
+        allow_unscoped_access_ref = (
+            scenario == "venue_access_issue"
+            and not _has_site_context(context)
+            and matches > 0
+        )
+        if raw.get("requires_site_match") and not site_match and not allow_unscoped_access_ref:
             continue
 
-        matches = _specific_match_count(raw, question, context)
         priority = int(raw.get("priority", 0) or 0)
         score = priority + (35 if site_match else 0) + (12 * matches)
 
