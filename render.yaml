@@ -1,0 +1,21 @@
+# Render Blueprint for the AllCPR Site Operations Agent.
+# Deploy: push this repo to GitHub, then in Render -> "New +" -> "Blueprint"
+# and point it at this repo. Render reads this file automatically.
+#
+# The app is a single FastAPI service (web_app:app) served by uvicorn. It is
+# fully local/deterministic: no external API keys, no database, no secrets.
+# SOP images are extracted on first request from the committed SOP/ folder into
+# app/web/static/sop_media (ephemeral disk is fine — they rebuild on boot).
+services:
+  - type: web
+    name: allcpr-agent
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn web_app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Match the locally tested interpreter.
+      - key: PYTHON_VERSION
+        value: "3.12.6"

@@ -18,6 +18,48 @@ Canonical location is now `~/Desktop/Developer/allcpr_agent`.
 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12 -m uvicorn web_app:app --host 127.0.0.1 --port 8012
 ```
 
+## Simple Chat UI + SOP Media Support (2026-06-26)
+The `/agent` page was redesigned from a form-heavy incident intake page into a
+simple ask-answer assistant. The primary visible workflow is now: type one
+question → ask → read a compact answer → optionally inspect SOP source images and
+full structured details.
+
+- **UI path:** `app/web/site_ops_agent.html`.
+- **API unchanged:** `POST /api/agents/autocpr-site-manager/ask`.
+- **Route unchanged:** `GET /agent` (standalone app also serves the same UI at
+  `/`).
+- **Advanced details:** site, class time, and attachment description are hidden
+  behind a collapsed `Advanced details / site information (optional)` section.
+- **Answer rendering:** compact summary, first action, steps, evidence,
+  escalation/human review, relevant SOP image/source evidence, source labels, and
+  a collapsed full structured answer.
+- **Media indexer:** `app/agents/autocpr_site_manager/sop_media_index.py`.
+- **Generated media folder:** `app/web/static/sop_media/`.
+- **Local index path:** `app/agents/autocpr_site_manager/sop_media_index.json`.
+- **Served static URL path:** `/static/sop_media/<filename>`.
+- **Media behavior:** scans local `SOP/` for raw images plus `.docx` images under
+  `word/media/` and `.pptx` images under `ppt/media/`. Metadata is derived only
+  from filenames, folder names, and source document names. The agent never claims
+  to visually analyze images.
+- **Matching:** deterministic scenario/tag matching. Smart Manikin questions can
+  match Smart Manikin source images; power/internet outages return no random
+  Smart Manikin image.
+- **Local media found:** 58 SOP image items were indexed from the current local
+  SOP folders. Smart Manikin black-screen query returned 3 matched SOP images in
+  live API verification. Power outage returned 0 images.
+- **Tests run:** `/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12
+  -m pytest tests/agents tests/test_web_app.py tests/test_healthcheck.py -q`
+  → **104 passed**.
+- **Manual verification:** fresh local server on `127.0.0.1:8012`; verified
+  `/health` includes `v0.8b1`, `/agent` includes the simplified assistant UI,
+  English power outage response remains English with no SOP images, Chinese power
+  outage response remains Chinese with no SOP images, and `Smart Manikin 黑屏怎么办？`
+  returns matched SOP images without unsupported Smart Manikin fixes.
+- **Limitations:** no browser-console automation was available in this session;
+  verification used live HTTP/API checks. Generated SOP media and index are local
+  and git-ignored because raw SOP materials may contain private venue/source
+  details.
+
 ## Bilingual Agent Upgrade (2026-06-26)
 The agent now supports English and Chinese responses. Language is selected by
 `context.lang`, `context.language`, or `context.locale` first (`en`, `english`,

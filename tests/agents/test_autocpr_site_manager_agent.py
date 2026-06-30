@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 
 import web_app
 from app.agents.autocpr_site_manager import answer_question, prompts
+from app.agents.autocpr_site_manager.sop_media_index import build_media_index
 from app.agents.autocpr_site_manager.schemas import AgentAnswer
 
 PKG_DIR = Path(__file__).resolve().parents[2] / "app" / "agents" / "autocpr_site_manager"
@@ -36,6 +37,8 @@ def test_answer_returns_valid_schema():
     assert isinstance(ans.evidence_requested, list)
     assert isinstance(ans.source_status, list)
     assert ans.language in {"en", "zh"}
+    assert isinstance(ans.sop_images, list)
+    assert isinstance(ans.answer_summary, str)
     assert ans.answer.strip()
 
 
@@ -184,6 +187,30 @@ def test_english_smart_manikin_black_screen_preserves_source_limits():
         assert unsupported not in low
 
 
+def test_smart_manikin_question_returns_sop_image_when_media_exists():
+    media = build_media_index()
+    ans = answer_question("Smart Manikin 黑屏怎么办？")
+    if media:
+        assert ans.sop_images
+        assert any("Smart Manikin" in item.title or "Smart Manikin" in item.source_file for item in ans.sop_images)
+    for item in ans.sop_images:
+        assert item.url.startswith("/static/sop_media/")
+        assert "image analysis" in item.description.lower() or "no image analysis" in item.description.lower()
+
+
+def test_electricity_outage_does_not_return_random_smart_manikin_image():
+    ans = answer_question("What should I do if the power goes out?", {"lang": "en"})
+    assert ans.scenario == "electricity_outage"
+    assert ans.sop_images == []
+
+
+def test_no_media_match_response_still_works():
+    ans = answer_question("asdf qwer zxcv totally unrelated", {"lang": "en"})
+    assert ans.scenario == "unknown"
+    assert ans.sop_images == []
+    assert ans.answer_summary
+
+
 # --- common-knowledge labeling ----------------------------------------------
 
 def test_common_knowledge_clearly_labeled_not_official():
@@ -245,7 +272,7 @@ def test_endpoint_returns_structured_answer(client):
         "next_actions", "issue_type", "severity", "immediate_safety_check",
         "steps", "information_to_collect", "evidence_requested", "contacts",
         "customer_communication", "do_not_decide_without_approval", "source_status",
-        "language", "attachments_note",
+        "language", "attachments_note", "answer_summary", "sop_images",
     ):
         assert key in body
     assert body["scenario"] == "electricity_outage"

@@ -22,6 +22,7 @@ from . import prompts
 from .retriever import SiteManagerRetriever
 from .scenarios import classify, requires_review
 from .schemas import AgentAnswer, RetrievedChunk
+from .sop_media_index import find_relevant_sop_media
 
 
 def _unique_sources(chunks: List[RetrievedChunk]) -> List[str]:
@@ -137,6 +138,23 @@ def _section(title: str, body: Any) -> str:
     return f"{title}{sep}{body}"
 
 
+def _answer_summary(lang: str, issue_type: str, severity: str, review: bool) -> str:
+    if lang == "zh":
+        severity_label = {
+            "critical": "紧急",
+            "high": "高",
+            "medium": "中",
+            "low": "低",
+            "info": "信息",
+        }.get(severity, severity)
+        if review:
+            return f"这是{severity_label}优先级现场事件（{issue_type}）。先确认安全，记录现场情况，联系相关负责人；未经人工批准不要自行决定取消、改期、退款或补偿。"
+        return f"这是{issue_type}相关问题。先确认现场情况，按来源支持的步骤处理，并在涉及政策或客户决定时上报。"
+    if review:
+        return f"Treat this as a {severity}-priority site incident ({issue_type}). Check safety first, document the issue, contact the right owner, and do not decide cancellation, reschedule, refund, or compensation without human approval."
+    return f"This is a {issue_type} question. Confirm the facts, follow the source-supported steps, and escalate if a policy or customer decision appears."
+
+
 class SiteManagerAgent:
     """Deterministic 管点 agent over the local SOP/KB.
 
@@ -188,8 +206,10 @@ class SiteManagerAgent:
         next_actions = _glist(guidance, "next_actions")
         source_status = _glist(guidance, "source_status")
         sources = _unique_sources(chunks)
+        sop_images = find_relevant_sop_media(question, scenario, top_k=3)
 
         attach_ack = _summarize_attachments(context, lang)
+        answer_summary = _answer_summary(lang, issue_type, severity, review)
 
         # ---- compose the human-readable answer -----------------------------
         labels = _LABELS[lang]
@@ -236,6 +256,8 @@ class SiteManagerAgent:
             do_not_decide_without_approval=do_not_decide,
             source_status=source_status,
             attachments_note=attach_ack,
+            answer_summary=answer_summary,
+            sop_images=sop_images,
         )
 
 

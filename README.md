@@ -18,6 +18,8 @@ The project is intentionally separate from `maps-scraper-intel`: opening
 - Returns a structured answer with safety checks, handling steps, evidence to
   collect, escalation guidance, customer/student communication, source status,
   and human-review flags.
+- Shows relevant local SOP source images under the answer when deterministic
+  metadata matching finds a safe scenario match.
 - Supports English and Chinese responses.
 - Uses local source material only. There is no LLM call, no paid API, and no
   secret handling.
@@ -40,6 +42,22 @@ The project is intentionally separate from `maps-scraper-intel`: opening
 | Agent UI alias | `/agent` |
 | Structured API | `POST /api/agents/autocpr-site-manager/ask` |
 | Health check | `/health` |
+
+## Assistant UI
+
+The `/` and `/agent` pages are intentionally simple:
+
+1. Type a site-operations question.
+2. Pick English or Chinese.
+3. Optionally expand **Advanced details** for site, class time, or attachment
+   description metadata.
+4. Read a compact answer first: summary, first action, steps, evidence,
+   escalation/human review, SOP image evidence, and sources.
+5. Expand **Show full structured details** only when the complete answer payload
+   is needed.
+
+The UI does not claim to analyze uploaded or SOP images. SOP image labels come
+from source filenames, folders, and document names only.
 
 ## Local Quick Start
 
@@ -236,6 +254,29 @@ The committed agent uses sanitized, source-derived markdown artifacts:
 If the team decides to publish raw SOP assets later, use a private repository or
 Git LFS after auditing the files for secrets and private venue details.
 
+## Local SOP Image Support
+
+When raw SOP folders are present locally, the app can build a local media index:
+
+- Extracted/copied media folder: `app/web/static/sop_media/`
+- Local JSON index: `app/agents/autocpr_site_manager/sop_media_index.json`
+- Served URL path: `/static/sop_media/<filename>`
+- Indexer: `app/agents/autocpr_site_manager/sop_media_index.py`
+
+The indexer scans local `SOP/` files for:
+
+- Raw `.png`, `.jpg`, `.jpeg`, `.webp`, `.gif` images.
+- Images embedded in `.docx` under `word/media/`.
+- Images embedded in `.pptx` under `ppt/media/`.
+
+Matching is deterministic by scenario and tags derived from source filenames,
+folder names, and document names. For example, Smart Manikin questions can match
+Smart Manikin instruction/quick-start images, while a general power outage does
+not receive random Smart Manikin images.
+
+Generated media and the JSON index are ignored by git because they may contain
+private SOP/venue material.
+
 ## Testing
 
 Run the standalone test suite:
@@ -250,7 +291,7 @@ Known-good local command used during setup:
 /Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12 -m pytest tests -q
 ```
 
-Expected result at handoff: `99 passed`.
+Expected result at handoff: `104 passed`.
 
 ## Deployment Notes
 

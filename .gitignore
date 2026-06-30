@@ -14,6 +14,8 @@ env/
 # Raw operational SOP/source folders are kept local.
 # They may contain private venue media, passcodes, contacts, or internal docs.
 /SOP/
+/app/web/static/sop_media/
+/app/agents/autocpr_site_manager/sop_media_index.json
 
 # Local runtime / editor noise
 .idea/

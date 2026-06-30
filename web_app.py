@@ -10,15 +10,19 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.agents.autocpr_site_manager import answer_question
 from app.agents.autocpr_site_manager.schemas import AgentAnswer, AgentAskRequest
+from app.agents.autocpr_site_manager.sop_media_index import MEDIA_ROOT
 
 ROOT = Path(__file__).resolve().parent
 SITE_OPS_AGENT_HTML = ROOT / "app" / "web" / "site_ops_agent.html"
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 
 app = FastAPI(title="AllCPR Site Operations Agent")
+MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+app.mount("/static/sop_media", StaticFiles(directory=str(MEDIA_ROOT)), name="sop_media")
 
 
 def _agent_page() -> HTMLResponse:

@@ -39,6 +39,24 @@ class RetrievedChunk(BaseModel):
     score: float
 
 
+class SopMediaItem(BaseModel):
+    """One local SOP image/media item matched to an answer.
+
+    Metadata is deliberately conservative: it is derived from filenames, folder
+    names, and source document names. The agent does not visually analyze images.
+    """
+
+    id: str
+    source_file: str
+    extracted_path: str
+    url: str
+    media_type: str = "image"
+    title: str
+    description: str
+    tags: List[str] = []
+    related_scenarios: List[str] = []
+
+
 class AgentAnswer(BaseModel):
     """Structured answer envelope returned by the agent and the endpoint.
 
@@ -71,3 +89,5 @@ class AgentAnswer(BaseModel):
     # "missing source".
     source_status: List[str] = []
     attachments_note: str = ""
+    answer_summary: str = ""
+    sop_images: List[SopMediaItem] = []

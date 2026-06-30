@@ -3,385 +3,1225 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AllCPR 管点助手 · Site Operations Assistant</title>
+<title>AllCPR Operations — Internal SOP Assistant</title>
 <style>
   :root{
-    --red:#d7282f;            /* AllCPR medical red */
+    --red:#d7282f;
     --red-dark:#a81d23;
     --red-soft:#fdecec;
-    --ink:#1f2733;            /* near-black navy */
-    --muted:#5b6675;
-    --line:#e6e9ee;
-    --bg:#f4f5f7;
+    --red-line:#f3c9ca;
+    --ink:#1b2330;
+    --ink-soft:#2f3a4a;
+    --muted:#5d6b7e;
+    --muted-2:#8a96a6;
+    --line:#e4e7ec;
+    --line-2:#eef1f5;
+    --bg:#f4f4f2;
+    --bg-2:#eceae6;
     --card:#ffffff;
-    --amber:#e8870c;
-    --green:#138a4f;
-    --shadow:0 1px 3px rgba(16,24,40,.08),0 6px 20px rgba(16,24,40,.06);
-    font-synthesis:none;
+    --amber:#b86400;
+    --amber-soft:#fff7ec;
+    --amber-line:#f1d6a8;
+    --green:#0a7a47;
+    --green-soft:#eaf6ef;
+    --green-line:#c4e5d1;
+    --navy:#243044;
+    --shadow-sm:0 1px 2px rgba(16,24,40,.05);
+    --shadow:0 1px 3px rgba(16,24,40,.07),0 8px 22px rgba(16,24,40,.06);
+    --radius:14px;
+    --radius-sm:10px;
   }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{
+    min-height:100vh;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC",
       "Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif;
-    color:var(--ink); background:var(--bg); line-height:1.55;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 380px at 50% -120px, #fbeaea 0%, rgba(251,234,234,0) 70%),
+      var(--bg);
+    line-height:1.55;
     -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
   }
+
   /* ---------- header ---------- */
-  header.topbar{
-    background:#fff; border-bottom:3px solid var(--red);
-    box-shadow:0 1px 2px rgba(16,24,40,.04);
-    position:sticky; top:0; z-index:5;
+  .accent{height:3px;background:linear-gradient(90deg,var(--red),#e8595d 60%,var(--red))}
+  header{
+    position:sticky;top:0;z-index:20;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:saturate(1.1) blur(8px);
+    border-bottom:1px solid var(--line);
   }
-  .topwrap{max-width:980px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; gap:12px}
-  .logo{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px}
-  .cross{width:30px;height:30px;border-radius:7px;background:var(--red);position:relative;flex:0 0 auto}
-  .cross::before,.cross::after{content:"";position:absolute;background:#fff;border-radius:1px}
-  .cross::before{left:50%;top:6px;bottom:6px;width:6px;transform:translateX(-50%)}
-  .cross::after{top:50%;left:6px;right:6px;height:6px;transform:translateY(-50%)}
-  .brand{font-size:19px;color:var(--ink)}
-  .brand b{color:var(--red)}
-  .brand .sub{display:block;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.3px}
-  .pill-internal{margin-left:auto;font-size:11px;font-weight:700;color:var(--red);
-    background:var(--red-soft);border:1px solid #f6d4d5;padding:4px 10px;border-radius:999px}
+  .top{max-width:1120px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:13px}
+  .mark{
+    width:34px;height:34px;border-radius:9px;background:var(--red);position:relative;flex:0 0 auto;
+    box-shadow:0 2px 6px rgba(215,40,47,.35);
+  }
+  .mark:before,.mark:after{content:"";position:absolute;background:#fff;border-radius:1.5px}
+  .mark:before{left:14px;top:7px;width:6px;height:20px}
+  .mark:after{left:7px;top:14px;width:20px;height:6px}
+  .brand{display:flex;flex-direction:column;line-height:1.15}
+  .brand .name{font-weight:800;font-size:16.5px;letter-spacing:-.2px}
+  .brand .name b{color:var(--red)}
+  .brand .subtitle{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.02em}
+  .lang{
+    margin-left:auto;display:inline-flex;background:var(--bg-2);
+    border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;flex:0 0 auto;
+  }
+  .lang button{
+    border:0;background:transparent;padding:6px 13px;font:inherit;font-size:12.5px;font-weight:700;
+    color:var(--muted);cursor:pointer;border-radius:7px;transition:background .12s,color .12s;
+  }
+  .lang button:hover{color:var(--ink)}
+  .lang button.active{background:#fff;color:var(--red);box-shadow:var(--shadow-sm)}
+
   /* ---------- layout ---------- */
-  main{max-width:980px; margin:0 auto; padding:22px 20px 60px}
-  .hero{margin:6px 0 18px}
-  .hero h1{font-size:22px;margin:0 0 4px}
-  .hero p{margin:0;color:var(--muted);font-size:14px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
-  .ask{padding:18px}
-  label.fld{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:0 0 6px}
-  textarea,input[type=text]{
-    width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;
-    font:inherit;color:var(--ink);background:#fff;resize:vertical}
-  textarea{min-height:84px}
+  main{max-width:1120px;margin:0 auto;padding:30px 24px 30px}
+  .hero{margin-bottom:20px;max-width:62ch}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--red);
+    background:var(--red-soft);border:1px solid var(--red-line);
+    padding:4px 10px;border-radius:999px;margin-bottom:11px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--red);
+    box-shadow:0 0 0 3px rgba(215,40,47,.18)}
+  h1{font-size:30px;line-height:1.12;margin:0 0 7px;letter-spacing:-.6px}
+  .hero p{margin:0;color:var(--muted);font-size:15px}
+
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 312px;gap:18px;align-items:start}
+
+  /* ---------- panels ---------- */
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+  .intake{padding:18px 18px 8px}
+  .panel-head{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+  .panel-head .ico{
+    width:28px;height:28px;border-radius:8px;background:var(--red-soft);color:var(--red);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;border:1px solid var(--red-line);
+  }
+  .panel-head .ico svg{width:16px;height:16px}
+  .panel-head h2{font-size:15.5px;margin:0;font-weight:800;letter-spacing:-.2px}
+  textarea{
+    width:100%;min-height:120px;resize:vertical;border:1px solid var(--line);
+    border-radius:var(--radius-sm);padding:14px 15px;font:inherit;font-size:15px;
+    color:var(--ink);background:#fff;line-height:1.5;transition:border-color .12s,box-shadow .12s;
+  }
+  textarea::placeholder{color:var(--muted-2)}
   textarea:focus,input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px var(--red-soft)}
-  .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-  .row > div{flex:1 1 200px}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
-  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;
-    font-size:13px;color:var(--ink);cursor:pointer;transition:.12s}
-  .chip:hover{border-color:var(--red);color:var(--red);background:var(--red-soft)}
-  .langbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}
-  .segmented{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
-  .seg{border:0;border-left:1px solid var(--line);background:#fff;color:var(--ink);
-    padding:8px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
-  .seg:first-child{border-left:0}
-  .seg.active{background:var(--red);color:#fff}
-  .actions{display:flex;align-items:center;gap:12px;margin-top:16px}
-  button.primary{background:var(--red);color:#fff;border:0;border-radius:10px;
-    padding:12px 22px;font-size:15px;font-weight:700;cursor:pointer;transition:.12s}
-  button.primary:hover{background:var(--red-dark)}
-  button.primary:disabled{opacity:.6;cursor:default}
-  .hint{font-size:12px;color:var(--muted)}
-  /* ---------- answer ---------- */
-  #out{margin-top:22px;display:none}
-  .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
-  .badge{font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted)}
-  .sev{color:#fff}
-  .sev.critical{background:#9b1c1f}.sev.high{background:var(--red)}
-  .sev.medium{background:var(--amber)}.sev.low{background:#5b7083}.sev.info{background:#5b7083}
-  .scn{background:#eef2f7;color:#33445c;border-color:#dde4ee}
-  .review{display:flex;gap:10px;align-items:flex-start;background:var(--red-soft);
-    border:1px solid #f3c9ca;color:#8a1417;border-radius:11px;padding:12px 14px;margin-bottom:14px;font-size:14px;font-weight:600}
-  .ok-note{background:#eaf6ef;border:1px solid #bfe3cd;color:#0f6b3e}
-  section.blk{border-top:1px solid var(--line);padding:14px 0}
-  section.blk:first-of-type{border-top:0}
-  .blk h3{margin:0 0 8px;font-size:14px;display:flex;align-items:center;gap:8px}
-  .blk h3 .ic{width:22px;height:22px;border-radius:6px;background:var(--red-soft);color:var(--red);
-    display:grid;place-items:center;font-size:13px;flex:0 0 auto}
-  .blk.safety h3 .ic{background:#fff0e0;color:var(--amber)}
-  .blk ul{margin:0;padding-left:2px;list-style:none}
-  .blk li{position:relative;padding:5px 0 5px 20px;font-size:14px;color:#2a3543}
-  .blk li::before{content:"";position:absolute;left:3px;top:12px;width:6px;height:6px;border-radius:50%;background:var(--red)}
-  .blk.safety li::before{background:var(--amber)}
-  ol.steps{margin:0;padding-left:22px}
-  ol.steps li{padding:4px 0;font-size:14px}
-  .evidence{background:#fff8ed;border:1px dashed #f0cf9c;border-radius:11px;padding:12px 14px}
-  .evidence li::before{background:var(--amber)}
-  .src{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
-  .srcstat{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:#eef2f7;color:#475569;border:1px solid #dde4ee}
-  .srcstat.warn{background:#fff4e5;color:#9a5b00;border-color:#f3d4a3}
-  .err{background:#fdecec;border:1px solid #f3c9ca;color:#8a1417;border-radius:11px;padding:12px 14px;font-size:14px}
-  footer{max-width:980px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:12px}
-  .spin{display:inline-block;width:15px;height:15px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px;margin-right:7px}
-  @keyframes s{to{transform:rotate(360deg)}}
+  .composer-foot{
+    display:flex;align-items:center;justify-content:flex-end;gap:14px;margin-top:11px;flex-wrap:wrap;
+  }
+  .status{display:none;align-items:center;gap:8px;color:var(--red);font-size:13px;font-weight:700;margin-right:auto}
+  .status.show{display:inline-flex}
+  .status .spin{
+    width:14px;height:14px;border:2px solid var(--red-line);border-top-color:var(--red);
+    border-radius:50%;animation:spin .7s linear infinite;flex:0 0 auto;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .primary{
+    border:0;background:var(--red);color:#fff;border-radius:var(--radius-sm);
+    padding:12px 22px;font:inherit;font-weight:800;font-size:14.5px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:9px;box-shadow:0 2px 8px rgba(215,40,47,.28);
+    transition:background .12s,transform .04s,box-shadow .12s;
+  }
+  .primary svg{width:16px;height:16px}
+  .primary:hover{background:var(--red-dark)}
+  .primary:active{transform:translateY(1px)}
+  .primary:disabled{opacity:.6;cursor:default;box-shadow:none}
+
+  /* ---------- quick actions ---------- */
+  .qa-block{border-top:1px solid var(--line-2);margin-top:16px;padding-top:15px}
+  .qa-label{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted-2);margin:0 2px 11px}
+  .qa-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .qa{
+    display:flex;align-items:center;gap:12px;text-align:left;background:var(--card);
+    border:1px solid var(--line);border-radius:var(--radius-sm);padding:11px 13px;cursor:pointer;
+    font:inherit;color:var(--ink);transition:border-color .12s,box-shadow .12s,transform .05s,background .12s;
+  }
+  .qa:hover{border-color:var(--red);box-shadow:var(--shadow);transform:translateY(-1px)}
+  .qa:active{transform:translateY(0)}
+  .qa.active{border-color:var(--red);background:var(--red-soft);box-shadow:0 0 0 1px var(--red-line) inset}
+  .qa .qa-ico{
+    width:36px;height:36px;border-radius:10px;background:#fff;color:var(--red);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+    border:1px solid var(--line);transition:background .12s,border-color .12s;
+  }
+  .qa:hover .qa-ico,.qa.active .qa-ico{background:var(--red-soft);border-color:var(--red-line)}
+  .qa .qa-ico svg{width:18px;height:18px;stroke-width:1.9}
+  .qa .qa-txt{display:flex;flex-direction:column;min-width:0}
+  .qa .qa-name{font-weight:750;font-size:13.5px;line-height:1.25}
+  .qa .qa-sub{font-size:11.5px;color:var(--muted-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* ---------- advanced ---------- */
+  details.advanced{border-top:1px solid var(--line-2);margin-top:16px}
+  details.advanced>summary{
+    list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;
+    color:var(--ink-soft);font-size:13.5px;font-weight:750;padding:15px 4px 16px;
+    transition:color .12s;
+  }
+  details.advanced>summary::-webkit-details-marker{display:none}
+  details.advanced>summary:hover{color:var(--red)}
+  details.advanced>summary .adv-badge{
+    width:30px;height:30px;border-radius:9px;background:var(--bg);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;border:1px solid var(--line);
+    transition:background .12s,color .12s,border-color .12s;
+  }
+  details.advanced>summary:hover .adv-badge{background:var(--red-soft);color:var(--red);border-color:var(--red-line)}
+  details.advanced>summary .adv-badge svg{width:16px;height:16px}
+  details.advanced>summary .adv-text{display:flex;flex-direction:column;line-height:1.3}
+  details.advanced>summary .adv-sub{font-size:11.5px;color:var(--muted-2);font-weight:600}
+  details.advanced>summary .chev{margin-left:auto;color:var(--muted-2);transition:transform .15s}
+  details.advanced>summary .chev svg{width:16px;height:16px}
+  details.advanced[open]>summary .chev{transform:rotate(180deg)}
+  .adv-body{padding:2px 4px 18px}
+  .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+  label{display:block;color:var(--muted);font-size:12px;font-weight:800;margin:0 0 6px;letter-spacing:.01em}
+  input{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:14px;background:#fff;transition:border-color .12s,box-shadow .12s}
+  input::placeholder{color:var(--muted-2)}
+  .field-wide{grid-column:1/-1}
+  .field-note{font-size:11.5px;color:var(--muted-2);margin:6px 2px 0;display:flex;gap:6px;align-items:flex-start}
+  .field-note svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px;color:var(--muted-2)}
+
+  /* ---------- side support panel ---------- */
+  .col-side{position:sticky;top:84px}
+  .side-panel{padding:17px 17px 8px}
+  .side-title{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--muted-2);margin:0 0 13px}
+  .prov{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-2)}
+  .prov:last-of-type{border-bottom:0}
+  .prov .p-ico{
+    width:32px;height:32px;border-radius:9px;background:var(--red-soft);color:var(--red);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;border:1px solid var(--red-line);
+  }
+  .prov .p-ico svg{width:16px;height:16px}
+  .prov .p-txt{display:flex;flex-direction:column;min-width:0}
+  .prov .p-name{font-weight:750;font-size:13.5px;line-height:1.3}
+  .prov .p-sub{font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.35;margin-top:1px}
+  .trust{border-top:1px solid var(--line);margin-top:5px;padding:13px 0 14px;display:flex;flex-direction:column;gap:9px}
+  .trust .t-row{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+  .trust .t-row svg{width:15px;height:15px;color:var(--red);flex:0 0 auto}
+
+  /* ---------- results ---------- */
+  #out{display:none;margin-top:24px}
+  .result-head{
+    background:var(--card);border:1px solid var(--line);border-top:3px solid var(--red);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:13px 16px 12px;margin-bottom:12px;
+  }
+  .res-eyebrow{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted-2);margin:0 0 11px}
+  .res-eyebrow svg{width:14px;height:14px;color:var(--red)}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .badge{
+    font-size:11.5px;font-weight:800;border:1px solid var(--line);border-radius:7px;
+    padding:4px 9px;color:var(--muted);background:var(--bg);display:inline-flex;align-items:center;gap:5px;
+  }
+  .badge svg{width:13px;height:13px}
+  .badge .k{color:var(--muted-2);font-weight:700}
+  .badge.severity{color:#fff;border-color:transparent}
+  .badge.critical{background:#7c1316}.badge.high{background:var(--red)}
+  .badge.medium{background:var(--amber)}.badge.low,.badge.info{background:#5b6675}
+  .badge.review-on{background:var(--red-soft);color:#8a1417;border-color:var(--red-line)}
+  .badge.review-off{background:var(--green-soft);color:var(--green);border-color:var(--green-line)}
+  .lead{margin:14px 0 0;font-size:15.5px;color:var(--ink-soft);line-height:1.55}
+
+  .first-action{
+    background:linear-gradient(180deg,#fff,#fffafa);
+    border:1px solid var(--red-line);border-left:4px solid var(--red);
+    border-radius:var(--radius);padding:15px 17px;margin-bottom:14px;box-shadow:var(--shadow-sm);
+  }
+  .first-action .fa-label{
+    display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin-bottom:7px;
+  }
+  .first-action .fa-label svg{width:15px;height:15px}
+  .first-action p{margin:0;font-size:16px;font-weight:650;color:var(--ink);line-height:1.5}
+
+  .section{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);padding:15px 17px;margin-bottom:12px;
+  }
+  .section>h3{
+    display:flex;align-items:center;gap:9px;font-size:13.5px;margin:0 0 11px;font-weight:800;
+    color:var(--ink);letter-spacing:-.1px;
+  }
+  .section>h3 .sico{
+    width:24px;height:24px;border-radius:7px;background:var(--bg);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;border:1px solid var(--line-2);
+  }
+  .section>h3 .sico svg{width:14px;height:14px}
+  .section.safety>h3 .sico{background:var(--red-soft);color:var(--red);border-color:var(--red-line)}
+  .section ul{margin:0;padding-left:20px}
+  .section li{margin:6px 0;color:var(--ink-soft)}
+  .section ol{counter-reset:step;list-style:none;padding-left:0;margin:0}
+  .section ol li{position:relative;padding-left:36px;margin:10px 0;color:var(--ink-soft)}
+  .section ol li:before{
+    counter-increment:step;content:counter(step);position:absolute;left:0;top:0;
+    width:24px;height:24px;border-radius:7px;background:var(--red-soft);color:var(--red);
+    border:1px solid var(--red-line);font-size:12px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .check-list{list-style:none;padding:0;margin:0}
+  .check-list li{position:relative;padding-left:28px;margin:8px 0;color:var(--ink-soft)}
+  .check-list li:before{
+    content:"";position:absolute;left:0;top:3px;width:16px;height:16px;border-radius:5px;
+    background:var(--green-soft);border:1px solid var(--green-line);
+  }
+  .check-list li:after{
+    content:"";position:absolute;left:5px;top:7px;width:5px;height:8px;border:solid var(--green);
+    border-width:0 2px 2px 0;transform:rotate(43deg);
+  }
+  .escal{display:flex;flex-direction:column;gap:11px}
+  .review-bar{
+    display:flex;align-items:center;gap:10px;border-radius:var(--radius-sm);padding:11px 13px;
+    font-weight:700;font-size:13.5px;border:1px solid;
+  }
+  .review-bar svg{width:17px;height:17px;flex:0 0 auto}
+  .review-bar.on{background:var(--red-soft);border-color:var(--red-line);color:#8a1417}
+  .review-bar.off{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
+
+  /* ---------- SOP media ---------- */
+  .media-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .media-card{
+    border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;background:#fff;
+    text-decoration:none;color:inherit;display:block;transition:border-color .12s,box-shadow .12s,transform .05s;
+  }
+  .media-card:hover{border-color:var(--red);box-shadow:var(--shadow);transform:translateY(-1px)}
+  .media-thumb{position:relative;width:100%;aspect-ratio:4/3;background:var(--bg-2)}
+  .media-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .media-thumb .tag{
+    position:absolute;left:8px;top:8px;font-size:10.5px;font-weight:800;letter-spacing:.02em;
+    background:rgba(27,35,48,.82);color:#fff;padding:3px 8px;border-radius:6px;backdrop-filter:blur(2px);
+  }
+  .media-body{padding:10px 11px}
+  .media-title{font-weight:800;font-size:12.5px;margin:0 0 4px}
+  .media-src{font-size:11px;color:var(--muted);margin:0;word-break:break-word;line-height:1.4}
+  .media-empty{
+    display:flex;align-items:center;gap:10px;border:1px dashed var(--line);border-radius:var(--radius-sm);
+    padding:14px 15px;color:var(--muted);font-size:13.5px;background:var(--bg);
+  }
+  .media-empty svg{width:18px;height:18px;color:var(--muted-2);flex:0 0 auto}
+  .media-note{display:flex;gap:7px;align-items:flex-start;color:var(--muted-2);font-size:11.5px;margin:11px 0 0}
+  .media-note svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px}
+
+  /* ---------- sources / footer ---------- */
+  .src-list{font-size:13px;color:var(--ink-soft);margin:0 0 10px;word-break:break-word}
+  .src-tags{display:flex;flex-wrap:wrap;gap:7px}
+  .src-tags span{
+    font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:7px;background:var(--bg);
+    color:var(--navy);border:1px solid var(--line);
+  }
+  .src-tags .warn{background:var(--amber-soft);color:var(--amber);border-color:var(--amber-line)}
+  details.full{margin-top:2px}
+  details.full>summary{
+    list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--muted);
+    font-size:13px;font-weight:800;padding:12px 15px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);
+  }
+  details.full>summary::-webkit-details-marker{display:none}
+  details.full>summary .chev{margin-left:auto;transition:transform .15s}
+  details.full[open]>summary .chev{transform:rotate(180deg)}
+  details.full>summary svg{width:15px;height:15px}
+  .raw{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-top:0;
+    border-radius:0 0 var(--radius-sm) var(--radius-sm);padding:14px;font-size:13px;
+    color:var(--ink-soft);overflow:auto;line-height:1.6}
+  .err{background:var(--red-soft);border:1px solid var(--red-line);color:#8a1417;border-radius:var(--radius);padding:15px 17px;font-weight:600}
+
+  footer{max-width:1120px;margin:0 auto;padding:8px 24px 40px}
+  .foot-inner{display:flex;gap:11px;align-items:flex-start;border-top:1px solid var(--line);
+    padding-top:18px;color:var(--muted);font-size:12.5px;line-height:1.55}
+  .foot-inner svg{width:16px;height:16px;color:var(--red);flex:0 0 auto;margin-top:1px}
+
+  /* ---------- on-site action card (concise result) ---------- */
+  .action-now{
+    background:linear-gradient(180deg,#fff,#fffafa);
+    border:1px solid var(--red-line);border-left:4px solid var(--red);
+    border-radius:var(--radius);padding:15px 17px 16px;margin-bottom:12px;box-shadow:var(--shadow);
+  }
+  .action-now .now-label{
+    display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--red);
+  }
+  .action-now .now-label svg{width:15px;height:15px}
+  .action-now ol{counter-reset:step;list-style:none;padding:0;margin:11px 0 0}
+  .action-now ol li{
+    position:relative;padding-left:34px;margin:9px 0;color:var(--ink);
+    font-size:14.5px;font-weight:600;line-height:1.45;
+  }
+  .action-now ol li:before{
+    counter-increment:step;content:counter(step);position:absolute;left:0;top:1px;
+    width:23px;height:23px;border-radius:7px;background:var(--red);color:#fff;
+    font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  }
+
+  /* two-up primary grid (evidence + escalation) */
+  .dual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:stretch}
+  .dual .section{margin-bottom:0;height:100%}
+
+  /* escalation chips */
+  .chips{display:flex;flex-direction:column;gap:8px}
+  .chip{
+    display:flex;gap:9px;align-items:flex-start;background:var(--bg);
+    border:1px solid var(--line);border-radius:var(--radius-sm);padding:9px 11px;
+  }
+  .chip svg{width:15px;height:15px;color:var(--red);flex:0 0 auto;margin-top:1px}
+  .chip .chip-txt{display:flex;flex-direction:column;min-width:0;font-size:13px;line-height:1.4}
+  .chip .chip-txt b{font-weight:750;color:var(--ink)}
+  .chip .chip-why{color:var(--muted);font-size:12.5px}
+
+  /* do-not warnings */
+  .section.dont>h3 .sico{background:var(--red-soft);color:var(--red);border-color:var(--red-line)}
+  .dont-list{list-style:none;padding:0;margin:0}
+  .dont-list li{position:relative;padding-left:25px;margin:7px 0;color:var(--ink-soft);font-size:13.5px;line-height:1.45}
+  .dont-list li:before{content:"";position:absolute;left:0;top:5px;width:14px;height:14px;border-radius:50%;background:var(--red)}
+  .dont-list li:after{content:"";position:absolute;left:3.5px;top:11px;width:7px;height:2px;background:#fff;border-radius:1px}
+
+  /* slim empty media state */
+  .media-empty.slim{padding:9px 12px;font-size:12.5px;color:var(--muted-2);margin-bottom:12px}
+  .media-empty.slim svg{width:15px;height:15px}
+
+  /* collapsed accordions */
+  .accordions{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+  details.full[open]>summary{border-radius:var(--radius-sm) var(--radius-sm) 0 0;box-shadow:none}
+  .full .acc-body{
+    background:var(--card);border:1px solid var(--line);border-top:0;
+    border-radius:0 0 var(--radius-sm) var(--radius-sm);padding:13px 15px;
+  }
+  .full .acc-body .acc-sub{
+    font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--muted-2);margin:13px 0 6px;
+  }
+  .full .acc-body .acc-sub:first-child{margin-top:0}
+  .full .acc-body ul{margin:0;padding-left:20px}
+  .full .acc-body li{margin:5px 0;color:var(--ink-soft);font-size:13.5px}
+  .full .acc-body ol{counter-reset:step;list-style:none;padding-left:0;margin:0}
+  .full .acc-body ol li{position:relative;padding-left:30px}
+  .full .acc-body ol li:before{
+    counter-increment:step;content:counter(step);position:absolute;left:0;top:0;
+    width:20px;height:20px;border-radius:6px;background:var(--red-soft);color:var(--red);
+    border:1px solid var(--red-line);font-size:11px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .full .acc-body .check-list{padding-left:0}
+  .full .acc-body .src-tags{margin-top:9px}
+  .full .acc-body .media-note{margin-top:11px}
+
+  /* ---------- available SOP actions ---------- */
+  .actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  details.act{border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;box-shadow:var(--shadow-sm);overflow:hidden}
+  details.act>summary{
+    list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;
+    padding:11px 13px;font-weight:750;font-size:13.5px;color:var(--ink);transition:background .12s;
+  }
+  details.act>summary::-webkit-details-marker{display:none}
+  details.act>summary:hover{background:var(--red-soft)}
+  details.act>summary .act-ico{
+    width:28px;height:28px;border-radius:8px;background:var(--red-soft);color:var(--red);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;border:1px solid var(--red-line);
+  }
+  details.act>summary .act-ico svg{width:15px;height:15px}
+  details.act>summary .chev{margin-left:auto;color:var(--muted-2);transition:transform .15s}
+  details.act>summary .chev svg{width:15px;height:15px}
+  details.act[open]>summary{background:var(--red-soft)}
+  details.act[open]>summary .chev{transform:rotate(180deg)}
+  details.act .act-body{padding:11px 13px 13px;border-top:1px solid var(--line-2);font-size:13px;color:var(--ink-soft)}
+  details.act .act-body .acc-sub{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-2);margin:11px 0 6px}
+  details.act .act-body .acc-sub:first-child{margin-top:0}
+  details.act .act-body ul,details.act .act-body ol{margin:0;padding-left:20px}
+  details.act .act-body li{margin:5px 0}
+  details.act .act-body ol{counter-reset:step;list-style:none;padding-left:0}
+  details.act .act-body ol li{position:relative;padding-left:28px}
+  details.act .act-body ol li:before{
+    counter-increment:step;content:counter(step);position:absolute;left:0;top:0;
+    width:19px;height:19px;border-radius:6px;background:var(--red-soft);color:var(--red);
+    border:1px solid var(--red-line);font-size:10.5px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .act-note{display:flex;gap:7px;align-items:flex-start;color:var(--muted-2);font-size:11.5px;margin:10px 0 0}
+  .act-note svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px}
+  .warn-line{
+    display:flex;gap:8px;align-items:center;background:var(--red-soft);border:1px solid var(--red-line);
+    color:#8a1417;border-radius:8px;padding:8px 10px;font-weight:700;font-size:12.5px;margin:11px 0 6px;
+  }
+  .warn-line svg{width:15px;height:15px;flex:0 0 auto}
+  .esc-note{
+    white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+    padding:11px 12px;font-size:12.5px;color:var(--ink-soft);line-height:1.6;font-family:inherit;margin:0;
+  }
+
+  /* ---------- approval-required block ---------- */
+  .approval{
+    background:var(--amber-soft);border:1px solid var(--amber-line);border-left:4px solid var(--amber);
+    border-radius:var(--radius);padding:13px 16px;margin-bottom:12px;
+  }
+  .approval .ap-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13.5px;color:var(--amber)}
+  .approval .ap-title svg{width:16px;height:16px}
+  .approval .ap-sub{font-size:12.5px;color:var(--ink-soft);margin:3px 0 0;font-weight:600}
+  .approval .ap-prep{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--amber);margin:11px 0 6px}
+  .approval .check-list li{font-size:13px}
+  .approval .ap-send{display:flex;gap:7px;align-items:center;margin:10px 0 0;font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+  .approval .ap-send svg{width:14px;height:14px;color:var(--amber);flex:0 0 auto}
+  .approval .ap-needsop{margin:7px 0 0;font-size:11.5px;color:var(--amber);font-weight:700}
+
+  /* ---------- do-not paired next action ---------- */
+  .dont-list li .dont-next{display:block;margin-top:3px;font-size:12.5px;color:var(--green);font-weight:650}
+  .dont-list li .dont-next:before{content:"\2192 ";font-weight:800}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr;gap:14px}
+    .col-side{position:static;top:auto}
+  }
+  @media (max-width:620px){
+    .top{flex-wrap:wrap;gap:10px;padding:11px 16px}
+    .lang{margin-left:0;width:100%;justify-content:stretch}
+    .lang button{flex:1}
+    main{padding:22px 16px 24px}
+    footer{padding:8px 16px 36px}
+    .qa-grid{grid-template-columns:1fr}
+    .media-grid{grid-template-columns:1fr}
+    .fields{grid-template-columns:1fr}
+    .composer-foot{flex-direction:column;align-items:stretch}
+    .status{margin-right:0;justify-content:center}
+    .primary{width:100%;justify-content:center}
+    h1{font-size:24px}
+  }
+  @media (min-width:621px) and (max-width:780px){
+    .media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:760px){
+    .dual{grid-template-columns:1fr}
+    .actions-grid{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="topwrap">
-    <div class="logo">
-      <span class="cross" aria-hidden="true"></span>
-      <span class="brand"><b>All</b>CPR<span class="sub">管点助手 · Site Operations Assistant</span></span>
+<div class="accent" aria-hidden="true"></div>
+<header>
+  <div class="top">
+    <span class="mark" aria-hidden="true"></span>
+    <div class="brand">
+      <span class="name"><b>All</b>CPR Operations</span>
+      <span class="subtitle" data-i18n="tagline">Internal SOP Assistant</span>
     </div>
-    <span class="pill-internal" data-i18n="internalPill">Internal tool</span>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" class="active" data-lang="en">English</button>
+      <button type="button" data-lang="zh">中文</button>
+    </div>
   </div>
 </header>
 
 <main>
   <div class="hero">
-    <h1 data-i18n="heroTitle">Site Operations Incident Assistant</h1>
-    <p data-i18n="heroText">Describe the on-site situation. The assistant returns safety checks, handling steps, information/evidence to collect, and escalation guidance. Company decisions still need supervisor confirmation.</p>
+    <span class="eyebrow"><span class="dot"></span><span data-i18n="eyebrow">On-site incident support</span></span>
+    <h1 data-i18n="title">Site Operations Assistant</h1>
+    <p data-i18n="intro">Get first action, evidence checklist, escalation guidance, and SOP references for on-site class issues.</p>
   </div>
 
-  <div class="card ask">
-    <div class="langbar">
-      <label class="fld" id="lang-label" data-i18n="languageLabel">Language</label>
-      <div class="segmented" role="group" aria-labelledby="lang-label">
-        <button class="seg active" type="button" data-lang="en">English</button>
-        <button class="seg" type="button" data-lang="zh">中文</button>
-      </div>
+  <div class="layout">
+    <div class="col-main">
+      <section class="panel intake" aria-label="Describe the situation">
+        <div class="panel-head">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <h2 data-i18n="describe">Describe the situation</h2>
+        </div>
+        <textarea id="q" data-i18n-placeholder="placeholder" placeholder="Example: The Smart Manikin tablet is black-screening during a Santa Clara class. What should staff do first?"></textarea>
+        <div class="composer-foot">
+          <span class="status" id="status"><span class="spin" aria-hidden="true"></span><span id="status-text"></span></span>
+          <button class="primary" id="go" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <span data-i18n="ask">Get SOP Guidance</span>
+          </button>
+        </div>
+
+        <div class="qa-block">
+          <p class="qa-label" data-i18n="quickLabel">Common incidents</p>
+          <div class="qa-grid" id="chips" aria-label="Incident shortcuts"></div>
+        </div>
+
+        <details class="advanced">
+          <summary>
+            <span class="adv-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M7 12h10M11 18h2"/></svg></span>
+            <span class="adv-text">
+              <span class="adv-name" data-i18n="advanced">Site details / optional context</span>
+              <span class="adv-sub" data-i18n="advancedSub">Add site, class time, or a photo description</span>
+            </span>
+            <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </summary>
+          <div class="adv-body">
+            <div class="fields">
+              <div>
+                <label for="site" data-i18n="site">Site</label>
+                <input id="site" type="text" placeholder="Santa Clara" />
+              </div>
+              <div>
+                <label for="ctime" data-i18n="classTime">Class time</label>
+                <input id="ctime" type="text" placeholder="2026-06-26 09:00" />
+              </div>
+              <div class="field-wide">
+                <label for="att" data-i18n="attachment">Attachment description</label>
+                <input id="att" type="text" data-i18n-placeholder="attachmentPlaceholder" placeholder="Describe the photo manually — e.g. door keypad shows red light" />
+                <p class="field-note">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+                  <span data-i18n="attachmentNote">Describe the photo manually. The assistant does not visually inspect uploads.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </details>
+      </section>
     </div>
 
-    <label class="fld" for="q" data-i18n="questionLabel">Question</label>
-    <textarea id="q" placeholder="Example: What should I do if the power goes out?"></textarea>
+    <aside class="col-side">
+      <div class="panel side-panel">
+        <p class="side-title" data-i18n="providesTitle">What this assistant provides</p>
 
-    <div class="chips" id="chips"></div>
+        <div class="prov">
+          <span class="p-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg></span>
+          <span class="p-txt"><span class="p-name" data-i18n="provFirst">First action</span><span class="p-sub" data-i18n="provFirstSub">The most important step right now</span></span>
+        </div>
+        <div class="prov">
+          <span class="p-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 11h6M9 15h4"/></svg></span>
+          <span class="p-txt"><span class="p-name" data-i18n="provEvidence">Evidence checklist</span><span class="p-sub" data-i18n="provEvidenceSub">What to photograph and record</span></span>
+        </div>
+        <div class="prov">
+          <span class="p-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span>
+          <span class="p-txt"><span class="p-name" data-i18n="provEscalation">Escalation guidance</span><span class="p-sub" data-i18n="provEscalationSub">Who to contact and when</span></span>
+        </div>
+        <div class="prov">
+          <span class="p-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5L5 20"/></svg></span>
+          <span class="p-txt"><span class="p-name" data-i18n="provSources">SOP sources</span><span class="p-sub" data-i18n="provSourcesSub">Local references, when available</span></span>
+        </div>
 
-    <div class="row">
-      <div>
-        <label class="fld" for="site" data-i18n="siteLabel">Site (optional)</label>
-        <input id="site" type="text" placeholder="Santa Clara" />
+        <div class="trust">
+          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span data-i18n="statusLocal">Local SOP only</span></span>
+          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11l-4 4-2-2"/><circle cx="12" cy="12" r="9"/></svg><span data-i18n="statusReview">Human review for policy decisions</span></span>
+          <span class="t-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 4 9-.2 3.3-1.5 6.5-4 9-2.5-2.5-3.8-5.7-4-9 .2-3.3 1.5-6.5 4-9z"/></svg><span data-i18n="statusBilingual">Bilingual support</span></span>
+        </div>
       </div>
-      <div>
-        <label class="fld" for="ctime" data-i18n="classTimeLabel">Class time (optional)</label>
-        <input id="ctime" type="text" placeholder="2026-06-26 09:00" />
-      </div>
-      <div>
-        <label class="fld" for="att" data-i18n="attachmentLabel">Attachment description (optional)</label>
-        <input id="att" type="text" placeholder="Example: photo of dark classroom dark_room.jpg" />
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="primary" id="go">Ask Agent</button>
-      <span class="hint" data-i18n-html="hint">Based on local SOP/KB; uncovered items are labeled <code>needs official SOP source</code>.</span>
-    </div>
+    </aside>
   </div>
 
   <div id="out"></div>
 </main>
 
 <footer>
-  <span data-i18n="footer">Internal decision-support tool, not for students/customers. Safety comes before evidence; do not take photos if unsafe. Cost/contract/insurance/safety/customer decisions require supervisor or official SOP confirmation.</span>
+  <div class="foot-inner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span data-i18n="footer">Internal decision-support assistant. Safety comes first. Official policy, refunds, reschedules, certificates, and customer notices require human approval.</span>
+  </div>
 </footer>
 
 <script>
-const API_BASE = location.protocol === 'file:' ? 'http://localhost:8000' : '';
-const $ = s => document.querySelector(s);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const API_BASE = location.protocol === 'file:' ? 'http://localhost:8012' : '';
+const $ = sel => document.querySelector(sel);
+const esc = value => String(value ?? '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
 let selectedLang = 'en';
+
+/* Inline icons (no dependencies, consistent 24px / stroke 2). */
+const ICON = {
+  power:'<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>',
+  wifi:'<path d="M1 5l22 14M5 12.5a11 11 0 0 1 5-2.8M2 8.8A16 16 0 0 1 8 5.6M12 20h.01M8.5 16.4a6 6 0 0 1 5-1.1"/>',
+  lock:'<rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/>',
+  tablet:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M11 18.5h2"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  report:'<path d="M8 3h6l4 4v13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M13 3v5h5M9 13h6M9 17h4"/>',
+  bolt:'<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  steps:'<path d="M3 6h13M3 12h13M3 18h13M19 5v14M19 5l2 2M19 5l-2 2"/>',
+  clip:'<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 11h6M9 15h4"/>',
+  flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  chat:'<path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5L5 20"/>',
+  alert:'<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/>',
+  pulse:'<path d="M3 12h4l2 6 4-14 2 8h6"/>'
+};
+function svg(name, cls){
+  return `<svg ${cls?`class="${cls}" `:''}viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[name]||''}</svg>`;
+}
 
 const COPY = {
   en: {
-    internalPill:'Internal tool',
-    heroTitle:'Site Operations Incident Assistant',
-    heroText:'Describe the on-site situation. The assistant returns safety checks, handling steps, information/evidence to collect, and escalation guidance. Company decisions still need supervisor confirmation.',
-    languageLabel:'Language',
-    questionLabel:'Question',
-    questionPlaceholder:'Example: What should I do if the power goes out?',
-    siteLabel:'Site (optional)',
-    classTimeLabel:'Class time (optional)',
-    attachmentLabel:'Attachment description (optional)',
-    attachmentPlaceholder:'Example: photo of dark classroom dark_room.jpg',
-    button:'Ask Agent',
-    loading:'Asking...',
-    hint:'Based on local SOP/KB; uncovered items are labeled <code>needs official SOP source</code>.',
-    footer:'Internal decision-support tool, not for students/customers. Safety comes before evidence; do not take photos if unsafe. Cost/contract/insurance/safety/customer decisions require supervisor or official SOP confirmation.',
-    severity:'Severity',
-    confidence:'Confidence',
-    reviewRequired:'Human review required — do not make promises or decisions before supervisor confirmation.',
-    reviewNotRequired:'Information reference; escalate if a decision or policy issue appears.',
-    safety:'Immediate safety check',
-    steps:'Step-by-step handling',
-    info:'Information to collect',
-    evidence:'Evidence to upload',
-    attachments:'Attachments',
-    attachmentAck:'Attachment descriptions received; if visual confirmation is needed, a human should review the images. This assistant does not analyze image content.',
-    contacts:'Who to contact / escalate to',
-    communication:'Student/customer communication',
-    doNotDecide:'Do not decide without approval',
-    next:'Next actions',
-    sourceStatus:'Source status',
-    sources:'Sources',
-    errorPrefix:'Unable to connect to the assistant service',
-    errorHelp:'Confirm the service is running and open this page from the same host/port.',
-    presets:[
+    tagline:'Internal SOP Assistant',
+    eyebrow:'On-site incident support',
+    title:'Site Operations Assistant',
+    intro:'Get first action, evidence checklist, escalation guidance, and SOP references for on-site class issues.',
+    describe:'Describe the situation',
+    placeholder:'Example: The Smart Manikin tablet is black-screening during a Santa Clara class. What should staff do first?',
+    ask:'Get SOP Guidance',
+    asking:'Checking local SOP sources…',
+    quickLabel:'Common incidents',
+    advanced:'Site details / optional context',
+    advancedSub:'Add site, class time, or a photo description',
+    site:'Site',
+    classTime:'Class time',
+    attachment:'Attachment description',
+    attachmentPlaceholder:'Describe the photo manually — e.g. door keypad shows red light',
+    attachmentNote:'Describe the photo manually. The assistant does not visually inspect uploads.',
+    providesTitle:'What this assistant provides',
+    provFirst:'First action', provFirstSub:'The most important step right now',
+    provEvidence:'Evidence checklist', provEvidenceSub:'What to photograph and record',
+    provEscalation:'Escalation guidance', provEscalationSub:'Who to contact and when',
+    provSources:'SOP sources', provSourcesSub:'Local references, when available',
+    statusLocal:'Local SOP only',
+    statusReview:'Human review for policy decisions',
+    statusBilingual:'Bilingual support',
+    footer:'Internal decision-support assistant. Safety comes first. Official policy, refunds, reschedules, certificates, and customer notices require human approval.',
+    examples:['Power outage','Internet down','Door locked','Smart Manikin issue','Instructor no-show','Incident report'],
+    exampleSubs:['Class can’t run','No connectivity','Can’t access room','Tablet / pad fault','Class can’t start','Draft a report'],
+    exampleIcons:['power','wifi','lock','tablet','user','report'],
+    exampleQuestions:[
       'What should I do if the power goes out?',
       'The classroom internet is down. What should I do?',
       'The door is locked and I cannot access the room.',
       'The Smart Manikin screen is black. What should I do?',
       'The instructor did not show up and class cannot start.',
-      'The student certificate/completion is missing.',
-      'Someone is injured on site. What should I do?',
       'Generate an incident report template.'
-    ]
+    ],
+    resultLabel:'SOP guidance',
+    safety:'Safety check',
+    steps:'Steps',
+    information:'Information to collect',
+    nextActions:'Next actions',
+    needsReview:'Human review',
+    required:'Required',
+    notRequired:'Not required',
+    confidence:'Confidence',
+    // concise on-site action card
+    whatToDoNow:'What to do now',
+    requiredEvidence:'Required evidence',
+    escalateTo:'Escalate to',
+    doNot:'Do not',
+    sopImageRef:'SOP image reference',
+    relatedRef:'Related SOP reference',
+    noMedia:'No matching SOP image found.',
+    // available SOP actions
+    availableActions:'Available SOP actions',
+    actAccess:'Open access SOP reference',
+    actAccessNote:'Use only if the site, building, and room match. Notes come only from trusted SOP text — the assistant does not read codes from images.',
+    actFix:'View documented fix',
+    actFixDocumented:'Documented source fix',
+    actFixNone:'No source-supported fix; escalate to engineer/vendor.',
+    actReport:'Open incident report reference',
+    actEscNote:'Draft escalation note',
+    actComm:'Customer communication template',
+    seeImagesAbove:'See the SOP image reference above.',
+    escFields:['Site / location','Class date & time','Affected students / count','Incident start–end time','What staff already tried','Could class continue?'],
+    escEvidence:'Evidence',
+    escTo:'Escalate to',
+    escNoteHint:'Copy, fill the blanks, and send for review.',
+    // approval block
+    approvalTitle:'Approval required',
+    approvalSub:'Refund / reschedule / cancellation requires approval.',
+    prepTitle:'Prepare these details',
+    prepItems:['Site / location','Class date & time','Affected students / count','Incident start & end time','Evidence (screenshots / photos)','What staff already tried','Whether class could continue'],
+    approvalSend:'Send to supervisor / official approval path.',
+    approvalNeedSop:'Official SOP source needed for the policy or amount.',
+    // do-not paired next actions
+    dnRefund:'Prepare site, class time, affected students, incident start/end, evidence, and what was tried — then send for approval.',
+    dnElectric:'Ask venue/property to reset or inspect — do not operate it yourself.',
+    dnManikin:'Use only the documented source fix; otherwise escalate to engineer/vendor.',
+    dnForce:'Contact venue/property to open and log your attempts.',
+    dnNetwork:'Ask venue/property or an authorized tech to handle the equipment.',
+    accSteps:'Full handling steps',
+    accInfo:'Information & full evidence list',
+    accSources:'Source references',
+    accFull:'View full details',
+    provenanceShort:'General operations guidance — not official SOP. Refunds, reschedules, and policy decisions need human approval.',
+    sopMedia:'SOP source images',
+    noAnalysis:'Images are source references matched from SOP filenames, folders, and document names. The assistant does not analyze image content.',
+    error:'Unable to reach the assistant service'
   },
   zh: {
-    internalPill:'内部工具',
-    heroTitle:'现场运营事件助手',
-    heroText:'描述现场情况（停电 / 断网 / 门禁 / 设备 / 课程无法开始 / 老师未到 / 签到 / 完课·证书 / 安全 / 事件记录），助手会给出安全检查、处理步骤、需收集的信息与证据、联系与升级建议。公司决定仍需主管确认。',
-    languageLabel:'语言',
-    questionLabel:'问题',
-    questionPlaceholder:'例如：停电了，学生已经到了，课程无法开始怎么办？',
-    siteLabel:'站点（可选）',
-    classTimeLabel:'上课时间（可选）',
-    attachmentLabel:'附件描述（可选）',
-    attachmentPlaceholder:'例如：黑暗教室的照片 dark_room.jpg',
-    button:'提问',
-    loading:'处理中...',
-    hint:'仅依据 SOP/KB；未覆盖内容会标注 <code>needs official SOP source</code> 等。',
-    footer:'内部决策支持工具，不对学员/客户开放。安全永远优先于取证；如不安全请勿拍照。涉及成本/合同/保险/安全/客户决定，请在主管或官方 SOP 确认前不要自行决定或对外承诺。',
-    severity:'严重程度',
-    confidence:'置信度',
-    reviewRequired:'需人工复核 — 请在主管确认前不要据此对外承诺或自行决定。',
-    reviewNotRequired:'信息性参考；涉及决定/政策时仍需上报。',
-    safety:'立即安全检查',
+    tagline:'内部 SOP 助手',
+    eyebrow:'现场事件支持',
+    title:'现场运营助手',
+    intro:'针对现场上课问题，给出第一步处理、取证清单、升级路径以及 SOP 来源参考。',
+    describe:'描述现场情况',
+    placeholder:'示例：Santa Clara 上课时 Smart Manikin 平板黑屏，现场应先怎么处理？',
+    ask:'获取 SOP 指引',
+    asking:'正在检索本地 SOP 来源…',
+    quickLabel:'常见现场事件',
+    advanced:'现场信息 / 可选补充',
+    advancedSub:'补充站点、上课时间或照片描述',
+    site:'站点',
+    classTime:'上课时间',
+    attachment:'附件描述',
+    attachmentPlaceholder:'请手动描述照片内容，例如：门禁键盘显示红灯',
+    attachmentNote:'请手动描述照片内容。本助手不会查看或分析上传的图片。',
+    providesTitle:'本助手提供',
+    provFirst:'第一步处理', provFirstSub:'当前最关键的一步',
+    provEvidence:'取证清单', provEvidenceSub:'需要拍照与记录的内容',
+    provEscalation:'升级指引', provEscalationSub:'何时联系谁',
+    provSources:'SOP 来源', provSourcesSub:'本地参考资料（如有）',
+    statusLocal:'仅本地 SOP',
+    statusReview:'政策决定需人工复核',
+    statusBilingual:'中英双语',
+    footer:'内部决策支持助手。安全优先。正式政策、退款、改期、证书及客户通知均需人工批准。',
+    examples:['停电','断网','门锁问题','Smart Manikin 故障','老师未到','事故报告'],
+    exampleSubs:['无法上课','现场没有网络','进不去教室','平板 / 设备故障','无法开课','起草报告'],
+    exampleIcons:['power','wifi','lock','tablet','user','report'],
+    exampleQuestions:['停电了怎么办？','教室没网怎么办？','门打不开怎么办？','Smart Manikin 黑屏怎么办？','老师没到怎么办？','生成现场事故报告模板'],
+    resultLabel:'SOP 指引',
+    safety:'安全检查',
     steps:'处理步骤',
-    info:'需收集信息',
-    evidence:'需上传/保存证据',
-    attachments:'附件',
-    attachmentAck:'已收到附件描述；如需视觉确认请人工查看照片（本助手不分析图片内容）。',
-    contacts:'联系与升级',
-    communication:'学员/客户沟通',
-    doNotDecide:'未经批准不得决定',
-    next:'下一步',
-    sourceStatus:'来源状态',
-    sources:'引用来源',
-    errorPrefix:'无法连接到助手服务',
-    errorHelp:'请确认服务已启动，并从同一 host/port 打开本页。',
-    presets:[
-      '停电了怎么办？',
-      '教室没网怎么办？',
-      '门打不开怎么办？',
-      'Smart Manikin 黑屏怎么办？',
-      '老师没到，课程无法开始怎么办？',
-      '学生证书没出来怎么办？',
-      '现场有人受伤怎么办？',
-      '生成现场事故报告模板'
-    ]
+    information:'需收集信息',
+    nextActions:'下一步',
+    needsReview:'人工复核',
+    required:'需要',
+    notRequired:'不需要',
+    confidence:'置信度',
+    // 现场行动卡
+    whatToDoNow:'现在先做什么',
+    requiredEvidence:'必须收集',
+    escalateTo:'升级给谁',
+    doNot:'不要做',
+    sopImageRef:'SOP 图片参考',
+    relatedRef:'相关 SOP 参考',
+    noMedia:'未匹配到 SOP 图片。',
+    // 可用 SOP 操作
+    availableActions:'可用 SOP 操作',
+    actAccess:'打开门禁 SOP 参考',
+    actAccessNote:'仅在站点/建筑/房间匹配时使用。说明仅来自可信 SOP 文本；本助手不从图片读取密码。',
+    actFix:'查看已记录修复',
+    actFixDocumented:'来源记录的修复',
+    actFixNone:'无来源支持的修复，请升级工程师/厂商。',
+    actReport:'打开事件报告参考',
+    actEscNote:'起草升级说明',
+    actComm:'客户沟通模板',
+    seeImagesAbove:'见上方 SOP 图片参考。',
+    escFields:['站点 / 地点','上课日期与时间','受影响学员 / 人数','事件起止时间','现场已尝试的处理','课程能否继续？'],
+    escEvidence:'证据',
+    escTo:'升级给',
+    escNoteHint:'复制、填空后送审。',
+    // 需要批准
+    approvalTitle:'需要批准',
+    approvalSub:'退款 / 改期 / 取消 需要批准。',
+    prepTitle:'准备这些信息',
+    prepItems:['站点 / 地点','上课日期与时间','受影响学员 / 人数','事件起止时间','证据（截图 / 照片）','现场已尝试的处理','课程是否能继续'],
+    approvalSend:'送交主管 / 官方审批路径。',
+    approvalNeedSop:'政策或金额需官方 SOP 来源确认。',
+    // 不要做的配套下一步
+    dnRefund:'准备站点、上课时间、受影响学员、事件起止、证据与已尝试处理，再送审批。',
+    dnElectric:'请场地 / 物业检查或复位，不要自行操作。',
+    dnManikin:'仅使用已记录的来源修复；否则升级工程师 / 厂商。',
+    dnForce:'联系场地 / 物业开门，并记录你的尝试。',
+    dnNetwork:'请场地 / 物业或授权技术处理设备。',
+    accSteps:'完整处理步骤',
+    accInfo:'需收集信息与完整证据清单',
+    accSources:'来源参考',
+    accFull:'查看完整详情',
+    provenanceShort:'通用运营建议，非官方 SOP；退款、改期及政策类决定需人工批准。',
+    sopMedia:'SOP 来源图片',
+    noAnalysis:'图片为来源参考，依据 SOP 文件名、文件夹与文档名匹配得出。本助手不分析图片内容。',
+    error:'无法连接到助手服务'
   }
 };
 
-const chips = $('#chips');
-
-function copyFor(lang){
-  return COPY[lang] || COPY.en;
-}
-
-function buildChips(){
-  chips.innerHTML = '';
-  copyFor(selectedLang).presets.forEach(t => {
-    const b = document.createElement('button');
-    b.className = 'chip';
-    b.type = 'button';
-    b.textContent = t;
-    b.onclick = () => { $('#q').value = t; ask(); };
-    chips.appendChild(b);
-  });
-}
+function copy(){ return COPY[selectedLang] || COPY.en; }
 
 function applyLanguage(lang){
   selectedLang = COPY[lang] ? lang : 'en';
-  const c = copyFor(selectedLang);
+  const c = copy();
   document.documentElement.lang = selectedLang === 'zh' ? 'zh-CN' : 'en';
-  document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('active', b.dataset.lang === selectedLang));
-  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = c[el.dataset.i18n] || el.textContent; });
-  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = c[el.dataset.i18nHtml] || el.innerHTML; });
-  $('#q').placeholder = c.questionPlaceholder;
-  $('#att').placeholder = c.attachmentPlaceholder;
-  $('#go').textContent = c.button;
+  document.querySelectorAll('[data-lang]').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === selectedLang));
+  document.querySelectorAll('[data-i18n]').forEach(el => { if(c[el.dataset.i18n] != null) el.textContent = c[el.dataset.i18n]; });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { if(c[el.dataset.i18nPlaceholder] != null) el.placeholder = c[el.dataset.i18nPlaceholder]; });
   buildChips();
 }
 
-function listBlock(title, icon, items, cls, ordered){
-  if(!items || !items.length) return '';
-  const inner = ordered
-    ? `<ol class="steps">${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ol>`
-    : `<ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`;
-  return `<section class="blk ${cls||''}"><h3><span class="ic">${icon}</span>${title}</h3>${inner}</section>`;
+function buildChips(){
+  const wrap = $('#chips');
+  const c = copy();
+  wrap.innerHTML = '';
+  c.examples.forEach((label, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'qa';
+    btn.innerHTML =
+      `<span class="qa-ico" aria-hidden="true">${svg(c.exampleIcons[idx] || 'report')}</span>` +
+      `<span class="qa-txt"><span class="qa-name">${esc(label)}</span>` +
+      `<span class="qa-sub">${esc((c.exampleSubs||[])[idx] || '')}</span></span>`;
+    btn.onclick = () => {
+      wrap.querySelectorAll('.qa').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+      $('#q').value = c.exampleQuestions[idx];
+      ask();
+    };
+    wrap.appendChild(btn);
+  });
 }
 
-function displaySourceStatus(status, lang){
-  if(lang === 'zh' && status === 'general operations guidance, not official SOP'){
-    return 'general operations guidance, not official SOP / 非官方 SOP 的通用运营建议';
-  }
-  return status;
+function list(items, ordered=false, limit=7){
+  const vals = (items || []).slice(0, limit);
+  if(!vals.length) return '';
+  const tag = ordered ? 'ol' : 'ul';
+  return `<${tag}>${vals.map(item => `<li>${esc(item)}</li>`).join('')}</${tag}>`;
 }
 
-function render(d, sentAttachment){
-  const lang = COPY[d.language] ? d.language : selectedLang;
-  const c = copyFor(lang);
-  const out = $('#out');
-  const sev = (d.severity||'info').toLowerCase();
-  const review = d.needs_human_review
-    ? `<div class="review"><span>!</span><span>${esc(c.reviewRequired)}</span></div>`
-    : `<div class="review ok-note"><span>i</span><span>${esc(c.reviewNotRequired)}</span></div>`;
-  const attText = d.attachments_note || (sentAttachment ? c.attachmentAck : '');
-  const attNote = attText
-    ? `<section class="blk"><h3><span class="ic">#</span>${c.attachments}</h3><ul><li>${esc(attText)}</li></ul></section>`
-    : '';
-  const srcStat = (d.source_status||[]).map(s=>{
-    const warn = /needs|missing|not official|data not/i.test(s);
-    return `<span class="srcstat ${warn?'warn':''}">${esc(displaySourceStatus(s, lang))}</span>`;
+function checklist(items, limit=7){
+  const vals = (items || []).slice(0, limit);
+  if(!vals.length) return '';
+  return `<ul class="check-list">${vals.map(item => `<li>${esc(item)}</li>`).join('')}</ul>`;
+}
+
+function section(name, icon, inner, extraClass=''){
+  if(!inner) return '';
+  return `<div class="section ${extraClass}">
+    <h3><span class="sico" aria-hidden="true">${svg(icon)}</span>${esc(name)}</h3>
+    ${inner}</div>`;
+}
+
+function sourceTagsHTML(items, lang){
+  return (items || []).map(item => {
+    const label = lang === 'zh' && item === 'general operations guidance, not official SOP'
+      ? `${item} / 非官方 SOP 的通用运营建议`
+      : item;
+    const warn = /needs|missing|not official|data not/i.test(item);
+    return `<span class="${warn ? 'warn' : ''}">${esc(label)}</span>`;
   }).join('');
-  const srcs = (d.sources&&d.sources.length) ? `<div class="hint" style="margin-top:8px">${c.sources}: ${esc(d.sources.join(', '))}</div>` : '';
+}
 
-  out.innerHTML = `
-    <div class="card" style="padding:18px">
-      <div class="meta">
-        <span class="badge sev ${sev}">${c.severity} ${esc(d.severity||'-')}</span>
-        <span class="badge scn">${esc(d.issue_type||d.scenario||'')}</span>
-        <span class="badge">${c.confidence} ${esc(d.confidence||'')}</span>
-      </div>
-      ${review}
-      ${listBlock(c.safety,'+',d.immediate_safety_check,'safety')}
-      ${listBlock(c.steps,'>',d.steps,'',true)}
-      ${listBlock(c.info,'i',d.information_to_collect)}
-      ${(d.evidence_requested&&d.evidence_requested.length)?`<section class="blk"><h3><span class="ic">*</span>${c.evidence}</h3><div class="evidence"><ul>${d.evidence_requested.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div></section>`:''}
-      ${attNote}
-      ${listBlock(c.contacts,'@',d.contacts)}
-      ${listBlock(c.communication,'" ',d.customer_communication)}
-      ${listBlock(c.doNotDecide,'x',d.do_not_decide_without_approval)}
-      ${listBlock(c.next,'✓',d.next_actions)}
-      <section class="blk"><h3><span class="ic">?</span>${c.sourceStatus}</h3><div class="src">${srcStat||'<span class="srcstat">-</span>'}</div>${srcs}</section>
+/* Generic, source-agnostic note dropped from the compact evidence list — it is a
+   long reminder that lives in the full evidence list inside the accordion. */
+const SAFE_PHOTO_RE = /如果安全且不影响|If it is safe and does not interfere/i;
+
+/* Trim a bilingual "中文 / English" issue_type to its first segment for badges. */
+function shortLabel(text){
+  const s = String(text || '');
+  const i = s.indexOf(' / ');
+  return i > 0 ? s.slice(0, i) : s;
+}
+
+function dropMatch(items, re){
+  return (items || []).filter(item => !re.test(String(item)));
+}
+
+/* Escalation contacts are authored as "who（why）" / "who (why)". Split so the
+   owner reads as a bold chip and the reason as muted subtext. */
+function escalateChips(contacts){
+  const vals = (contacts || []).slice(0, 5);
+  if(!vals.length) return '';
+  const chips = vals.map(raw => {
+    const text = String(raw).trim();
+    const m = text.match(/^([^：:（(]+)[：:（(](.+)$/);
+    let who = text.replace(/[。.]+$/, '');
+    let why = '';
+    if(m){
+      who = m[1].trim();
+      why = m[2].replace(/[）)。.\s]+$/, '').replace(/[）)]/g, '').trim();
+    }
+    return `<div class="chip">${svg('flag')}<span class="chip-txt"><b>${esc(who)}</b>${
+      why ? `<span class="chip-why">${esc(why)}</span>` : ''}</span></div>`;
+  }).join('');
+  return `<div class="chips">${chips}</div>`;
+}
+
+function dontList(items){
+  const vals = (items || []).slice(0, 4);
+  if(!vals.length) return '';
+  return `<ul class="dont-list">${vals.map(x =>
+    `<li>${esc(String(x).replace(/^[-•]\s*/, ''))}</li>`).join('')}</ul>`;
+}
+
+function mediaGridHTML(items, c){
+  const cards = items.slice(0, 3).map(item =>
+    `<a class="media-card" href="${esc(item.url)}" target="_blank" rel="noopener">
+      <span class="media-thumb">
+        <img src="${esc(item.url)}" alt="${esc(item.title)}" loading="lazy" />
+        <span class="tag">${esc(c.sopImageRef)}</span>
+      </span>
+      <span class="media-body">
+        <p class="media-title">${esc(item.title)}</p>
+        <p class="media-src">${esc(item.source_file)}</p>
+      </span>
+    </a>`).join('');
+  return `<div class="media-grid">${cards}</div>
+    <p class="media-note">${svg('alert')}<span>${esc(c.noAnalysis)}</span></p>`;
+}
+
+function mediaEmptySlim(c){
+  return `<div class="media-empty slim">${svg('image')}<span>${esc(c.noMedia)}</span></div>`;
+}
+
+function chev(){
+  return `<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+}
+
+function accordion(title, inner){
+  if(!inner) return '';
+  return `<details class="full">
+      <summary>${svg('report')}<span>${esc(title)}</span>${chev()}</summary>
+      <div class="acc-body">${inner}</div>
+    </details>`;
+}
+
+function accSub(label, inner){
+  return inner ? `<p class="acc-sub">${esc(label)}</p>${inner}` : '';
+}
+
+function olList(items){
+  return (items && items.length) ? `<ol>${items.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : '';
+}
+function ulList(items){
+  return (items && items.length) ? `<ul>${items.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : '';
+}
+
+/* Deterministic intent matchers — used to surface (never invent) source-backed
+   actions and to pair "do not" warnings with a helpful next step. */
+const APPROVAL_RE = /refund|reschedule|cancel|compensation|退费|退款|改期|取消|补偿/i;
+const ACCESS_RE = /passcode|lockbox|gate|door|keypad|room|floor|signage|instruction video|门|门禁|大门|密码|房间|楼层|指示牌|钥匙|视频/i;
+const UNDOC_RE = /no documented fix|needs engineer\/vendor|engineer\/vendor confirmation|未记录修复|未记录|不要自行编造/i;
+const DONT_PAIRS = [
+  [APPROVAL_RE, 'dnRefund'],
+  [/electric|breaker|operate or repair|配电|电力|电闸|电气|操作或维修/i, 'dnElectric'],
+  [/calibration|reset|root cause|hardware|undocumented|硬件|校准|根因|重置|未记录|自行编造/i, 'dnManikin'],
+  [/force|climb|damage the lock|强行|破门|翻越|破坏门锁/i, 'dnForce'],
+  [/network equipment|not authorized|网络设备|未授权/i, 'dnNetwork'],
+];
+
+function actionCard(icon, label, body, cls){
+  if(!body) return '';
+  return `<details class="act${cls ? ' ' + cls : ''}">
+      <summary><span class="act-ico" aria-hidden="true">${svg(icon)}</span><span>${esc(label)}</span>${chev()}</summary>
+      <div class="act-body">${body}</div>
+    </details>`;
+}
+
+/* Drafts an escalation note by assembling fields the answer already contains,
+   with blank placeholders for site-specific facts. No invented facts. */
+function escNoteHTML(data, c){
+  const head = `[${data.issue_type || data.scenario}]`;
+  const blanks = (c.escFields || []).map(f => `${f}: ____`).join('\n');
+  const ev = dropMatch(data.evidence_requested, SAFE_PHOTO_RE).slice(0, 4).map(e => '• ' + e).join('\n');
+  const who = (data.contacts || []).slice(0, 3).map(x => '• ' + x).join('\n');
+  const parts = [head, blanks];
+  if(ev) parts.push(`${c.escEvidence}:\n${ev}`);
+  if(who) parts.push(`${c.escTo}:\n${who}`);
+  return `<pre class="esc-note">${esc(parts.join('\n'))}</pre>
+    <p class="act-note">${svg('alert')}<span>${esc(c.escNoteHint)}</span></p>`;
+}
+
+/* Build the "Available SOP actions" cards from source-backed answer fields only. */
+function buildActionsHTML(data, c){
+  const sc = data.scenario || '';
+  const steps = data.steps || [];
+  let cards = '';
+
+  // Access / room SOP reference — surfaces the documented access procedure.
+  if(sc === 'venue_access_issue'){
+    const accessSteps = steps.filter(s => ACCESS_RE.test(s));
+    let body = olList(accessSteps.length ? accessSteps : steps);
+    body += `<p class="act-note">${svg('alert')}<span>${esc(c.actAccessNote)}</span></p>`;
+    if((data.sop_images || []).length){
+      body += `<p class="act-note">${svg('image')}<span>${esc(c.seeImagesAbove)}</span></p>`;
+    }
+    cards += actionCard('lock', c.actAccess, body);
+  }
+
+  // Smart Manikin: separate documented fixes from unsupported issues.
+  if(sc === 'smart_manikin_troubleshooting' && steps.length){
+    const undoc = steps.filter(s => UNDOC_RE.test(s));
+    const doc = steps.filter(s => !UNDOC_RE.test(s));
+    let body = '';
+    if(doc.length) body += accSub(c.actFixDocumented, olList(doc));
+    if(undoc.length){
+      body += `<div class="warn-line">${svg('alert')}<span>${esc(c.actFixNone)}</span></div>${ulList(undoc)}`;
+    }
+    cards += actionCard('tablet', c.actFix, body);
+  }
+
+  // Incident report reference — the documented report structure.
+  if(sc === 'incident_report' && steps.length){
+    cards += actionCard('report', c.actReport, olList(steps));
+  }
+
+  // Draft escalation note — for any review-required incident.
+  if(data.needs_human_review && steps.length){
+    cards += actionCard('flag', c.actEscNote, escNoteHTML(data, c));
+  }
+
+  // Customer communication template.
+  if((data.customer_communication || []).length){
+    cards += actionCard('chat', c.actComm, ulList(data.customer_communication));
+  }
+
+  return cards;
+}
+
+function needsApproval(data){
+  return (data.do_not_decide_without_approval || []).some(x => APPROVAL_RE.test(x))
+    || (data.contacts || []).some(x => APPROVAL_RE.test(x))
+    || (data.customer_communication || []).some(x => APPROVAL_RE.test(x));
+}
+
+function approvalBlockHTML(data, c){
+  const needSop = (data.source_status || []).some(s => /needs official SOP|official SOP source|data not provided/i.test(s));
+  return `<div class="approval">
+      <div class="ap-title">${svg('shield')}<span>${esc(c.approvalTitle)}</span></div>
+      <p class="ap-sub">${esc(c.approvalSub)}</p>
+      <p class="ap-prep">${esc(c.prepTitle)}</p>
+      <ul class="check-list">${(c.prepItems || []).map(i => `<li>${esc(i)}</li>`).join('')}</ul>
+      <p class="ap-send">${svg('flag')}<span>${esc(c.approvalSend)}</span></p>
+      ${needSop ? `<p class="ap-needsop">${esc(c.approvalNeedSop)}</p>` : ''}
     </div>`;
-  out.style.display = 'block';
-  out.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* "Do not" warnings, each paired with a deterministic helpful next step. */
+function dontPairedHTML(items, c){
+  const vals = (items || []).slice(0, 4);
+  if(!vals.length) return '';
+  return `<ul class="dont-list">${vals.map(x => {
+    const s = String(x).replace(/^[-•]\s*/, '');
+    let next = '';
+    for(const [re, key] of DONT_PAIRS){ if(re.test(s)){ next = c[key]; break; } }
+    return `<li>${esc(s)}${next ? `<span class="dont-next">${esc(next)}</span>` : ''}</li>`;
+  }).join('')}</ul>`;
+}
+
+function render(data){
+  const c = COPY[data.language] || copy();
+  const sev = (data.severity || 'info').toLowerCase();
+  const review = !!data.needs_human_review;
+  const hasSteps = Array.isArray(data.steps) && data.steps.length > 0;
+
+  /* --- compact incident header: review state shown ONCE, here --- */
+  const badges = [
+    `<span class="badge severity ${sev}">${esc(data.severity || 'info')}</span>`,
+    (data.issue_type || data.scenario)
+      ? `<span class="badge">${esc(shortLabel(data.issue_type || data.scenario))}</span>` : '',
+    data.confidence
+      ? `<span class="badge"><span class="k">${esc(c.confidence)}</span> ${esc(data.confidence)}</span>` : '',
+    `<span class="badge ${review ? 'review-on' : 'review-off'}">${svg(review ? 'alert' : 'shield')}${esc(c.needsReview)}: ${review ? esc(c.required) : esc(c.notRequired)}</span>`
+  ].filter(Boolean).join('');
+
+  /* --- What to do now: 3–5 concise steps --- */
+  let now = hasSteps ? data.steps
+    : (Array.isArray(data.next_actions) && data.next_actions.length ? data.next_actions
+    : (data.immediate_safety_check || []));
+  now = now.slice(0, 5);
+  const nowHTML = now.length
+    ? `<div class="action-now">
+        <span class="now-label">${svg('bolt')}${esc(c.whatToDoNow)}</span>
+        <ol>${now.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+      </div>` : '';
+
+  /* --- Required evidence (drop the generic safe-photo note; max 4) --- */
+  const evid = dropMatch(data.evidence_requested, SAFE_PHOTO_RE).slice(0, 4);
+  const evSec = evid.length ? section(c.requiredEvidence, 'clip', checklist(evid, 4)) : '';
+  /* --- Escalate to --- */
+  const escal = escalateChips(data.contacts);
+  const esSec = escal ? section(c.escalateTo, 'flag', escal) : '';
+  const primaryPair = (evSec && esSec) ? `<div class="dual">${evSec}${esSec}</div>` : (evSec + esSec);
+
+  /* --- Available SOP actions: source-backed, expand inline --- */
+  const actionsCards = buildActionsHTML(data, c);
+  const actionsSec = actionsCards
+    ? section(c.availableActions, 'steps', `<div class="actions-grid">${actionsCards}</div>`)
+    : '';
+
+  /* --- Approval-required block (refund/reschedule/cancellation) --- */
+  const approvalSec = needsApproval(data) ? approvalBlockHTML(data, c) : '';
+
+  /* --- Do not: each warning paired with a helpful next step --- */
+  const dont = dontPairedHTML(data.do_not_decide_without_approval, c);
+  const dontSec = dont ? section(c.doNot, 'alert', dont, 'dont') : '';
+
+  /* --- SOP image reference: prominent when present, slim empty otherwise --- */
+  const imgs = data.sop_images || [];
+  const hasImgs = imgs.length > 0;
+  const isIncident = hasSteps || evid.length || !!escal;
+  const mediaHigh = hasImgs ? section(c.sopImageRef, 'image', mediaGridHTML(imgs, c)) : '';
+  const mediaLow = (!hasImgs && isIncident) ? mediaEmptySlim(c) : '';
+
+  /* --- collapsed secondary detail --- */
+  const accSteps = accordion(c.accSteps,
+    accSub(c.steps, list(data.steps, true, 99))
+    + accSub(c.safety, list(data.immediate_safety_check, false, 99))
+    + accSub(c.nextActions, list(data.next_actions, false, 99)));
+  const accInfo = accordion(c.accInfo,
+    accSub(c.information, list(data.information_to_collect, false, 99))
+    + accSub(c.requiredEvidence, checklist(data.evidence_requested, 99)));
+  const accSources = accordion(c.accSources,
+    `<p class="src-list">${esc((data.sources||[]).length ? data.sources.join(', ') : '—')}</p>
+     <div class="src-tags">${sourceTagsHTML(data.source_status || [], data.language) || ''}</div>
+     <p class="media-note">${svg('alert')}<span>${esc(c.provenanceShort)}</span></p>`);
+  const accFull = `<details class="full">
+      <summary>${svg('report')}<span>${esc(c.accFull)}</span>${chev()}</summary>
+      <pre class="raw">${esc(data.answer || '')}</pre>
+    </details>`;
+
+  const html = `
+    <div class="result-head">
+      <p class="res-eyebrow">${svg('pulse')}${esc(c.resultLabel)}</p>
+      <div class="badges">${badges}</div>
+      ${(!hasSteps && data.answer_summary) ? `<p class="lead">${esc(data.answer_summary)}</p>` : ''}
+    </div>
+
+    ${nowHTML}
+    ${mediaHigh}
+    ${actionsSec}
+    ${primaryPair}
+    ${approvalSec}
+    ${dontSec}
+    ${mediaLow}
+
+    <div class="accordions">
+      ${accSteps}${accInfo}${accSources}${accFull}
+    </div>`;
+
+  $('#out').innerHTML = html;
+  $('#out').style.display = 'block';
+  $('#out').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function setBusy(on){
+  const btn = $('#go');
+  const status = $('#status');
+  btn.disabled = on;
+  if(on){
+    $('#status-text').textContent = copy().asking;
+    status.classList.add('show');
+  }else{
+    status.classList.remove('show');
+  }
 }
 
 async function ask(){
   const q = $('#q').value.trim();
   if(!q){ $('#q').focus(); return; }
-  const c = copyFor(selectedLang);
-  const ctx = { audience:'internal', lang:selectedLang };
+  const ctx = {lang:selectedLang, audience:'internal'};
   if($('#site').value.trim()) ctx.site = $('#site').value.trim();
   if($('#ctime').value.trim()) ctx.class_time = $('#ctime').value.trim();
-  const att = $('#att').value.trim();
-  if(att) ctx.attachments = [{ type:'note', description: att }];
+  if($('#att').value.trim()) ctx.attachments = [{type:'note', description:$('#att').value.trim()}];
 
-  const btn = $('#go'); const old = btn.innerHTML;
-  btn.disabled = true; btn.innerHTML = `<span class="spin"></span>${esc(c.loading)}`;
+  setBusy(true);
   try{
-    const r = await fetch(API_BASE + '/api/agents/autocpr-site-manager/ask', {
-      method:'POST', headers:{'content-type':'application/json'},
-      body: JSON.stringify({ question:q, context:ctx })
+    const resp = await fetch(API_BASE + '/api/agents/autocpr-site-manager/ask', {
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({question:q, context:ctx})
     });
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const d = await r.json();
-    render(d, !!att);
-  }catch(e){
-    $('#out').innerHTML = `<div class="card" style="padding:16px"><div class="err">${esc(c.errorPrefix)}: ${esc(e.message)}.<br>${esc(c.errorHelp)}</div></div>`;
-    $('#out').style.display='block';
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    render(await resp.json());
+  }catch(err){
+    $('#out').innerHTML = `<div class="err">${esc(copy().error)}: ${esc(err.message)}</div>`;
+    $('#out').style.display = 'block';
   }finally{
-    btn.disabled=false; btn.innerHTML=old;
+    setBusy(false);
   }
 }
+
 $('#go').onclick = ask;
-$('#q').addEventListener('keydown', e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter') ask(); });
-document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => applyLanguage(b.dataset.lang)));
+$('#q').addEventListener('keydown', event => {
+  if((event.metaKey || event.ctrlKey) && event.key === 'Enter') ask();
+});
+document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => applyLanguage(btn.dataset.lang)));
 applyLanguage(selectedLang);
 </script>
 </body>
