@@ -24,11 +24,14 @@ from app.agents.autocpr_site_manager.sop_media_index import MEDIA_ROOT
 
 ROOT = Path(__file__).resolve().parent
 SITE_OPS_AGENT_HTML = ROOT / "app" / "web" / "site_ops_agent.html"
+STATIC_ROOT = ROOT / "app" / "web" / "static"
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 
 app = FastAPI(title="AllCPR Site Operations Agent")
+STATIC_ROOT.mkdir(parents=True, exist_ok=True)
 MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
 app.mount("/static/sop_media", StaticFiles(directory=str(MEDIA_ROOT)), name="sop_media")
+app.mount("/static", StaticFiles(directory=str(STATIC_ROOT)), name="static")
 
 
 def _agent_page() -> HTMLResponse:
