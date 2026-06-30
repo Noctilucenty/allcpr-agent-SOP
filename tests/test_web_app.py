@@ -48,6 +48,21 @@ def test_root_and_agent_serve_bilingual_ui():
         assert "/api/incident-logs" in body
 
 
+def test_ui_decision_tree_default_routing_keys_are_defined():
+    """The sub-issue default-open map must reference real pill keys and labels,
+    so a routed narrow query opens an existing panel (no undefined keys)."""
+    client = TestClient(web_app.app)
+    body = client.get("/agent").text
+    assert "SUB_DEFAULT" in body
+    assert "issue_subtype" in body
+    # every panel key the router can default-open must exist as a pill key
+    for key in ("passcode", "venue", "access", "classmatch", "incident"):
+        assert f"key:'{key}'" in body
+    # and the copy labels those pills depend on must be defined (en + zh)
+    for label in ("aPasscode:", "aClassMismatch:", "aVenue:", "aAccess:", "aIncident:"):
+        assert body.count(label) >= 2
+
+
 def test_agent_api_returns_operational_references_for_matching_access_site():
     client = TestClient(web_app.app)
     resp = client.post(

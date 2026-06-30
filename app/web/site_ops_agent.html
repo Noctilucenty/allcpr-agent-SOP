@@ -1395,6 +1395,22 @@ function buildTree(data, c){
     A.push({key:'sopimg', icon:'image', label:c.aSopImg, sub:c.subRef});
   }
 
+  // Default-open the single panel matching the routed sub-issue, so a narrow
+  // query lands on its answer (passcode / code-failed / wrong-room / wrong-
+  // course / not-on-roster / certificate / incident) instead of a closed menu.
+  // Smart Manikin keeps its own per-subissue default (issue_subtype is unset
+  // there), so this never double-opens.
+  const SUB_DEFAULT = {
+    passcode_needed:'passcode', code_failed:'venue', wrong_room_floor:'access',
+    wrong_course:'classmatch', not_on_roster:'classmatch',
+    certificate_issue:'ref_completion_photo_certificate', fix_failed:'incident'
+  };
+  let want = SUB_DEFAULT[data.issue_subtype || ''];
+  if(!want && sc === 'incident_report') want = 'incident';
+  if(want && A.some(a => a.key === want && a.panel)){
+    A.forEach(a => { if(a.panel) a.defaultOpen = (a.key === want); });
+  }
+
   return A;
 }
 

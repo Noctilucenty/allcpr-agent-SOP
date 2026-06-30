@@ -118,6 +118,13 @@ class AgentAnswer(BaseModel):
     smart_manikin_subissue: str = ""
     documented_fix_available: bool = False
     documented_fix_failed_requested: bool = False
+    # General (non-Smart-Manikin) sub-issue routing. ``issue_subtype`` is the
+    # focused sub-issue slug (e.g. "passcode_needed", "wrong_course"),
+    # ``route_detail`` is a short route category (e.g. "access", "checkin"), and
+    # ``policy_approval_required`` flags sub-issues that need supervisor approval.
+    issue_subtype: str = ""
+    route_detail: str = ""
+    policy_approval_required: bool = False
 
 
 class IncidentLogPatch(BaseModel):

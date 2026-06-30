@@ -151,8 +151,7 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
             "If only this room tripped: if safe and allowed, ask the venue/property to reset it — do NOT operate the breaker yourself.",
             "Record the outage start time and the affected classes/times.",
             "Notify the venue/property contact to confirm cause and estimated restore time.",
-            "Assess whether class can continue (devices need power; the Smart Manikin tablet needs power).",
-            "If it may restore soon, ask waiting students to hold; if not, wait for the supervisor's reschedule/refund decision.",
+            "Assess whether class can continue (devices/tablet need power): if it may restore soon ask waiting students to hold, otherwise wait for the supervisor's reschedule/refund decision.",
         ],
         "information_to_collect": [
             "Outage scope (room/building/area).",
@@ -392,8 +391,7 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
         "lead": "On-site incident report (general template, not official SOP): record the time, place, site, event type, what happened, impact, actions taken, evidence, escalation target, and items awaiting a supervisor decision.",
         "immediate_safety_check": ["If the event is ongoing and involves safety → handle as safety_or_emergency first, then write the report."],
         "steps": [
-            "Record the basics: site, room, class time, event time, recorder.",
-            "Event type and what happened: what, when, who.",
+            "Record the basics (site, room, class time, event time, recorder) and the event type — what happened, when, and who.",
             "Impact: affected classes/students/devices; was class interrupted.",
             "Actions taken and the result.",
             "Evidence: list of photos/screenshots/comms.",
@@ -563,8 +561,7 @@ GUIDANCE_ZH: Dict[str, Dict[str, object]] = {
             "是否仅本房间跳闸：如安全且被允许，请场地方/物业复位；专员不要自行操作配电箱。",
             "记录停电开始时间、受影响的班级与时间。",
             "通知场地/物业联系人，确认原因与预计恢复时间。",
-            "评估课程能否继续（设备依赖供电；Smart Manikin 平板需供电）。",
-            "若短时可恢复，安抚在场学员稍候；若不能恢复，等待主管对改期/退费的决定。",
+            "评估课程能否继续（设备/平板需供电）：若短时可恢复，安抚在场学员稍候；否则等待主管对改期/退费的决定。",
         ],
         "information_to_collect": ["停电范围（房间/楼/区域）。", "停电开始时间与预计恢复时间。", "受影响班级、时间、在场学员人数。", "场地/物业联系人及沟通记录。"],
         "evidence_requested": [
@@ -725,8 +722,7 @@ GUIDANCE_ZH: Dict[str, Dict[str, object]] = {
         "lead": "现场事件记录（通用模板，非官方 SOP）：记录时间、地点、站点、事件类型、经过、影响、已采取措施、证据、上报对象与待主管决定事项。",
         "immediate_safety_check": ["若事件仍在进行且涉及安全 → 先按 safety_or_emergency 处理，再写记录。"],
         "steps": [
-            "记录基本信息：站点、教室、班级时间、事件发生时间、记录人。",
-            "事件类型与经过：发生了什么、何时、涉及谁。",
+            "记录基本信息（站点、教室、班级时间、事件发生时间、记录人）与事件类型——发生了什么、何时、涉及谁。",
             "影响：受影响的班级/学员/设备、是否中断课程。",
             "已采取措施与结果。",
             "证据：照片/截图/沟通记录清单。",

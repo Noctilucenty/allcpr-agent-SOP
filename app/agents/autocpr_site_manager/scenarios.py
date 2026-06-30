@@ -79,7 +79,8 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "power is out", "no power", "lost power", "电力", "电源没了", "电没了",
         "电跳了", "breaker tripped", "blackout", "power goes out",
         "power went out", "power go out", "no electricity", "breaker issue",
-        "lights out", "电闸",
+        "lights out", "电闸", "power still", "still no power",
+        "still no electricity", "还是没电", "电还是没",
     )),
     ("internet_outage", (
         "没网", "断网", "网络", "网断了", "连不上网", "网卡", "wifi", "wi-fi",
@@ -87,7 +88,9 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "internet outage", "internet is down", "classroom internet is down",
         "网络故障", "上不了网", "网络中断", "loading error", "加载不出来",
         "加载失败", "连接超时", "router", "platform not loading", "no network",
-        "平台加载失败",
+        "平台加载失败", "internet still", "wifi still", "wi-fi still",
+        "network still", "platform still", "still no internet", "still no wifi",
+        "还是没网", "网还是",
     )),
     ("venue_access_issue", (
         "门打不开", "进不去", "门禁", "access", "door", "key", "钥匙", "lock",

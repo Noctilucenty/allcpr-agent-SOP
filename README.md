@@ -156,9 +156,19 @@ The endpoint returns `AgentAnswer`:
   "customer_communication": [],
   "do_not_decide_without_approval": [],
   "source_status": [],
-  "attachments_note": ""
+  "attachments_note": "",
+  "issue_subtype": "",
+  "route_detail": "",
+  "policy_approval_required": false
 }
 ```
+
+`issue_subtype` carries the focused sub-issue a narrow query routed to (for
+example `passcode_needed`, `code_failed`, `wrong_course`, `certificate_issue`,
+`fix_failed`), `route_detail` is its short route category (`access`, `checkin`,
+`completion`, `outage`), and `policy_approval_required` flags sub-issues that
+need supervisor/registration approval. Smart Manikin keeps its own
+`smart_manikin_subissue` field.
 
 ## Supported Scenarios
 
@@ -191,6 +201,25 @@ The agent labels provenance explicitly:
 General operational triage is allowed for common incidents, but the answer must
 clearly label it as **general operations guidance, not official SOP**. Official
 company decisions require source or human review.
+
+### Focused Sub-Issue Routing
+
+A narrow question gets a short, focused answer for the exact sub-issue instead of
+the whole scenario bucket. Detection is deterministic keyword matching and never
+invents policy, codes, or fixes:
+
+- `venue_access_issue` → `passcode_needed`, `code_failed`, `wrong_room_floor`.
+- `student_checkin_issue` → `wrong_course`, `not_on_roster`.
+- `completion_or_certificate_issue` → `certificate_issue` (no invented
+  eligibility/re-issue rules).
+- `electricity_outage` / `internet_outage` → `fix_failed` (still down after the
+  basic checks → escalate and start an incident report, do not repeat basics).
+- `smart_manikin_troubleshooting` keeps its dedicated routing (see below).
+
+The decision-tree UI opens the matching panel by default (passcode query →
+passcode panel, code-failed → venue/property, wrong course → roster, etc.).
+Site-specific access codes still appear only when the question/context names a
+matching site.
 
 ### Smart Manikin Constraints
 
@@ -228,6 +257,8 @@ but no documented fix is recorded, and routes it to
 │       ├── agent.py
 │       ├── prompts.py
 │       ├── scenarios.py
+│       ├── scenario_subissues.py
+│       ├── smart_manikin_subissues.py
 │       ├── schemas.py
 │       ├── retriever.py
 │       ├── kb_loader.py
@@ -286,9 +317,11 @@ remains ignored.
 
 Every `/api/agents/autocpr-site-manager/ask` call appends a lightweight internal
 incident log entry. The log records the user-entered site/location, class time,
-scenario, severity, first actions, evidence, escalation, SOP image count, and
-matched operational references. It does not store uploaded image files or the raw
-full answer payload.
+scenario, severity, first actions, evidence, escalation, SOP image count,
+matched operational references, the routed `issue_subtype`/`route_detail` and
+`policy_approval_required` flag, trusted-passcode-shown flags for access, and the
+Smart Manikin sub-issue when relevant. It does not store uploaded image files,
+local filesystem paths, or the raw full answer payload.
 
 Default local storage:
 

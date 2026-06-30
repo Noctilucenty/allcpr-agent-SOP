@@ -22,6 +22,12 @@ from . import prompts
 from .retriever import SiteManagerRetriever
 from .scenarios import classify, requires_review
 from .schemas import AgentAnswer, RetrievedChunk
+from .scenario_subissues import (
+    ROUTE_LABELS,
+    detect_subissue,
+    focused_guidance as scenario_focused_guidance,
+    policy_approval_required as scenario_policy_approval_required,
+)
 from .smart_manikin_subissues import (
     detect_smart_manikin_subissue,
     documented_fix_available,
@@ -219,6 +225,9 @@ class SiteManagerAgent:
         smart_manikin_subissue = ""
         documented_fix_failed_requested = False
         has_documented_fix = False
+        issue_subtype = ""
+        route_detail = ""
+        policy_approval_required = False
         if scenario == "smart_manikin_troubleshooting":
             smart_manikin_subissue = detect_smart_manikin_subissue(question)
             documented_fix_failed_requested = is_documented_fix_failed_requested(question)
@@ -242,6 +251,28 @@ class SiteManagerAgent:
                     focused.get("do_not_decide_without_approval", do_not_decide) or []
                 )
                 next_actions = list(focused.get("next_actions", next_actions) or [])
+        else:
+            # General (non-Smart-Manikin) sub-issue routing: narrow access /
+            # check-in / completion / outage queries get a focused block instead
+            # of the full generic scenario bucket.
+            issue_subtype = detect_subissue(scenario, question)
+            general_focused = scenario_focused_guidance(scenario, issue_subtype, lang)
+            if general_focused:
+                lead_text = str(general_focused.get("lead", lead_text))
+                steps = list(general_focused.get("steps", steps) or [])
+                information_to_collect = list(
+                    general_focused.get("information_to_collect", information_to_collect) or []
+                )
+                evidence_requested = list(
+                    general_focused.get("evidence_requested", evidence_requested) or []
+                )
+                contacts = list(general_focused.get("contacts", contacts) or [])
+                do_not_decide = list(
+                    general_focused.get("do_not_decide_without_approval", do_not_decide) or []
+                )
+                next_actions = list(general_focused.get("next_actions", next_actions) or [])
+                route_detail = ROUTE_LABELS.get(scenario, "")
+            policy_approval_required = scenario_policy_approval_required(scenario, issue_subtype)
 
         attach_ack = _summarize_attachments(context, lang)
         answer_summary = _answer_summary(lang, issue_type, severity, review)
@@ -297,6 +328,9 @@ class SiteManagerAgent:
             smart_manikin_subissue=smart_manikin_subissue,
             documented_fix_available=has_documented_fix,
             documented_fix_failed_requested=documented_fix_failed_requested,
+            issue_subtype=issue_subtype,
+            route_detail=route_detail,
+            policy_approval_required=policy_approval_required,
         )
 
 
