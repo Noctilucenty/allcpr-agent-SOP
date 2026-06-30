@@ -30,6 +30,7 @@ def test_root_and_agent_serve_bilingual_ui():
         assert "中文" in body
         assert "Get SOP Guidance" in body
         assert "Site Operations Assistant" in body
+        assert "/static/allcpr-logo.png" in body
         assert 'id="q"' in body
         assert "Site details / optional context" in body
         assert "SOP source images" in body

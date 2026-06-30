@@ -56,12 +56,10 @@
   }
   .top{max-width:1120px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:13px}
   .mark{
-    width:34px;height:34px;border-radius:9px;background:var(--red);position:relative;flex:0 0 auto;
-    box-shadow:0 2px 6px rgba(215,40,47,.35);
+    width:42px;height:42px;border-radius:50%;background:#fff;flex:0 0 auto;
+    display:block;object-fit:contain;
+    box-shadow:0 1px 3px rgba(16,24,40,.12);
   }
-  .mark:before,.mark:after{content:"";position:absolute;background:#fff;border-radius:1.5px}
-  .mark:before{left:14px;top:7px;width:6px;height:20px}
-  .mark:after{left:7px;top:14px;width:20px;height:6px}
   .brand{display:flex;flex-direction:column;line-height:1.15}
   .brand .name{font-weight:800;font-size:16.5px;letter-spacing:-.2px}
   .brand .name b{color:var(--red)}
@@ -543,7 +541,7 @@
 <div class="accent" aria-hidden="true"></div>
 <header>
   <div class="top">
-    <span class="mark" aria-hidden="true"></span>
+    <img class="mark" src="/static/allcpr-logo.png" alt="AllCPR" width="42" height="42" />
     <div class="brand">
       <span class="name"><b>All</b>CPR Operations</span>
       <span class="subtitle" data-i18n="tagline">Internal SOP Assistant</span>
