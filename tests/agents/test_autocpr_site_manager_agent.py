@@ -198,10 +198,34 @@ def test_smart_manikin_question_returns_sop_image_when_media_exists():
         assert "image analysis" in item.description.lower() or "no image analysis" in item.description.lower()
 
 
+def test_venue_access_returns_sop_images_when_media_exists():
+    media = build_media_index()
+    ans = answer_question("门打不开怎么办？")
+    assert ans.scenario == "venue_access_issue"
+    if media:
+        assert ans.sop_images
+    for item in ans.sop_images:
+        assert item.url.startswith("/static/sop_media/")
+
+
 def test_electricity_outage_does_not_return_random_smart_manikin_image():
     ans = answer_question("What should I do if the power goes out?", {"lang": "en"})
     assert ans.scenario == "electricity_outage"
     assert ans.sop_images == []
+
+
+def test_sop_media_index_exposes_web_paths_not_local_paths():
+    """The committed index must serve web URLs and never leak local machine paths
+    (absolute paths, /Users/<name>/..., or username tokens in tags)."""
+    items = build_media_index()
+    leaky = {"users", "desktop", "developer", "private", "home", "noctilucenteasteliq"}
+    for item in items:
+        assert item.url.startswith("/static/sop_media/")
+        assert not item.source_file.startswith("/")
+        assert "Users" not in item.source_file and ":\\" not in item.source_file
+        assert not leaky.intersection({t.lower() for t in item.tags})
+        for tag in item.tags:
+            assert "/" not in tag
 
 
 def test_no_media_match_response_still_works():

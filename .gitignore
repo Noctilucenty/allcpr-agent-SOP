@@ -11,11 +11,17 @@ env/
 .env.*
 !.env.example
 
-# Raw operational SOP/source folders are kept local.
-# They may contain private venue media, passcodes, contacts, or internal docs.
+# Raw operational SOP/source folders are kept local. They may contain private
+# venue media, passcodes, contacts, or internal docs (.docx/.pptx/.xlsx).
 /SOP/
-/app/web/static/sop_media/
-/app/agents/autocpr_site_manager/sop_media_index.json
+
+# NOTE: the *generated* SOP media (extracted/copied images) and the JSON index
+# ARE committed — this is a private/internal deployment repo and Render needs
+# them to serve SOP image references. They contain no absolute paths or secrets;
+# tags are derived from repo-relative paths only. The raw /SOP/ archive above
+# stays out of git. If this repo is ever made public, re-ignore the two paths:
+#   app/web/static/sop_media/
+#   app/agents/autocpr_site_manager/sop_media_index.json
 
 # Local runtime / editor noise
 .idea/

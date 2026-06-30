@@ -91,7 +91,11 @@ def _rel(path: Path) -> str:
 
 
 def _tokenize_path(path: Path) -> set[str]:
-    text = path.as_posix().replace("_", " ").replace("-", " ").replace("/", " ").lower()
+    # Tokenize the *repo-relative* path only — never the absolute path — so the
+    # index never leaks local machine paths / usernames (e.g. /Users/<name>/...)
+    # into the committed tags. Meaningful tokens (SOP folder + document name)
+    # are preserved, so deterministic matching is unchanged.
+    text = _rel(path).replace("_", " ").replace("-", " ").replace("/", " ").lower()
     tokens = {t.strip(" .()[]{}:,;\"'") for t in text.split() if t.strip()}
     compact = text.replace(" ", "")
     for phrase in ("smart manikin", "santa clara", "black screen", "quick start"):
