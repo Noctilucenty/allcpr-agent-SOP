@@ -122,10 +122,9 @@ def find_operational_references(
         priority = int(raw.get("priority", 0) or 0)
         score = priority + (35 if site_match else 0) + (12 * matches)
 
-        # General references remain useful for their exact scenario even when the
-        # query has no extra keyword; topic refs need a direct keyword or a high
-        # enough priority to be useful as scenario-level staff guidance.
-        if matches or site_match or not raw.get("requires_site_match"):
+        # Topic references need a direct keyword or site match. Only references
+        # with no applies_to terms behave as broad scenario-level guidance.
+        if matches or site_match or not raw.get("applies_to"):
             scored.append((score, str(raw.get("id", "")), raw))
 
     scored.sort(key=lambda item: (-item[0], item[1]))

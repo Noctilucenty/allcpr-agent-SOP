@@ -82,6 +82,28 @@ def _access_ref_flags(answer: AgentAnswer) -> Dict[str, bool]:
     }
 
 
+def _smart_manikin_flags(answer: AgentAnswer) -> Dict[str, Any]:
+    if answer.scenario != "smart_manikin_troubleshooting":
+        return {
+            "smart_manikin_subissue": "",
+            "documented_fix_available": False,
+            "documented_fix_failed_requested": False,
+            "smart_manikin_escalation_targets": [],
+        }
+    targets: List[str] = []
+    for contact in answer.contacts:
+        if re.search(r"engineer|vendor|工程师|厂商", contact, re.I):
+            targets.append("engineer/vendor")
+        if re.search(r"supervisor|主管", contact, re.I):
+            targets.append("supervisor")
+    return {
+        "smart_manikin_subissue": answer.smart_manikin_subissue,
+        "documented_fix_available": answer.documented_fix_available,
+        "documented_fix_failed_requested": answer.documented_fix_failed_requested,
+        "smart_manikin_escalation_targets": list(dict.fromkeys(targets)),
+    }
+
+
 def build_log_entry(
     question: str,
     context: Optional[Dict[str, Any]],
@@ -113,6 +135,7 @@ def build_log_entry(
         "sop_image_count": len(answer.sop_images),
         "operational_reference_titles": [ref.title for ref in answer.operational_references[:3]],
         **_access_ref_flags(answer),
+        **_smart_manikin_flags(answer),
         "status": "open",
         "created_by": created_by or "staff",
         "assigned_to": "",

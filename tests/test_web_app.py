@@ -36,6 +36,8 @@ def test_root_and_agent_serve_bilingual_ui():
         assert "SOP source images" in body
         assert "Internal SOP passcode" in body
         assert "iPad / PAD" in body
+        assert "Training no data" in body
+        assert "Fix failed" in body
         assert "operational_references" in body
         assert ".opref" in body
         assert "Live site log" in body
@@ -112,6 +114,40 @@ def test_incident_log_marks_no_passcode_when_source_not_matching_site():
     log = client.get("/api/incident-logs").json()[0]
     assert log["access_refs_shown"] is True
     assert log["trusted_passcode_refs_shown"] is False
+
+
+def test_smart_manikin_log_stores_subissue_and_fix_failed_path():
+    client = TestClient(web_app.app)
+    resp = client.post(
+        "/api/agents/autocpr-site-manager/ask",
+        json={
+            "question": "Bluetooth fix did not work",
+            "context": {"site": "Santa Clara", "lang": "en"},
+        },
+    )
+    assert resp.status_code == 200
+    payload = resp.json()
+    assert payload["smart_manikin_subissue"] == "documented_fix_failed"
+    assert payload["documented_fix_failed_requested"] is True
+
+    log = client.get("/api/incident-logs").json()[0]
+    assert log["smart_manikin_subissue"] == "documented_fix_failed"
+    assert log["documented_fix_failed_requested"] is True
+    assert "engineer/vendor" in log["smart_manikin_escalation_targets"]
+    assert "supervisor" in log["smart_manikin_escalation_targets"]
+
+
+def test_smart_manikin_log_stores_ipad_subissue_without_documented_fix():
+    client = TestClient(web_app.app)
+    resp = client.post(
+        "/api/agents/autocpr-site-manager/ask",
+        json={"question": "ipad打不开", "context": {"lang": "en"}},
+    )
+    assert resp.status_code == 200
+    log = client.get("/api/incident-logs").json()[0]
+    assert log["smart_manikin_subissue"] == "ipad_pad_power_or_open"
+    assert log["documented_fix_available"] is False
+    assert log["documented_fix_failed_requested"] is False
 
 
 def test_incident_log_get_and_patch_status_and_note():

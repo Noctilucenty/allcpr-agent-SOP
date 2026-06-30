@@ -115,6 +115,9 @@ class AgentAnswer(BaseModel):
     sop_images: List[SopMediaItem] = []
     operational_references: List[OperationalReference] = []
     incident_log_id: str = ""
+    smart_manikin_subissue: str = ""
+    documented_fix_available: bool = False
+    documented_fix_failed_requested: bool = False
 
 
 class IncidentLogPatch(BaseModel):

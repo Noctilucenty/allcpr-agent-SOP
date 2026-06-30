@@ -22,6 +22,12 @@ from . import prompts
 from .retriever import SiteManagerRetriever
 from .scenarios import classify, requires_review
 from .schemas import AgentAnswer, RetrievedChunk
+from .smart_manikin_subissues import (
+    detect_smart_manikin_subissue,
+    documented_fix_available,
+    focused_guidance,
+    is_documented_fix_failed_requested,
+)
 from .sop_media_index import find_relevant_sop_media
 from .sop_operational_refs import find_operational_references
 
@@ -206,9 +212,36 @@ class SiteManagerAgent:
         do_not_decide = _glist(guidance, "do_not_decide_without_approval")
         next_actions = _glist(guidance, "next_actions")
         source_status = _glist(guidance, "source_status")
+        lead_text = str(guidance.get("lead", ""))
         sources = _unique_sources(chunks)
         sop_images = find_relevant_sop_media(question, scenario, top_k=3)
         operational_references = find_operational_references(question, scenario, context, limit=3)
+        smart_manikin_subissue = ""
+        documented_fix_failed_requested = False
+        has_documented_fix = False
+        if scenario == "smart_manikin_troubleshooting":
+            smart_manikin_subissue = detect_smart_manikin_subissue(question)
+            documented_fix_failed_requested = is_documented_fix_failed_requested(question)
+            has_documented_fix = documented_fix_available(smart_manikin_subissue)
+            focused = focused_guidance(
+                smart_manikin_subissue,
+                lang,
+                documented_fix_failed_requested,
+            )
+            if focused:
+                lead_text = str(focused.get("lead", lead_text))
+                steps = list(focused.get("steps", steps) or [])
+                information_to_collect = list(
+                    focused.get("information_to_collect", information_to_collect) or []
+                )
+                evidence_requested = list(
+                    focused.get("evidence_requested", evidence_requested) or []
+                )
+                contacts = list(focused.get("contacts", contacts) or [])
+                do_not_decide = list(
+                    focused.get("do_not_decide_without_approval", do_not_decide) or []
+                )
+                next_actions = list(focused.get("next_actions", next_actions) or [])
 
         attach_ack = _summarize_attachments(context, lang)
         answer_summary = _answer_summary(lang, issue_type, severity, review)
@@ -224,7 +257,7 @@ class SiteManagerAgent:
             _section(labels["severity"], severity),
             _section(labels["immediate_safety_check"], immediate_safety_check),
             _section(labels["scenario"], scenario),
-            _section(labels["guidance"], str(guidance.get("lead", ""))),
+            _section(labels["guidance"], lead_text),
             _section(labels["steps"], steps),
             _section(labels["information_to_collect"], information_to_collect),
             _section(labels["evidence_requested"], evidence_requested),
@@ -261,6 +294,9 @@ class SiteManagerAgent:
             answer_summary=answer_summary,
             sop_images=sop_images,
             operational_references=operational_references,
+            smart_manikin_subissue=smart_manikin_subissue,
+            documented_fix_available=has_documented_fix,
+            documented_fix_failed_requested=documented_fix_failed_requested,
         )
 
 

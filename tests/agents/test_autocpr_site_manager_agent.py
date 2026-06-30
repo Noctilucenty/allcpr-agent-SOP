@@ -181,11 +181,95 @@ def test_english_smart_manikin_black_screen_preserves_source_limits():
     ans = answer_question("The Smart Manikin screen is black. What should I do?")
     assert ans.language == "en"
     assert ans.scenario == "smart_manikin_troubleshooting"
+    assert ans.smart_manikin_subissue == "black_screen_app_restart"
     low = ans.answer.lower()
     assert "needs engineer/vendor confirmation" in low
     assert "no documented fix" in low
-    for unsupported in ("wi-fi", "wifi", "browser", "permission", "reset", "calibration"):
+    for unsupported in ("wi-fi", "wifi", "browser", "permission"):
         assert unsupported not in low
+    assert "do not try undocumented reset" in low
+
+
+@pytest.mark.parametrize(
+    "question, subissue, fix_available",
+    [
+        ("ipad打不开", "ipad_pad_power_or_open", False),
+        ("iPad won't turn on", "ipad_pad_power_or_open", False),
+        ("PAD connected but TRAINING receives no data", "training_no_data", True),
+        ("蓝牙连不上", "bluetooth_connection", True),
+        ("黑屏", "black_screen_app_restart", False),
+        ("完成照片怎么拍", "completion_photo", True),
+        ("找不到房间", "wrong_room_floor", True),
+    ],
+)
+def test_smart_manikin_subissue_detection(question, subissue, fix_available):
+    ans = answer_question(question, {"lang": "en"})
+    assert ans.scenario == "smart_manikin_troubleshooting"
+    assert ans.smart_manikin_subissue == subissue
+    assert ans.documented_fix_available is fix_available
+
+
+def test_ipad_open_answer_is_focused_and_failure_aware():
+    ans = answer_question("ipad打不开", {"lang": "en"})
+    joined_steps = " ".join(ans.steps).lower()
+    first_steps = " ".join(ans.steps[:3]).lower()
+    assert ans.smart_manikin_subissue == "ipad_pad_power_or_open"
+    assert "no documented ipad/pad open/power fix" in ans.answer.lower()
+    assert "engineer/vendor" in ans.answer.lower()
+    assert "photo/video" in joined_steps
+    assert "completion photo" not in first_steps
+    assert "wrong room" not in first_steps
+    assert "all session done" not in first_steps
+    assert "do not try undocumented reset" in ans.answer.lower()
+
+
+def test_bluetooth_answer_mentions_source_backed_power_and_restart_then_escalates():
+    ans = answer_question("Bluetooth won't connect", {"lang": "en"})
+    low = ans.answer.lower()
+    assert ans.smart_manikin_subissue == "bluetooth_connection"
+    assert "power strip" in low
+    assert "source-recorded manikin restart" in low
+    assert "escalate to engineer/vendor" in low
+
+
+def test_training_no_data_answer_is_specific():
+    ans = answer_question("PAD connected but TRAINING receives no data", {"lang": "en"})
+    low = ans.answer.lower()
+    assert ans.smart_manikin_subissue == "training_no_data"
+    assert "pad says connected" in low
+    assert "training receives no data" in low
+    assert "power strip" in low
+    assert "engineer/vendor" in low
+
+
+def test_completion_photo_answer_uses_source_email():
+    ans = answer_question("How do I take the completion photo?", {"lang": "en"})
+    low = ans.answer.lower()
+    assert ans.smart_manikin_subissue == "completion_photo"
+    assert "all session done / pass" in low
+    assert "support@allcpr.org" in low
+    assert "do not invent certificate" in low
+
+
+def test_smart_manikin_fix_failed_prioritizes_escalation():
+    ans = answer_question("Bluetooth fix did not work", {"lang": "en"})
+    low = ans.answer.lower()
+    assert ans.scenario == "smart_manikin_troubleshooting"
+    assert ans.documented_fix_failed_requested is True
+    assert ans.smart_manikin_subissue == "documented_fix_failed"
+    assert ans.steps[0].startswith("Stop repeating")
+    assert "escalate to engineer/vendor" in low
+    assert "do not invent hardware-damage" in low
+    ids = {ref.id for ref in ans.operational_references}
+    assert "smart_manikin_fix_failed_escalation" in ids
+
+
+def test_source_log_count_not_in_main_smart_steps():
+    ans = answer_question("蓝牙连不上", {"lang": "en"})
+    main = " ".join(ans.steps).lower()
+    assert "source log count" not in main
+    refs = " ".join(item.value for ref in ans.operational_references for item in ref.items)
+    assert "4" in refs
 
 
 def test_smart_manikin_question_returns_sop_image_when_media_exists():

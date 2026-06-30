@@ -10,6 +10,9 @@
         "keypad",
         "lockbox",
         "passcode",
+        "door locked",
+        "门打不开",
+        "进不去",
         "门禁",
         "密码",
         "房间",
@@ -278,6 +281,57 @@
       ]
     },
     {
+      "id": "smart_manikin_ipad_power_open_no_fix",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "iPad / PAD open or power issue",
+      "applies_to": [
+        "ipad打不开",
+        "iPad won't open",
+        "iPad won't turn on",
+        "PAD打不开",
+        "tablet won't turn on",
+        "平板打不开",
+        "平板开不了",
+        "pad not opening",
+        "tablet black screen"
+      ],
+      "source_status": "Smart Manikin source + needs engineer/vendor confirmation",
+      "priority": 115,
+      "items": [
+        {
+          "label": "Source limit",
+          "value": "No documented iPad/PAD open or power-on fix is recorded in the source.",
+          "sensitivity": "normal",
+          "fact_type": "unsupported_fix"
+        },
+        {
+          "label": "Do now",
+          "value": "Confirm power/charging state, save photo/video of the screen and power state, then escalate if it does not recover.",
+          "sensitivity": "normal",
+          "fact_type": "device_note"
+        },
+        {
+          "label": "Escalation",
+          "value": "Escalate to engineer/vendor and notify supervisor if class is affected.",
+          "sensitivity": "normal",
+          "fact_type": "vendor_escalation"
+        }
+      ],
+      "media_tags": [
+        "smart",
+        "manikin",
+        "ipad",
+        "pad",
+        "tablet",
+        "power",
+        "screen"
+      ],
+      "do_not": [
+        "Do not invent reset, calibration, disassembly, or root-cause steps.",
+        "Do not claim the source has an iPad/PAD power fix."
+      ]
+    },
+    {
       "id": "smart_manikin_bluetooth_power",
       "scenario": "smart_manikin_troubleshooting",
       "title": "Smart Manikin Bluetooth / power fix",
@@ -303,7 +357,7 @@
         },
         {
           "label": "If still not connecting",
-          "value": "If it still does not connect while plugged in, restart the manikin. This is the source-recorded fix.",
+          "value": "If it still does not connect while plugged in, use only the source-recorded manikin restart step.",
           "sensitivity": "normal",
           "fact_type": "device_fix"
         },
@@ -312,6 +366,18 @@
           "value": "When powered-but-unplugged, the PAD may show connected, but TRAINING receives no data.",
           "sensitivity": "normal",
           "fact_type": "device_note"
+        },
+        {
+          "label": "Documented fix did not work?",
+          "value": "Save photo/video evidence, record exact symptom and time, escalate to engineer/vendor, and notify supervisor if class is affected.",
+          "sensitivity": "normal",
+          "fact_type": "fix_failed"
+        },
+        {
+          "label": "Source log count",
+          "value": "4",
+          "sensitivity": "normal",
+          "fact_type": "source_count"
         }
       ],
       "media_tags": [
@@ -327,6 +393,114 @@
       ]
     },
     {
+      "id": "smart_manikin_training_no_data",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "PAD connected but TRAINING receives no data",
+      "applies_to": [
+        "TRAINING receives no data",
+        "training no data",
+        "PAD connected but no data",
+        "connected but training receives no data",
+        "显示 connected 但是没有数据",
+        "训练没数据",
+        "PAD 显示连接但没数据"
+      ],
+      "source_status": "Smart Manikin source",
+      "priority": 105,
+      "items": [
+        {
+          "label": "Confirm state",
+          "value": "Confirm the PAD shows connected and TRAINING receives no data.",
+          "sensitivity": "normal",
+          "fact_type": "device_note"
+        },
+        {
+          "label": "Documented step",
+          "value": "Keep the manikin and PAD powered with a power strip.",
+          "sensitivity": "normal",
+          "fact_type": "device_fix"
+        },
+        {
+          "label": "If still no data",
+          "value": "Save photo/video of connected/no-data state and escalate to engineer/vendor.",
+          "sensitivity": "normal",
+          "fact_type": "fix_failed"
+        },
+        {
+          "label": "Source log count",
+          "value": "4",
+          "sensitivity": "normal",
+          "fact_type": "source_count"
+        }
+      ],
+      "media_tags": [
+        "smart",
+        "manikin",
+        "training",
+        "pad",
+        "tablet",
+        "bluetooth"
+      ],
+      "do_not": [
+        "Do not invent browser-permission, Wi-Fi, calibration, or unsupported reset fixes."
+      ]
+    },
+    {
+      "id": "smart_manikin_wrong_room_floor",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "Wrong room / floor finding issue",
+      "applies_to": [
+        "wrong room",
+        "wrong floor",
+        "can't find room",
+        "room/floor issue",
+        "走错楼层",
+        "找不到房间",
+        "房间不对",
+        "楼层不对",
+        "指示牌"
+      ],
+      "source_status": "Smart Manikin source + official SOP source",
+      "priority": 88,
+      "items": [
+        {
+          "label": "Confirm location",
+          "value": "Confirm the class address, floor, and room before giving directions.",
+          "sensitivity": "normal",
+          "fact_type": "location_note"
+        },
+        {
+          "label": "Source-backed help",
+          "value": "Use the classroom-finding video plus source-backed room/gate materials for the matching site.",
+          "sensitivity": "normal",
+          "fact_type": "access_note"
+        },
+        {
+          "label": "Signage",
+          "value": "Source-recorded improvement: add/use 2F signage.",
+          "sensitivity": "normal",
+          "fact_type": "signage"
+        },
+        {
+          "label": "Source log count",
+          "value": "2-3",
+          "sensitivity": "normal",
+          "fact_type": "source_count"
+        }
+      ],
+      "media_tags": [
+        "room",
+        "floor",
+        "signage",
+        "building",
+        "access"
+      ],
+      "do_not": [
+        "Do not guess access codes from images.",
+        "Do not promise refund/reschedule if students are delayed."
+      ]
+    },
+    {
       "id": "smart_manikin_completion_photo",
       "scenario": "smart_manikin_troubleshooting",
       "title": "Completion photo requirement",
@@ -337,6 +511,8 @@
         "certificate",
         "support@allcpr.org",
         "完成截图",
+        "完成照片",
+        "忘记截图",
         "证书"
       ],
       "source_status": "reviewed SOP text: Smart Manikin Instruction.docx",
@@ -353,6 +529,18 @@
           "value": "Take a photo of the completion screen and email it to support@allcpr.org as proof for certificate processing.",
           "sensitivity": "normal",
           "fact_type": "completion_email"
+        },
+        {
+          "label": "If photo was missed",
+          "value": "Record student/class/session details and escalate; do not invent certificate or completion policy.",
+          "sensitivity": "normal",
+          "fact_type": "escalation"
+        },
+        {
+          "label": "Source log count",
+          "value": "2",
+          "sensitivity": "normal",
+          "fact_type": "source_count"
         }
       ],
       "media_tags": [
@@ -437,6 +625,12 @@
           "value": "Collect the exact symptom, timing, screen/photo evidence, power/display/Bluetooth/tablet-PAD status, and escalate to engineer/vendor.",
           "sensitivity": "normal",
           "fact_type": "vendor_escalation"
+        },
+        {
+          "label": "Source log count",
+          "value": "3",
+          "sensitivity": "normal",
+          "fact_type": "source_count"
         }
       ],
       "media_tags": [
@@ -447,6 +641,56 @@
       ],
       "do_not": [
         "Do not invent an undocumented restart, reset, recovery, calibration, or root-cause fix."
+      ]
+    },
+    {
+      "id": "smart_manikin_fix_failed_escalation",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "Documented fix did not work",
+      "applies_to": [
+        "still not working",
+        "fix did not work",
+        "tried but failed",
+        "still no data",
+        "still black screen",
+        "source recorded fix does not work",
+        "修复无效",
+        "还是不行",
+        "试了没用",
+        "插电还是连不上",
+        "重启还是不行"
+      ],
+      "source_status": "Smart Manikin source + needs engineer/vendor confirmation",
+      "priority": 120,
+      "items": [
+        {
+          "label": "Stop repeating attempts",
+          "value": "Stop repeating the same fix or trying undocumented reset/calibration steps.",
+          "sensitivity": "normal",
+          "fact_type": "fix_failed"
+        },
+        {
+          "label": "Evidence",
+          "value": "Save photo/video evidence and record exact symptom, time, course step, and what was tried.",
+          "sensitivity": "normal",
+          "fact_type": "evidence"
+        },
+        {
+          "label": "Escalate",
+          "value": "Escalate to engineer/vendor and notify supervisor if class is affected.",
+          "sensitivity": "normal",
+          "fact_type": "vendor_escalation"
+        }
+      ],
+      "media_tags": [
+        "smart",
+        "manikin",
+        "device",
+        "failure"
+      ],
+      "do_not": [
+        "Do not try undocumented reset/calibration steps.",
+        "Do not invent hardware damage or root cause."
       ]
     },
     {
@@ -622,6 +866,11 @@
       "title": "Power outage handling",
       "applies_to": [
         "power outage",
+        "power goes out",
+        "power went out",
+        "power is out",
+        "power's out",
+        "no power",
         "no electricity",
         "breaker",
         "lights out",
@@ -670,12 +919,15 @@
       "title": "Internet / platform outage handling",
       "applies_to": [
         "internet down",
+        "no internet",
+        "no wifi",
         "Wi-Fi",
         "wifi",
         "platform not loading",
         "router",
         "no network",
         "断网",
+        "没网",
         "网络故障",
         "平台加载失败",
         "加载失败"

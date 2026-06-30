@@ -831,10 +831,13 @@ const COPY = {
     accessDont:['Do not guess a code from images.','If no source-backed code, contact venue/property.'],
     accessImgNote:'SOP image reference available — the assistant does not read codes from images.',
     // smart manikin
-	    aIpad:'iPad / PAD', aBt:'Bluetooth / power', aPhoto:'Completion photo', aRoom:'Wrong room / floor', aBlack:'Black screen', aVendor:'Engineer / vendor', aDeviceFix:'Device fix',
+	    aIpad:'iPad / PAD', aBt:'Bluetooth / power', aTrainingNoData:'Training no data', aPhoto:'Completion photo', aRoom:'Wrong room / floor', aBlack:'Black screen', aFixFailed:'Fix failed', aVendor:'Engineer / vendor', aDeviceFix:'Device fix',
     blackTitle:'Black screen — no documented source fix',
     blackDo:['Collect a photo/video and the exact symptom.','Escalate to engineer/vendor.'],
     blackDont:['Do not invent a reset, calibration, or root cause.'],
+    fixFailedTitle:'Documented fix did not work?',
+    fixFailedDo:['Save photo/video evidence.','Record exact symptom and time.','Escalate to engineer/vendor.','Notify supervisor if class is affected.'],
+    fixFailedDont:['Do not try undocumented reset/calibration steps.'],
     // incident report
     aIncident:'Incident report', incidentDo:'Fill the draft below and attach evidence.',
     incidentFields:['Site / room','Class time / event time','Event type + what happened','Impact (classes / students / devices)','Actions taken + result','Evidence list','Awaiting decision (refund / reschedule)'],
@@ -978,10 +981,13 @@ const COPY = {
 	    aPasscode:'密码', passcodeTitle:'内部 SOP 密码', trustedPasscode:'仅用于匹配的站点 / 建筑 / 房间。', noTrustedPasscode:'此站点/问题没有已提取的来源支持密码。请查看 SOP 图片/参考，或联系场地/物业。',
     accessDont:['不要从图片猜测密码。','若无来源支持的密码，联系场地 / 物业。'],
     accessImgNote:'有 SOP 图片参考 —— 本助手不从图片读取密码。',
-	    aIpad:'iPad / PAD', aBt:'蓝牙 / 供电', aPhoto:'完成截图', aRoom:'走错房间 / 楼层', aBlack:'黑屏', aVendor:'工程师 / 厂商', aDeviceFix:'设备修复',
+	    aIpad:'iPad / PAD', aBt:'蓝牙 / 供电', aTrainingNoData:'训练无数据', aPhoto:'完成截图', aRoom:'走错房间 / 楼层', aBlack:'黑屏', aFixFailed:'修复无效', aVendor:'工程师 / 厂商', aDeviceFix:'设备修复',
     blackTitle:'黑屏 —— 无来源记录的修复',
     blackDo:['收集照片/视频与确切症状。','升级工程师 / 厂商。'],
     blackDont:['不要自行编造重置、校准或根因。'],
+    fixFailedTitle:'已记录修复无效？',
+    fixFailedDo:['保存照片/视频证据。','记录具体现象和时间。','升级工程师/厂商。','如影响课程，通知主管。'],
+    fixFailedDont:['不要尝试未记录的重置/校准步骤。'],
     aIncident:'事故报告', incidentDo:'填写下方草稿并附上证据。',
     incidentFields:['站点 / 房间','上课时间 / 事件时间','事件类型 + 经过','影响（班级 / 学员 / 设备）','已采取处理 + 结果','证据清单','待决定（退款 / 改期）'],
     aSopImg:'SOP 图片',
@@ -1277,22 +1283,44 @@ function buildTree(data, c){
     const manikinRefs = refs.filter(r => r.scenario === 'smart_manikin_troubleshooting');
     manikinRefs.forEach(r => usedRefIds.add(r.id));
     const entriesById = id => refEntries(manikinRefs.filter(r => r.id === id), null, 8);
-    const find = re => steps.find(s => re.test(s));
-    const bt = find(/bluetooth|蓝牙|power strip|插线板|供电/i);
-    const photo = find(/completion photo|all session done|完成截图|support@allcpr/i);
-    const room = find(/room|floor|signage|房间|楼层|指示牌|走错/i);
-    const ipadEntries = entriesById('smart_manikin_ipad_pad_setup');
+    const sub = data.smart_manikin_subissue || '';
+    const defaultKey = data.documented_fix_failed_requested ? 'mfail' : ({
+      ipad_pad_power_or_open:'mipad',
+      bluetooth_connection:'mbt',
+      training_no_data:'mtraining',
+      black_screen_app_restart:'mblack',
+      completion_photo:'mphoto',
+      wrong_room_floor:'mroom'
+    }[sub] || '');
+    const def = key => key === defaultKey;
+    const ipadEntries = [
+      ...entriesById('smart_manikin_ipad_power_open_no_fix'),
+      ...entriesById('smart_manikin_ipad_pad_setup')
+    ];
     const btEntries = entriesById('smart_manikin_bluetooth_power');
+    const trainingEntries = entriesById('smart_manikin_training_no_data');
     const photoEntries = entriesById('smart_manikin_completion_photo');
     const blackEntries = entriesById('smart_manikin_black_screen_no_fix');
-    if(ipadEntries.length) A.push({key:'mipad', icon:'tablet', label:c.aIpad, sub:c.subDoc, panel:{title:c.aIpad, refEntries:ipadEntries, source:c.ssManikin}});
-    if(bt || btEntries.length) A.push({key:'mbt', icon:'tablet', label:c.aBt, sub:c.subDoc, panel:{title:c.aBt, refEntries:btEntries, doNow:btEntries.length ? [] : [bt], source:c.ssManikin}});
-    if(photo || photoEntries.length) A.push({key:'mphoto', icon:'clip', label:c.aPhoto, sub:c.subDoc, panel:{title:c.aPhoto, refEntries:photoEntries, doNow:photoEntries.length ? [] : [photo], source:c.ssManikin}});
-    if(room) A.push({key:'mroom', icon:'lock', label:c.aRoom, sub:c.subDoc, panel:{title:c.aRoom, doNow:[room], source:c.ssManikin}});
-    const black = steps.find(s => UNDOC_RE.test(s));
-    A.push({key:'mblack', icon:'alert', label:c.aBlack, sub:c.subNoFix, panel:{
-      title:c.blackTitle, refEntries:blackEntries, doNow:blackEntries.length ? [] : c.blackDo, sendTo:[c.toVendor], doNot:c.blackDont,
-      note:black || '', source:c.ssNeedVendor}});
+    const roomEntries = entriesById('smart_manikin_wrong_room_floor');
+    const failEntries = entriesById('smart_manikin_fix_failed_escalation');
+    A.push({key:'mipad', icon:'tablet', label:c.aIpad, sub:data.documented_fix_available === false && sub === 'ipad_pad_power_or_open' ? c.subNoFix : c.subDoc, defaultOpen:def('mipad'), panel:{
+      title:c.aIpad, refEntries:ipadEntries, doNow:def('mipad') ? steps.slice(0, 4) : [], sendTo:[c.toVendor], doNot:c.blackDont, source:sourceFromRefs(manikinRefs, c.ssManikin)}});
+    A.push({key:'mbt', icon:'tablet', label:c.aBt, sub:c.subDoc, defaultOpen:def('mbt'), panel:{
+      title:c.aBt, refEntries:btEntries, doNow:def('mbt') ? steps.slice(0, 4) : [], source:c.ssManikin}});
+    A.push({key:'mtraining', icon:'tablet', label:c.aTrainingNoData, sub:c.subDoc, defaultOpen:def('mtraining'), panel:{
+      title:c.aTrainingNoData, refEntries:trainingEntries, doNow:def('mtraining') ? steps.slice(0, 4) : [], source:c.ssManikin}});
+    A.push({key:'mblack', icon:'alert', label:c.aBlack, sub:c.subNoFix, defaultOpen:def('mblack'), panel:{
+      title:c.blackTitle, refEntries:blackEntries, doNow:def('mblack') ? steps.slice(0, 4) : c.blackDo, sendTo:[c.toVendor], doNot:c.blackDont,
+      source:c.ssNeedVendor}});
+    A.push({key:'mphoto', icon:'clip', label:c.aPhoto, sub:c.subDoc, defaultOpen:def('mphoto'), panel:{
+      title:c.aPhoto, refEntries:photoEntries, doNow:def('mphoto') ? steps.slice(0, 4) : [], source:c.ssManikin}});
+    A.push({key:'mroom', icon:'lock', label:c.aRoom, sub:c.subDoc, defaultOpen:def('mroom'), panel:{
+      title:c.aRoom, refEntries:roomEntries, doNow:def('mroom') ? steps.slice(0, 4) : [], sendTo:[c.toSupervisor], source:c.ssManikin}});
+    A.push({key:'mfail', icon:'alert', label:c.aFixFailed, sub:c.subNoFix, defaultOpen:def('mfail'), panel:{
+      title:c.fixFailedTitle, refEntries:failEntries, doNow:c.fixFailedDo, sendTo:[c.toVendor, c.toSupervisor], doNot:c.fixFailedDont,
+      source:c.ssNeedVendor}});
+    A.push({key:'mvendor', icon:'flag', label:c.aVendor, sub:c.subNoFix, panel:{
+      title:c.aVendor, doNow:c.fixFailedDo, sendTo:[c.toVendor, c.toSupervisor], doNot:c.fixFailedDont, source:c.ssNeedVendor}});
   }
   if(sc === 'student_checkin_issue'){
     const mismatchRefs = refs.filter(r => r.id === 'class_mismatch_checkin');
