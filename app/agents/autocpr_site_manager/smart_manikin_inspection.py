@@ -63,7 +63,11 @@ _RULES = [
     )),
     (EQUIPMENT_PLACEMENT, (
         "器材摆放", "摆放位置", "摆放", "equipment placement", "placement",
-        "where to place", "layout",
+        "where to place", "layout", "器材怎么摆", "怎么摆", "放哪里", "放哪儿",
+        "放在哪", "ipad放哪", "aed放哪", "假人怎么摆", "where to put",
+        "where should i put", "where does the ipad go", "where do the pads go",
+        "setup layout", "station layout", "manikin layout",
+        "how to set up the station", "how to arrange",
     )),
     (INSPECTION_FREQUENCY, (
         "多久", "频率", "几次", "how often", "frequency", "once a week",
@@ -104,6 +108,12 @@ _RULES = [
     (SITE_CHECKLIST, (
         "现场检查", "现场要检查", "检查什么", "检查项", "site checklist", "checklist",
         "check items", "what to check", "现场检查项",
+        # cleaning / supplies / consumables map to the site checklist
+        "trash", "empty trash", "no wipes", "out of wipes", "no gloves",
+        "out of gloves", "supplies", "restock", "dirty room", "room is dirty",
+        "need disinfect", "need to clean", "mask adapter", "mask adaptor",
+        "垃圾", "倒垃圾", "没有湿巾", "没有手套", "耗材", "补货", "房间很脏",
+        "房间脏", "需要打扫", "面罩转接头",
     )),
     (ISSUE_ESCALATION, (
         "无法解决", "解决不了", "上报", "report to allcpr", "escalate", "cannot fix",

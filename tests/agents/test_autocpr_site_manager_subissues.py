@@ -24,7 +24,11 @@ from app.agents.autocpr_site_manager.scenario_subissues import detect_subissue
         ("密码不对，进不去", "venue_access_issue", "code_failed"),
         ("wrong room and floor", "venue_access_issue", "wrong_room_floor"),
         ("找不到房间", "venue_access_issue", "wrong_room_floor"),
-        ("door locked", "venue_access_issue", ""),
+        # casual locked-out phrasing now lands on the passcode panel (redacted
+        # availability when locked, real codes only when unlocked)
+        ("door locked", "venue_access_issue", "passcode_needed"),
+        ("can't get in", "venue_access_issue", "passcode_needed"),
+        ("门锁了", "venue_access_issue", "passcode_needed"),
         ("chose wrong course BLS vs CPR", "student_checkin_issue", "wrong_course"),
         ("选错课程了", "student_checkin_issue", "wrong_course"),
         ("student not on roster", "student_checkin_issue", "not_on_roster"),

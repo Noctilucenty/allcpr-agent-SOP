@@ -111,10 +111,16 @@ def find_operational_references(
 
         site_match = _has_site_match(raw, question, context)
         matches = _specific_match_count(raw, question, context)
+        # For an access question with NO named site, surface every site's passcode
+        # reference as *availability* (redacted when locked, revealed only with a
+        # valid staff token). This is safe because the codes are never exposed
+        # while locked, and it lets staff see which sites have codes / unlock to
+        # view them — instead of a misleading "no source-backed passcode" message.
+        # A query that names a NON-matching site (e.g. Palo Alto) still gets only
+        # the source-needed fallback, never another site's codes.
         allow_unscoped_access_ref = (
             scenario == "venue_access_issue"
             and not _has_site_context(context)
-            and matches > 0
         )
         if raw.get("requires_site_match") and not site_match and not allow_unscoped_access_ref:
             continue
@@ -123,13 +129,20 @@ def find_operational_references(
         score = priority + (35 if site_match else 0) + (12 * matches)
 
         # Topic references need a direct keyword or site match. Only references
-        # with no applies_to terms behave as broad scenario-level guidance.
-        if matches or site_match or not raw.get("applies_to"):
+        # with no applies_to terms (or the unscoped access case) behave as broad
+        # scenario-level guidance.
+        if matches or site_match or not raw.get("applies_to") or allow_unscoped_access_ref:
             scored.append((score, str(raw.get("id", "")), raw))
 
     scored.sort(key=lambda item: (-item[0], item[1]))
+    # A site-less access question surfaces the general "confirm site / availability"
+    # guidance alongside each site's (redacted) passcode row, so widen the cap a
+    # little in that case only.
+    eff_limit = limit
+    if scenario == "venue_access_issue" and not _has_site_context(context):
+        eff_limit = max(limit, 4)
     refs: List[OperationalReference] = []
-    for _, _, raw in scored[:limit]:
+    for _, _, raw in scored[:eff_limit]:
         try:
             refs.append(OperationalReference(**raw))
         except (TypeError, ValueError):

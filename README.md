@@ -223,8 +223,43 @@ invents policy, codes, or fixes:
 
 The decision-tree UI opens the matching panel by default (passcode query →
 passcode panel, code-failed → venue/property, wrong course → roster, etc.).
-Site-specific access codes still appear only when the question/context names a
-matching site.
+
+### Fuzzy / casual intent routing
+
+Staff rarely type exact SOP wording, so routing is deterministic keyword matching
+over a broad bilingual phrase set — casual, incomplete, and typo-ish variants map
+to the correct scenario/subtype without any LLM guessing. Coverage spans every
+major category: access/passcode, arrival/inspection procedure, iPad/PAD & device,
+Bluetooth/connection, training/no-data, wrong-course/roster, instructor-no-show/
+class-cannot-start, refund/reschedule/cancel (always approval-gated), certificate/
+completion, power/internet/platform, camera/monitoring, safety/injury, cleaning/
+supplies, and equipment placement.
+
+Precedence is ordered so safety always wins and specific scenarios beat generic
+ones. Guardrails that must hold: `teacher did not arrive` → `instructor_no_show`;
+`students arrived and class cannot start` → `class_cannot_start`; arrival/procedure
+phrasing → `smart_manikin_site_inspection` / `pre_check_photos`; and truly
+unsupported questions stay `unknown` rather than being force-fit. See
+`tests/agents/test_fuzzy_routing.py`.
+
+### Passcode panel behavior
+
+The Passcode chip renders from matched operational references, not a hardcoded
+message. When a site-less access question is asked, every site's passcode row is
+surfaced as *availability*:
+
+- **Locked (default):** rows show the site + label + source with the value replaced
+  by the redaction message — never a raw code, and never the misleading "no
+  source-backed passcode extracted" when references exist.
+- **Unlocked (valid staff token):** the source-backed codes are revealed with the
+  "Internal use only. Verify site/building/room before using." warning; multiple
+  sites are shown with clear labels.
+- A query naming a **non-matching** site (e.g. Palo Alto) still gets only the
+  source-needed fallback, never another site's codes.
+
+Site-specific access codes are shown for a matching site directly; redaction is
+enforced backend-side in all cases (`passcode_ref_available` /
+`passcode_revealed` / `staff_access_unlocked` flags drive the panel).
 
 ### Smart Manikin Constraints
 
