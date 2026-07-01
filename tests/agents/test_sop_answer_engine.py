@@ -87,6 +87,19 @@ def test_ipad_paraphrase_returns_power_steps():
     assert m["found"]
     blob = " ".join(m["steps"]).lower()
     assert "charg" in blob or "power" in blob
+    assert "unplug the tablet charging cable" not in blob
+
+
+def test_sop_match_keeps_source_chunks_accessible_but_not_as_main_steps():
+    m = engine.compose_sop_match("ipad no battery")
+    assert m["found"]
+    assert m["evidence_requested"]
+    assert "raw_retrieved_chunks" in m
+    main = " ".join(m["steps"]).lower()
+    raw = " ".join(chunk.get("value", "") for chunk in m["raw_retrieved_chunks"]).lower()
+    assert "unplug the tablet charging cable" not in main
+    # Source-recorded context can still be inspected in the collapsed details.
+    assert "source records no ipad battery" in raw or "unplug the tablet charging cable" in raw
 
 
 def test_unmatched_text_is_not_found_safely():

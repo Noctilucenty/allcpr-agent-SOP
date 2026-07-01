@@ -120,10 +120,11 @@ def api_agent_site_manager_ask(req: AgentAskRequest) -> AgentAnswer:
     answer = answer_question(
         req.question, req.context, staff_access_token=req.staff_access_token
     )
-    answer.ai_pending = ai_enabled()
+    staff_unlocked = staff_access.verify_token(req.staff_access_token)
+    answer.ai_pending = ai_enabled() and staff_unlocked
     # Even with AI off, a weak deterministic answer (messy wording the classifier
     # could not route) should trigger the deterministic SOP knowledge-base match.
-    answer.sop_assist_pending = (not ai_enabled()) and sop_assist_recommended(answer)
+    answer.sop_assist_pending = staff_unlocked and (not ai_enabled()) and sop_assist_recommended(answer)
     entry = append_answer_log(req.question, req.context, answer)
     answer.incident_log_id = str(entry.get("id", ""))
     return answer
@@ -138,6 +139,8 @@ def api_agent_site_manager_ai_summary(req: AgentAskRequest) -> dict:
     deterministic answer. Returns ``ai_used: false`` if AI is off or the call
     fails — the client then keeps the instructions it already showed.
     """
+    if not staff_access.verify_token(req.staff_access_token):
+        raise HTTPException(status_code=401, detail="staff access required")
     payload = ai_summary_payload(
         req.question, req.context, staff_access_token=req.staff_access_token
     )

@@ -61,11 +61,12 @@ def test_3_audit_includes_every_library_file():
     audited = {e["path"] for e in sop_workflows.audit_entries()}
     on_disk = {
         p.relative_to(PROJECT_ROOT).as_posix()
-        for p in SOP_LIBRARY.rglob("*")
-        # skip OS metadata / dotfiles (.DS_Store) and Word temp-lock files (~$...)
-        # — they aren't SOP documents
-        if p.is_file() and not p.name.startswith((".", "~$"))
-    }
+            for p in SOP_LIBRARY.rglob("*")
+            # skip OS metadata / dotfiles (.DS_Store) and Word temp-lock files (~$...)
+            # plus gitignored LOCAL-only credential/work-copy docs — they aren't
+            # committed SOP documents
+            if p.is_file() and not p.name.startswith((".", "~$")) and ".LOCAL." not in p.name
+        }
     missing = on_disk - audited
     assert not missing, f"audit is missing files: {sorted(missing)}"
 

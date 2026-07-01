@@ -696,26 +696,35 @@ def test_ui_activity_drawer_closed_by_default():
     assert 'id="log-list"' in body
 
 
-def test_ui_answer_card_shows_full_guidance_expanded():
+def test_ui_answer_card_collapses_supporting_details_by_default():
     body = TestClient(web_app.app).get("/agent").text
-    # calm card shell is kept, but guidance is no longer buried behind tabs:
-    # the decision tree (source-recorded operational references), SOP images,
-    # evidence, escalation and "do not" all render as visible sections.
+    # calm card shell is kept, with the main operational answer visible first.
     assert 'class="ans-card"' in body
     assert 'class="ac-now"' in body
-    # tab machinery is gone — nothing starts collapsed/hidden by default
+    # tab machinery is gone; support material is available through closed
+    # disclosures instead of being expanded as main content.
     assert 'class="ac-tab"' not in body
     assert 'data-acpanel="${key}" hidden' not in body
-    # full guidance rendered inline in render()
-    assert "treeHTML(data" in body          # recorded operational references
-    assert "mediaGridHTML(imgs" in body      # SOP images shown when present
+    assert "accordion(c.viewRecordedSteps" in body
+    assert "accordion(c.viewSourceDetails" in body
+    assert "accordion(c.viewAdditionalImages" in body
+    assert "accordion(c.viewMoreFollowups" in body
+    assert "rawRetrievedChunks:" in body
+    # recorded steps and raw retrieved chunks are not expanded main sections.
+    assert "section(c.recordedSteps" not in body
+    assert "accSub(c.rawRetrievedChunks" in body
+    # main guidance still renders the operational essentials.
+    assert "treeHTML(data" in body
+    assert "mediaGridHTML(imgs, c, 1)" in body  # main card shows one image max
     assert "escalateChips(data.contacts" in body
     assert "section(c.doNot" in body
     assert "section(c.requiredEvidence" in body
-    # source-recorded steps get their own always-visible section
-    assert "section(c.recordedSteps" in body
     assert "refEntriesHTML(recEntries" in body
     assert body.count("recordedSteps:") >= 2  # en + zh
+    assert body.count("viewRecordedSteps:") >= 2
+    assert body.count("viewSourceDetails:") >= 2
+    assert body.count("viewAdditionalImages:") >= 2
+    assert body.count("viewMoreFollowups:") >= 2
     # all steps are shown, not capped at three
     assert "now.slice(0, 3)" not in body
 
@@ -811,8 +820,10 @@ def test_ui_has_sop_knowledge_base_and_ai_summary_labels():
               "SOP knowledge base · SOP-backed", "AI 整理后的 SOP 智能知识库 · 基于 SOP",
               "Searching SOP knowledge base…", "正在查询 SOP 知识库…"):
         assert s in body
-    # the SOP fallback is fetched even when AI is off
+    # the SOP-backed expansion is fetched only after staff unlock
     assert "data.sop_assist_pending" in body
+    assert "tok && (data.ai_pending || data.sop_assist_pending)" in body
+    assert "if(!tok) return" in body
     assert "sopMatchHTML" in body
 
 
@@ -907,6 +918,13 @@ def _enable_ai(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-real")
 
 
+def _staff_token_with_env(monkeypatch, client):
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "1234")
+    resp = client.post("/api/staff-access/unlock", json={"pin": "1234"})
+    assert resp.status_code == 200
+    return resp.json()["token"]
+
+
 def _fake_complete(intent=None, summary=None):
     """Return a _complete stand-in that answers by stage (intent vs summary)."""
     def fake(system, user):
@@ -945,20 +963,38 @@ def test_ask_is_deterministic_and_fast_when_ai_disabled(monkeypatch):
 
 def test_ask_sets_ai_pending_but_does_not_block_on_ai(monkeypatch):
     # When AI is enabled, /ask still returns the deterministic answer immediately
-    # and only flags ai_pending — it must NOT call the model on this path.
+    # and only flags ai_pending after staff unlock — it must NOT call the model
+    # on this path.
     _enable_ai(monkeypatch)
     _throw_if_called(monkeypatch)
-    d = TestClient(web_app.app).post(
-        _ASK, json={"question": "power outage", "language": "en"}
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
+    d = client.post(
+        _ASK, json={"question": "power outage", "language": "en", "staff_access_token": token}
     ).json()
     assert d["scenario"] == "electricity_outage"
     assert d["ai_pending"] is True
     assert d["ai_used"] is False
 
 
+def test_ai_summary_and_pending_are_staff_gated(monkeypatch):
+    _enable_ai(monkeypatch)
+    _throw_if_called(monkeypatch)
+    client = TestClient(web_app.app)
+    d = client.post(_ASK, json={"question": "power outage", "language": "en"}).json()
+    assert d["ai_pending"] is False
+    assert d["sop_assist_pending"] is False
+    resp = client.post(_AI_SUMMARY, json={"question": "power outage"})
+    assert resp.status_code == 401
+
+
 def test_ai_summary_endpoint_returns_ai_used_false_when_disabled(monkeypatch):
     _throw_if_called(monkeypatch)
-    d = TestClient(web_app.app).post(_AI_SUMMARY, json={"question": "power outage"}).json()
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
+    d = client.post(
+        _AI_SUMMARY, json={"question": "power outage", "staff_access_token": token}
+    ).json()
     assert d["ai_used"] is False
     assert d["ai_summary"] == ""
 
@@ -971,8 +1007,11 @@ def test_ai_summary_endpoint_returns_summary_when_enabled(monkeypatch):
     summary = {"short_title": "Manikin black screen", "plain_summary": "Save evidence and escalate.",
                "top_3_steps": ["Confirm symptom", "Save photo", "Escalate to vendor"], "clarifying_question": ""}
     monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
-    d = TestClient(web_app.app).post(
-        _AI_SUMMARY, json={"question": "the smart manikin screen is black", "language": "en"}
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
+    d = client.post(
+        _AI_SUMMARY,
+        json={"question": "the smart manikin screen is black", "language": "en", "staff_access_token": token},
     ).json()
     assert d["ai_used"] is True
     assert d["ai_stage"] == "both"
@@ -1003,7 +1042,9 @@ def test_ai_summary_cannot_leak_a_real_passcode(monkeypatch):
     summary = {"short_title": "Access", "plain_summary": f"The code is {leak}.",
                "top_3_steps": [f"Enter {leak}"], "clarifying_question": ""}
     monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
-    d = TestClient(web_app.app).post(_AI_SUMMARY, json={"question": "door locked"}).json()
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
+    d = client.post(_AI_SUMMARY, json={"question": "door locked", "staff_access_token": token}).json()
     assert leak not in d["ai_summary"]
     assert all(leak not in s for s in d["ai_top_steps"])
     assert leak not in _json.dumps(d, ensure_ascii=False)
@@ -1014,7 +1055,9 @@ def test_ai_summary_unsupported_scenario_hint_is_ignored(monkeypatch):
     intent = {"normalized_question": "power outage at the site", "scenario_hint": "totally_made_up_label"}
     summary = {"short_title": "Outage", "plain_summary": "Check scope.", "top_3_steps": [], "clarifying_question": ""}
     monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
-    d = TestClient(web_app.app).post(_AI_SUMMARY, json={"question": "no power"}).json()
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
+    d = client.post(_AI_SUMMARY, json={"question": "no power", "staff_access_token": token}).json()
     assert d["ai_scenario_hint"] == ""  # unknown label dropped
 
 
@@ -1025,7 +1068,8 @@ def test_ai_summary_cannot_override_deterministic_review(monkeypatch):
                "top_3_steps": ["Approve the refund now"], "clarifying_question": ""}
     monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
     client = TestClient(web_app.app)
-    q = {"question": "can I approve a refund and certificate for this student"}
+    token = _staff_token_with_env(monkeypatch, client)
+    q = {"question": "can I approve a refund and certificate for this student", "staff_access_token": token}
     # The deterministic /ask decides review — the AI summary is text-only and
     # cannot flip it.
     ask = client.post(_ASK, json=q).json()
@@ -1040,11 +1084,22 @@ def test_ask_sets_sop_assist_pending_for_weak_query_when_ai_off(monkeypatch):
     # flag sop_assist_pending so the client fetches the SOP knowledge-base match,
     # even though AI is off and /ask never touches the model.
     _throw_if_called(monkeypatch)
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
+    d = client.post(
+        _ASK, json={"question": "camera seems off", "language": "en", "staff_access_token": token}
+    ).json()
+    assert d["ai_pending"] is False
+    assert d["sop_assist_pending"] is True
+
+
+def test_ask_hides_sop_assist_pending_before_staff_unlock(monkeypatch):
+    _throw_if_called(monkeypatch)
     d = TestClient(web_app.app).post(
         _ASK, json={"question": "camera seems off", "language": "en"}
     ).json()
     assert d["ai_pending"] is False
-    assert d["sop_assist_pending"] is True
+    assert d["sop_assist_pending"] is False
 
 
 def test_ask_no_sop_assist_for_strong_query_when_ai_off(monkeypatch):
@@ -1058,8 +1113,11 @@ def test_ask_no_sop_assist_for_strong_query_when_ai_off(monkeypatch):
 
 def test_ai_summary_returns_sop_match_when_ai_off(monkeypatch):
     _throw_if_called(monkeypatch)
-    d = TestClient(web_app.app).post(
-        _AI_SUMMARY, json={"question": "i cant get the practice session going", "language": "en"}
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
+    d = client.post(
+        _AI_SUMMARY,
+        json={"question": "i cant get the practice session going", "language": "en", "staff_access_token": token},
     ).json()
     assert d["ai_used"] is False          # AI never ran
     assert "sop_match" in d
@@ -1071,10 +1129,12 @@ def test_ai_summary_returns_sop_match_when_ai_off(monkeypatch):
 
 def test_ai_summary_sop_match_never_leaks_passcode(monkeypatch):
     _throw_if_called(monkeypatch)
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
     secrets = ai.sensitive_values()
     assert secrets, "expected at least one sensitive value in the source refs"
     for q in ("the door is locked", "wifi password", "the little screen thing is frozen"):
-        d = TestClient(web_app.app).post(_AI_SUMMARY, json={"question": q}).json()
+        d = client.post(_AI_SUMMARY, json={"question": q, "staff_access_token": token}).json()
         blob = _json.dumps(d, ensure_ascii=False)
         for secret in secrets:
             assert secret not in blob, (q, secret)
@@ -1086,8 +1146,10 @@ def test_ai_summary_includes_sop_match_when_ai_on(monkeypatch):
     summary = {"short_title": "Camera", "plain_summary": "Save evidence and escalate.",
                "top_3_steps": ["Check camera", "Save photo", "Escalate"], "clarifying_question": ""}
     monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
-    d = TestClient(web_app.app).post(
-        _AI_SUMMARY, json={"question": "camera seems off", "language": "en"}
+    client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
+    d = client.post(
+        _AI_SUMMARY, json={"question": "camera seems off", "language": "en", "staff_access_token": token}
     ).json()
     assert d["ai_used"] is True
     assert "sop_match" in d and d["sop_match"]["found"] is True
@@ -1119,15 +1181,19 @@ def test_ai_metadata_patched_onto_log_without_secrets(monkeypatch):
                "top_3_steps": [], "clarifying_question": ""}
     monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
     client = TestClient(web_app.app)
+    token = _staff_token_with_env(monkeypatch, client)
     # 1) fast path creates the log with ai_pending, ai_used still false
-    ask = client.post(_ASK, json={"question": "no power help"}).json()
+    ask = client.post(
+        _ASK, json={"question": "no power help", "staff_access_token": token}
+    ).json()
     log_id = ask["incident_log_id"]
     pending_log = client.get("/api/incident-logs").json()[0]
     assert pending_log["ai_pending"] is True
     assert pending_log["ai_used"] is False
     # 2) async summary patches the safe metadata onto that same log
     client.post(_AI_SUMMARY, json={"question": "no power help",
-                                   "context": {"incident_log_id": log_id}})
+                                   "context": {"incident_log_id": log_id},
+                                   "staff_access_token": token})
     log = client.get("/api/incident-logs").json()[0]
     assert log["ai_used"] is True
     assert log["ai_stage"] == "both"

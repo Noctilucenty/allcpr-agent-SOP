@@ -33,3 +33,10 @@ env/
 
 # Word/Office temp lock files
 ~$*
+
+# LOCAL-ONLY credentials / access notes — NEVER commit. Site passcodes, lockbox
+# codes, Wi-Fi passwords, staff PINs live here for on-site staff reference only.
+*.LOCAL.md
+*.LOCAL.docx
+*.SECRET.*
+/SOP_library/ALLCPR_Site_Access_Credentials.LOCAL.md

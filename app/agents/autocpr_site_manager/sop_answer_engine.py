@@ -34,6 +34,7 @@ staff" rather than presenting a guess as authoritative.
 """
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import scenarios as _scenarios
@@ -248,6 +249,44 @@ def _sources(answer: AgentAnswer) -> List[Dict[str, str]]:
     return out
 
 
+def _is_sensitive_ref_item(item: Any) -> bool:
+    sensitivity = str(getattr(item, "sensitivity", "") or "").lower()
+    text = f"{getattr(item, 'label', '')} {getattr(item, 'value', '')}".lower()
+    if sensitivity in {"internal", "restricted"}:
+        return True
+    return any(token in text for token in ("passcode", "password", "lockbox", "wi-fi", "wifi", "密码"))
+
+
+def _raw_source_chunks(answer: AgentAnswer) -> List[Dict[str, str]]:
+    from .ai_orchestrator import redact_text, sensitive_values  # local import avoids widening module coupling
+
+    def scrub(text: str) -> str:
+        out = str(redact_text(text) or "")
+        for secret in sensitive_values():
+            for token in re.findall(r"[A-Za-z0-9]{4,}", str(secret or "")):
+                if any(ch.isdigit() for ch in token) and token in out:
+                    out = out.replace(token, "[redacted]")
+        return out
+
+    chunks: List[Dict[str, str]] = []
+    for ref in (answer.operational_references or []):
+        for item in (getattr(ref, "items", None) or []):
+            if _is_sensitive_ref_item(item):
+                continue
+            value = str(getattr(item, "value", "") or "").strip()
+            if not value:
+                continue
+            chunks.append({
+                "label": scrub(str(getattr(item, "label", "") or "Source note")),
+                "value": scrub(value),
+                "source": scrub(str(getattr(ref, "title", "") or getattr(ref, "id", "") or "")),
+                "source_status": str(getattr(ref, "source_status", "") or ""),
+            })
+            if len(chunks) >= 10:
+                return chunks
+    return chunks
+
+
 def _match_from_answer(
     answer: AgentAnswer,
     *,
@@ -268,10 +307,12 @@ def _match_from_answer(
         "title": answer.issue_type or answer.scenario,
         "summary": (answer.answer_summary or "").strip(),
         "steps": [str(s) for s in (answer.steps or [])][:7],
+        "evidence_requested": [str(s) for s in (answer.evidence_requested or [])][:6],
         "do_not": [str(s) for s in (answer.do_not_decide_without_approval or [])][:5],
         "escalate_to": [str(s) for s in (answer.contacts or [])][:4],
         "sources": _sources(answer),
         "image_references": _image_refs(answer, lang),
+        "raw_retrieved_chunks": _raw_source_chunks(answer),
         "needs_human_review": bool(needs_review or answer.needs_human_review),
         "audience": audience,
         "note": note,
@@ -288,10 +329,12 @@ def _not_found(lang: str, audience: str) -> Dict[str, Any]:
         "title": "",
         "summary": "",
         "steps": [],
+        "evidence_requested": [],
         "do_not": [],
         "escalate_to": [],
         "sources": [],
         "image_references": [],
+        "raw_retrieved_chunks": [],
         "needs_human_review": True,
         "audience": audience,
         "note": _NOT_FOUND_NOTE["zh" if lang == "zh" else "en"],

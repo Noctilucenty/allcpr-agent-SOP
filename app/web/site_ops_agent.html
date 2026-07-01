@@ -1336,6 +1336,12 @@ const COPY = {
     // ---- decision tree ----
     treeTitle:'What do you need next?',
     recordedSteps:'Recorded steps for this issue',
+    viewRecordedSteps:'View recorded SOP steps',
+    viewSourceDetails:'View source details',
+    viewAdditionalImages:'View additional SOP images',
+    viewMoreFollowups:'View more follow-up actions',
+    rawRetrievedChunks:'Raw retrieved SOP chunks',
+    fullRetrievalMatches:'Full retrieval matches',
     pUseWhen:'Use when', pDoNow:'Do now', pCollect:'Collect', pSendTo:'Send to', pDoNot:'Do not', pSource:'Source status',
     copyDraft:'Copy draft', copied:'Copied',
     subApproval:'Needs approval', subSop:'SOP reference', subDoc:'Documented', subNoFix:'No documented fix', subDraft:'Draft', subRef:'Open reference',
@@ -1629,6 +1635,12 @@ const COPY = {
     // ---- 决策树 ----
     treeTitle:'下一步需要什么？',
     recordedSteps:'该问题的记录步骤',
+    viewRecordedSteps:'查看已记录 SOP 步骤',
+    viewSourceDetails:'查看来源详情',
+    viewAdditionalImages:'查看更多 SOP 图片',
+    viewMoreFollowups:'查看更多后续操作',
+    rawRetrievedChunks:'原始检索 SOP 片段',
+    fullRetrievalMatches:'完整检索匹配',
     pUseWhen:'适用情况', pDoNow:'现在做', pCollect:'收集', pSendTo:'发送给', pDoNot:'不要做', pSource:'来源状态',
     copyDraft:'复制草稿', copied:'已复制',
     subApproval:'需要批准', subSop:'SOP 参考', subDoc:'已记录', subNoFix:'无记录修复', subDraft:'草稿', subRef:'打开参考',
@@ -1902,18 +1914,32 @@ function dontList(items){
     `<li>${esc(String(x).replace(/^[-•]\s*/, ''))}</li>`).join('')}</ul>`;
 }
 
-function mediaGridHTML(items, c){
-  const cards = items.slice(0, 3).map(item =>
-    `<a class="media-card" href="${esc(item.url)}" target="_blank" rel="noopener">
+function dedupeMediaItems(items){
+  const seen = new Set();
+  const out = [];
+  (items || []).forEach(item => {
+    const key = [item.url || item.path || '', item.source_file || item.source || '', item.title || ''].join('|').toLowerCase();
+    if(seen.has(key)) return;
+    seen.add(key);
+    out.push(item);
+  });
+  return out;
+}
+
+function mediaGridHTML(items, c, limit=3){
+  const cards = (items || []).slice(0, limit).map(item => {
+    const url = item.url || item.path || '';
+    return `<a class="media-card" href="${esc(url)}" target="_blank" rel="noopener">
       <span class="media-thumb">
-        <img src="${esc(item.url)}" alt="${esc(item.title)}" loading="lazy" />
+        <img src="${esc(url)}" alt="${esc(item.title || '')}" loading="lazy" />
         <span class="tag">${esc(c.sopImageRef)}</span>
       </span>
       <span class="media-body">
-        <p class="media-title">${esc(item.title)}</p>
-        <p class="media-src">${esc(item.source_file)}</p>
+        <p class="media-title">${esc(item.title || '')}</p>
+        <p class="media-src">${esc(item.source_file || item.source || item.caution || '')}</p>
       </span>
-    </a>`).join('');
+    </a>`;
+  }).join('');
   return `<div class="media-grid">${cards}</div>
     <p class="media-note">${svg('alert')}<span>${esc(c.noAnalysis)}</span></p>`;
 }
@@ -2016,6 +2042,17 @@ function refEntriesHTML(entries){
       <span class="opref-k">${esc(item.label || '')}</span>
       <span class="opref-v">${esc(item.value || '')}</span>
       <span class="opref-src">${esc(ref.title || ref.id || '')}</span>
+    </div>`).join('')}</div>`;
+}
+
+function rawChunksHTML(chunks){
+  const vals = chunks || [];
+  if(!vals.length) return '';
+  return `<div class="oprefs">${vals.map(item =>
+    `<div class="opref">
+      <span class="opref-k">${esc(item.label || '')}</span>
+      <span class="opref-v">${esc(item.value || '')}</span>
+      <span class="opref-src">${esc(item.source || item.source_status || '')}</span>
     </div>`).join('')}</div>`;
 }
 
@@ -2268,16 +2305,27 @@ function treePanelHTML(key, p, c, open=false){
   </div>`;
 }
 
-function treeHTML(data, c){
-  const actions = buildTree(data, c);
-  if(!actions.length) return '';
+function treeActionsHTML(actions, c){
   const menu = `<div class="tree-menu">${actions.map(a =>
     `<button type="button" class="pill${a.defaultOpen ? ' open' : ''}" data-act="${a.key}">
       <span class="pill-ic" aria-hidden="true">${svg(a.icon)}</span>
       <span class="pill-tx"><span class="pill-lb">${esc(a.label)}</span>${a.sub ? `<span class="pill-sb">${esc(a.sub)}</span>` : ''}</span>
     </button>`).join('')}</div>`;
   const panels = actions.filter(a => a.panel).map(a => treePanelHTML(a.key, a.panel, c, !!a.defaultOpen)).join('');
-  return section(c.treeTitle, 'steps', menu + `<div class="tree-panels">${panels}</div>`);
+  return menu + `<div class="tree-panels">${panels}</div>`;
+}
+
+function treeHTML(data, c){
+  const actions = buildTree(data, c);
+  if(!actions.length) return '';
+  const visible = actions.slice(0, 3);
+  return section(c.treeTitle, 'steps', treeActionsHTML(visible, c));
+}
+
+function moreTreeHTML(data, c){
+  const actions = buildTree(data, c).slice(3).map(a => Object.assign({}, a, {defaultOpen:false}));
+  if(!actions.length) return '';
+  return accordion(c.viewMoreFollowups, treeActionsHTML(actions, c));
 }
 
 /* Answer card: a complete, self-contained field guide, visible by default.
@@ -2313,22 +2361,39 @@ function sopMatchHTML(m, c){
       <p class="ac-ai-q">${svg('alert')}<span>${esc(m.note || c.sopNotFound)}</span></p>
     </div>`;
   }
-  const steps = (m.steps || []).slice(0, 7);
+  const steps = (m.steps || []).slice(0, 5);
+  const evid = dropMatch(m.evidence_requested || [], SAFE_PHOTO_RE).slice(0, 5);
   const dont = (m.do_not || []).slice(0, 4);
   const escTo = (m.escalate_to || []).slice(0, 3);
   const srcs = (m.sources || []).map(s => s && s.label).filter(Boolean).slice(0, 3);
-  const img = (m.image_references || [])[0];
+  const imgs = dedupeMediaItems(m.image_references || []);
+  const mainImg = imgs[0];
   const note = m.needs_human_review ? (m.note || c.sopConfirm) : '';
+  const evSec = evid.length ? section(c.requiredEvidence, 'clip', checklist(evid, 5)) : '';
+  const esSec = escTo.length ? section(c.escalateTo, 'flag', escalateChips(escTo)) : '';
+  const primaryPair = (evSec && esSec) ? `<div class="dual">${evSec}${esSec}</div>` : (evSec + esSec);
+  const sourceInner =
+    accSub(c.sopSourceLabel, srcs.length ? `<p class="src-list">${srcs.map(x => esc(x)).join(', ')}</p>` : '')
+    + accSub(c.rawRetrievedChunks, rawChunksHTML(m.raw_retrieved_chunks || []))
+    + accSub(c.fullRetrievalMatches, `<pre class="raw">${esc(JSON.stringify({
+      matched_issue:m.matched_issue || '',
+      confidence:m.confidence || '',
+      via:m.via || '',
+      note:m.note || ''
+    }, null, 2))}</pre>`);
+  const sourceAcc = accordion(c.viewSourceDetails, sourceInner);
+  const moreImgs = imgs.length > 1 ? accordion(c.viewAdditionalImages, mediaGridHTML(imgs.slice(1), c, 99)) : '';
   return `<div class="ac-ai ac-sop">
     <span class="ac-ai-tag">${svg('bolt')}${esc(c.sopLabel)}</span>
     ${m.title ? `<p class="ac-ai-title">${esc(m.title)}</p>` : ''}
     ${m.summary ? `<p class="ac-ai-sum">${esc(m.summary)}</p>` : ''}
-    ${steps.length ? `<ol class="ac-ai-steps">${steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
-    ${dont.length ? `<p class="ac-ai-dont"><strong>${esc(c.doNot)}:</strong> ${dont.map(x => esc(x)).join('; ')}</p>` : ''}
-    ${escTo.length ? `<p class="ac-ai-esc"><strong>${esc(c.escalateTo)}:</strong> ${escTo.map(x => esc(x)).join('; ')}</p>` : ''}
-    ${img ? `<figure class="ac-sop-img"><img src="${esc(img.path)}" alt="${esc(img.title || '')}" loading="lazy"><figcaption>${esc(img.caution || '')}</figcaption></figure>` : ''}
+    ${steps.length ? `<div class="ac-sop-block"><p class="ac-now-title">${svg('bolt')}${esc(c.whatToDoNow)}</p><ol class="ac-ai-steps">${steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol></div>` : ''}
+    ${primaryPair}
+    ${dont.length ? section(c.doNot, 'alert', `<ul class="dont-list">${dont.map(x => `<li>${esc(String(x).replace(/^[-•]\s*/, ''))}</li>`).join('')}</ul>`, 'dont') : ''}
+    ${mainImg ? `<figure class="ac-sop-img"><img src="${esc(mainImg.path || mainImg.url || '')}" alt="${esc(mainImg.title || '')}" loading="lazy"><figcaption>${esc(mainImg.caution || '')}</figcaption></figure>` : ''}
     ${srcs.length ? `<p class="ac-ai-src">${esc(c.sopSourceLabel)}: ${srcs.map(x => esc(x)).join(', ')}</p>` : ''}
     ${note ? `<p class="ac-ai-q">${svg('alert')}<span>${esc(note)}</span></p>` : ''}
+    <div class="accordions">${sourceAcc}${moreImgs}</div>
   </div>`;
 }
 function render(data){
@@ -2369,16 +2434,19 @@ function render(data){
      path of the decision tree so they remain staff-locked. */
   const recEntries = refEntries(opRefs(data), item => !isCodeItem(item), 12);
   const recordedSec = recEntries.length
-    ? section(c.recordedSteps, 'steps', refEntriesHTML(recEntries)) : '';
+    ? accordion(c.viewRecordedSteps, accSub(c.recordedSteps, refEntriesHTML(recEntries))) : '';
 
   /* Decision tree ("what do you need next?") — the interactive router for
      other paths (passcode, escalation note, incident report, etc.). */
   const treeSec = treeHTML(data, c);
+  const moreTreeSec = moreTreeHTML(data, c);
 
-  /* SOP images — shown inline, at hand, whenever the source provides them. */
-  const imgs = data.sop_images || [];
+  /* SOP images — show one direct image on the main card, keep extras collapsed. */
+  const imgs = dedupeMediaItems(data.sop_images || []);
   const mediaSec = imgs.length
-    ? `<div id="sop-images">${section(c.sopImageRef, 'image', mediaGridHTML(imgs, c))}</div>` : '';
+    ? `<div id="sop-images">${section(c.sopImageRef, 'image', mediaGridHTML(imgs, c, 1))}</div>` : '';
+  const extraMediaSec = imgs.length > 1
+    ? accordion(c.viewAdditionalImages, mediaGridHTML(imgs.slice(1), c, 99)) : '';
 
   /* Required evidence + escalation, side by side. */
   const evid = dropMatch(data.evidence_requested, SAFE_PHOTO_RE).slice(0, 6);
@@ -2393,27 +2461,33 @@ function render(data){
     ? section(c.doNot, 'alert', `<ul class="dont-list">${dontItems.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`, 'dont')
     : '';
 
-  /* Secondary detail — info to collect, source provenance, raw answer. */
+  /* Secondary detail — info to collect, source provenance, retrieved chunks, raw answer. */
   const accInfo = (data.information_to_collect && data.information_to_collect.length)
     ? accSub(c.information, list(data.information_to_collect, false, 99)) : '';
   const accSources =
     `<p class="src-list">${esc((data.sources || []).length ? data.sources.join(', ') : '—')}</p>`
     + `<div class="src-tags">${sourceTagsHTML(data.source_status || [], data.language) || ''}</div>`
     + `<p class="media-note">${svg('alert')}<span>${esc(c.provenanceShort)}</span></p>`;
-  const detailsBlock = accordion(c.accSources, accInfo + accSources)
-    + `<details class="full"><summary>${svg('report')}<span>${esc(c.accFull)}</span>${chev()}</summary><pre class="raw">${esc(data.answer || '')}</pre></details>`;
+  const rawRetrieved = refEntriesHTML(refEntries(opRefs(data), item => !isCodeItem(item), 99));
+  const detailsBlock = accordion(c.viewSourceDetails,
+      accInfo
+      + accSub(c.sopSourceLabel, accSources)
+      + accSub(c.rawRetrievedChunks, rawRetrieved)
+      + accSub(c.fullRetrievalMatches, `<pre class="raw">${esc(data.answer || '')}</pre>`)
+    )
+    + extraMediaSec
+    + moreTreeSec;
 
   $('#out').innerHTML = `<div class="ans-card">
     <div class="ac-head">${head}</div>
     ${aiBanner}
     ${safetyBanner}
     ${nowHTML}
-    ${recordedSec}
     ${treeSec}
     ${mediaSec}
     ${primaryPair}
     ${dontSec}
-    <div class="accordions">${detailsBlock}</div>
+    <div class="accordions">${recordedSec}${detailsBlock}</div>
   </div>`;
   $('#out').style.display = 'block';
   $('#out').scrollIntoView({behavior:'smooth', block:'start'});
@@ -2679,7 +2753,7 @@ async function ask(){
     render(data);
     // Optional AI summary: fetch it separately and pop it in on top when ready,
     // so the deterministic instructions never wait on the model.
-    if(data.ai_pending || data.sop_assist_pending) fetchAiSummary(q, ctx, tok, data.incident_log_id, seq, !!data.ai_pending);
+    if(tok && (data.ai_pending || data.sop_assist_pending)) fetchAiSummary(q, ctx, tok, data.incident_log_id, seq, !!data.ai_pending);
     if(data.incident_log_id) await loadLogs(data.incident_log_id);
   }catch(err){
     if(seq !== askSeq) return;
@@ -2695,6 +2769,7 @@ async function ask(){
    (or removes it silently on failure / when AI returns nothing). A sequence guard
    ignores results from a question the user has since replaced. */
 function fetchAiSummary(q, ctx, tok, logId, seq, aiPending){
+  if(!tok) return;
   const card = $('#out .ans-card');
   if(!card) return;
   const head = card.querySelector('.ac-head');
