@@ -207,15 +207,14 @@ def api_list_student_checks(limit: int = Query(default=50, ge=1, le=200)) -> lis
 
 
 @app.get("/api/inspection-reference")
-def api_inspection_reference() -> list[dict]:
+def api_inspection_reference(lang: str = Query(default="en")) -> list[dict]:
     """Source-backed SOP media for the guided inspection flow (equipment placement
-    diagram). Metadata only — no image analysis."""
-    from app.agents.autocpr_site_manager.sop_media_index import find_relevant_sop_media
+    diagram). Metadata only — no image analysis. Each item carries title, image
+    path, source, use_for, related_steps, and a "reference only; do not repair or
+    dismantle" caution."""
+    from app.agents.autocpr_site_manager.sop_workflows import build_inspection_reference
 
-    items = find_relevant_sop_media(
-        "器材摆放 equipment placement supplies", "smart_manikin_site_inspection", top_k=3
-    )
-    return [i.model_dump() if hasattr(i, "model_dump") else i.dict() for i in items]
+    return build_inspection_reference("zh" if lang == "zh" else "en")
 
 
 @app.get("/api/inspection-logs/{log_id}")

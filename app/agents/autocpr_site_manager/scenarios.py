@@ -167,6 +167,16 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "假人怎么摆", "where to put", "where should i put", "where does the ipad go",
         "where do the pads go", "setup layout", "station layout", "manikin layout",
         "how to set up the station", "how to arrange",
+        # table / station pre-check ("what should be on the table")
+        "on the table", "on the station", "what's on the table", "whats on the table",
+        "what should be on the table", "what should be on the station", "table setup",
+        "table pre-check", "table precheck", "station pre-check", "station precheck",
+        "table/station", "table / station", "桌上", "桌面", "桌子", "训练站",
+        "桌上应该有什么", "桌上有什么", "桌面上有什么", "站点桌面",
+        # inspection order / sequence ("what order do I inspect")
+        "what order", "in what order", "which order", "inspection order",
+        "order do i inspect", "order to inspect", "inspect first", "sequence of",
+        "巡检顺序", "检查顺序", "步骤顺序", "先检查什么", "顺序是什么", "按什么顺序",
     )),
     ("smart_manikin_troubleshooting", (
         "smart manikin", "manikin", "假人", "黑屏", "black screen", "blank screen",

@@ -66,21 +66,37 @@ default screen answers "what am I doing right now?":
 5. Optionally expand **Advanced details** for site, class time, or attachment
    description metadata.
 
-**Start Inspection** first asks *Choose check type* — a subtle workflow picker,
-not a permission gate:
+**Start Inspection** first asks *Choose check type* — a workflow picker that is
+also a role gate:
 
-- **Full Site Inspection** (site representatives) opens the existing guided
-  staff flow. It now begins with a compact **Table / Station Pre-check** —
-  confirm what is present on the Smart Manikin table (present / missing /
-  problem) before moving anything — followed by before photos, the full
-  checklist, after photos, Weekly Site Check Report, upload reminders, and the
-  do-not-repair warning.
-- **Quick Class Readiness Check** (light users) opens a short, report-only flow:
-  six visible checks (access, room, station, iPad, manikin, supplies) plus a
-  quick report. It carries no staff duties — no Weekly Report, Google Drive
-  upload, access codes, staff PIN, or manager review. Reports post to
-  `/api/student-site-checks`; a safety concern is stored with a
+- **Full Site Inspection** (staff / site representatives, **PIN required**)
+  opens the guided staff flow. Pressing it asks for the **staff PIN** before the
+  checklist opens (the same PIN that unlocks internal access; the token is kept
+  in `sessionStorage` for the session). The flow follows the ordered SOP steps —
+  **1** before photos (before touching anything), **2** Table / Station Pre-check
+  (confirm each item present / missing / problem, compared against the placement
+  reference), **3** site checklist, **4** after photos, **5** Weekly Site Check
+  Report, **6** upload — plus the do-not-repair warning.
+- **Quick Class Readiness Check** (**students only, no PIN**) opens a short,
+  report-only flow: six visible checks (access, room, station, iPad, manikin,
+  supplies) plus a quick report. It carries no staff duties — no Weekly Report,
+  Google Drive upload, access codes, staff PIN, or manager review. Reports post
+  to `/api/student-site-checks`; a safety concern is stored with a
   `safety_escalation` status.
+
+The curated `SOP_library/` is the **source** library; the app runs on
+**workflow-converted** SOPs, not the raw documents. Every library file is
+classified in `SOP_library/AUDIT.md` /
+`app/agents/autocpr_site_manager/sop_library_audit.json` (active_workflow /
+reference_template / archive_only), and the helpful SOPs are converted into
+ordered, step-by-step tutorials in
+`app/agents/autocpr_site_manager/sop_workflows.json` (full site inspection,
+student quick check, plus reference-only new-site assessment and business-trip
+process). Pictures are **references, not instructions**: the equipment placement
+diagram is served by `/api/inspection-reference` with the caution *"Reference
+only; do not repair or dismantle equipment."* Sensitive per-site instructions
+and passcodes stay in the redacted, staff-gated operational-reference layer and
+never appear in the library, the audit, or the workflows.
 
 Staff-only tooling — staff access unlock, the live site log, and the
 staff-gated **Manager Review** panel — lives in the **Activity** drawer

@@ -160,6 +160,44 @@
       "检查 Smart Manikin / iPad 电源线。"
     ]
   },
+  "table_station_precheck": {
+    "intro_en": "Before moving anything, take before photos, then use the table/station placement reference (page-3 diagram) to compare and confirm each item on the table.",
+    "intro_zh": "移动任何东西前，先拍巡检前照片，然后用桌面/训练站摆放参考（第 3 页图）逐项对比并确认桌上的每件物品。",
+    "if_problem_en": "If an item is missing or has a problem: mark it Missing/Problem, take a photo if safe, write a short note, include it in the Weekly Site Check Report, and report to ALLCPR if it cannot be fixed on site. Do not invent a replacement or repair, and do not dismantle equipment.",
+    "if_problem_zh": "如某项缺失或有问题：标记为缺失/问题，安全时拍照，写简短说明，写入每周分点巡检表；无法现场解决的上报 ALLCPR。不要臆造替代品或维修，也不要拆卸设备。",
+    "en": [
+      "iPad present",
+      "Smart Manikin / manikins present",
+      "AED Training Pads present (1 set for both Adult & Infant)",
+      "Consumables area present",
+      "Tissues / simulated gauze present if supplied",
+      "Disinfecting wipes present",
+      "Disposable gloves present",
+      "Mask adaptors present",
+      "Face shield present if supplied / optional",
+      "Pocket Mask present",
+      "BVM / Bag-Valve-Mask present (use if mask adaptors are unavailable)",
+      "iPad connected to power",
+      "Smart Manikin connected to power (keep plugged in throughout the course)",
+      "Items in standard placement / not scattered"
+    ],
+    "zh": [
+      "iPad 在现场",
+      "Smart Manikin / 假人在现场",
+      "AED Training Pads 在现场（成人与婴儿共用一套）",
+      "耗材区域在现场",
+      "纸巾 / 模拟纱布如有配置应在现场",
+      "消毒湿巾在现场",
+      "一次性手套在现场",
+      "Mask adaptors 在现场",
+      "Face shield 如有配置应在现场",
+      "Pocket Mask 在现场",
+      "BVM / 球囊面罩在现场（无面罩转接头时使用）",
+      "iPad 已连接电源",
+      "Smart Manikin 已连接电源（全程保持插电）",
+      "物品按标准位置摆放，没有明显散乱"
+    ]
+  },
   "acknowledgement": {
     "title_en": "Important inspection reminder",
     "title_zh": "巡检前重要提醒",

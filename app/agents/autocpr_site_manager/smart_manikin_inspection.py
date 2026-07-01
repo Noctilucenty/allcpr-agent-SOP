@@ -34,6 +34,8 @@ UPLOAD_MATERIALS = "upload_materials"
 DO_NOT_REPAIR = "do_not_repair"
 ISSUE_ESCALATION = "issue_escalation"
 EQUIPMENT_PLACEMENT = "equipment_placement"
+TABLE_STATION_PRECHECK = "table_station_precheck"
+INSPECTION_ORDER = "inspection_order"
 
 
 @lru_cache(maxsize=1)
@@ -60,6 +62,21 @@ _RULES = [
         "可以修", "能修", "修吗", "维修", "不得维修", "不得拆卸", "拆卸",
         "坏了", "设备坏", "can i repair", "can i fix", "repair", "dismantle",
         "do not repair", "fix it myself",
+    )),
+    # Table / station pre-check ("what should be on the table") and inspection
+    # order ("what order do I inspect") lead so they win over the broader
+    # placement / checklist / arrival rules.
+    (TABLE_STATION_PRECHECK, (
+        "on the table", "on the station", "what's on the table", "whats on the table",
+        "what should be on the table", "what should be on the station", "table setup",
+        "table pre-check", "table precheck", "station pre-check", "station precheck",
+        "table/station", "table / station", "桌上", "桌面", "桌子", "训练站",
+        "桌上应该有什么", "桌上有什么", "桌面上有什么", "站点桌面",
+    )),
+    (INSPECTION_ORDER, (
+        "what order", "in what order", "which order", "inspection order",
+        "order do i inspect", "order to inspect", "sequence of", "sequence",
+        "巡检顺序", "检查顺序", "步骤顺序", "先检查什么", "顺序是什么", "按什么顺序",
     )),
     (EQUIPMENT_PLACEMENT, (
         "器材摆放", "摆放位置", "摆放", "equipment placement", "placement",
@@ -294,7 +311,71 @@ def focused_guidance(subtype: str, lang: str) -> Optional[Dict[str, Any]]:
             ),
             "steps": _sec("equipment_placement", lang),
         }
+    if subtype == TABLE_STATION_PRECHECK:
+        block = load_sop().get("table_station_precheck", {})
+        intro = block.get("intro_zh" if zh else "intro_en", "")
+        if_problem = block.get("if_problem_zh" if zh else "if_problem_en", "")
+        dont_move = lead(
+            "Before moving anything, take before photos — do not clean, move, or organize first.",
+            "移动任何东西前，先拍巡检前照片——不要先清洁、搬动或整理。",
+        )
+        compare = lead(
+            "Use the table/station placement reference to compare these items:",
+            "用桌面/训练站摆放参考对比以下物品：",
+        )
+        steps = [dont_move, compare] + _sec("table_station_precheck", lang)
+        if if_problem:
+            steps.append(if_problem)
+        return {
+            "lead": intro or lead(
+                "Table/station pre-check: before moving anything, take before photos, then compare the station against the standard placement reference.",
+                "桌面/训练站预检查：移动任何东西前先拍巡检前照片，再与标准摆放参考对比。",
+            ),
+            "steps": steps,
+            "contacts": [lead("ALLCPR (report unresolved / missing items).", "ALLCPR（上报无法解决或缺失的物品）。")],
+            "do_not_decide_without_approval": [
+                lead(
+                    "Do not invent a replacement or repair; do not dismantle the Smart Manikin / iPad.",
+                    "不要臆造替代品或维修；不要拆卸 Smart Manikin / iPad。",
+                ),
+                lead(
+                    "The placement diagram is a reference only — not repair instructions.",
+                    "摆放图仅供参考——不是维修说明。",
+                ),
+            ],
+            "next_actions": [
+                lead("Mark each item Present / Missing / Problem, then continue the checklist.",
+                     "逐项标记在场 / 缺失 / 问题，再继续检查清单。"),
+                lead("Photograph, note, and report any missing or broken item to ALLCPR.",
+                     "对任何缺失或损坏的物品拍照、记录并上报 ALLCPR。"),
+            ],
+        }
+    if subtype == INSPECTION_ORDER:
+        return {
+            "lead": lead(
+                "Inspection order (per the SOP). Take before photos before cleaning or moving anything, then work through the steps in order.",
+                "巡检顺序（依据 SOP）。在清洁或移动任何东西前先拍巡检前照片，再按顺序逐步完成。",
+            ),
+            "steps": _ordered_step_titles(lang),
+            "next_actions": [
+                lead("Start with before photos, then the table/station pre-check.",
+                     "先拍巡检前照片，再做桌面/训练站预检查。"),
+            ],
+        }
     return None
+
+
+def _ordered_step_titles(lang: str) -> List[str]:
+    """Return the numbered full-inspection step titles from the workflow layer."""
+    from . import sop_workflows
+
+    wf = sop_workflows.full_inspection_workflow() or {}
+    key = "title_zh" if lang == "zh" else "title_en"
+    titles = []
+    for i, step in enumerate(wf.get("steps", []) or [], start=1):
+        title = step.get(key) or step.get("title_en") or step.get("id", "")
+        titles.append(f"{i}. {title}")
+    return titles
 
 
 def _is_equipment_line(line: str) -> bool:

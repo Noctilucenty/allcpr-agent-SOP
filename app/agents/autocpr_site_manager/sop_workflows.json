@@ -1,0 +1,588 @@
+{
+  "title": "ALLCPR Smart Manikin — step-by-step operational workflows",
+  "description": "Ordered tutorials converted from the curated SOP_library. Each step is Step N with instructions, evidence, an if-problem branch, and do-not rules, so a staff member knows the order, what to check, what to do if something is missing/broken, when to report to ALLCPR, and what NOT to do. Images support steps but never replace them. No raw passcodes appear here.",
+  "source_status": "official SOP source",
+  "workflows": [
+    {
+      "workflow_id": "smart_manikin_full_site_inspection",
+      "title_en": "Smart Manikin Full Site Inspection",
+      "title_zh": "Smart Manikin 完整分点巡检",
+      "scenario": "smart_manikin_site_inspection",
+      "source_files": [
+        "SOP_library/01_Core_SOPs/Smart Manikin 专员分点巡检 SOP.docx",
+        "SOP_library/02_Forms_and_Templates/ICPIS Weekly Site Check Report.docx"
+      ],
+      "applies_to": ["staff", "site_representative"],
+      "not_for": ["student"],
+      "requires_staff_pin": true,
+      "record_form": "Weekly Site Check Report / 每周分点巡检表",
+      "steps": [
+        {
+          "id": "step_1_arrive_and_pause",
+          "title_en": "Arrive and pause before touching anything",
+          "title_zh": "到达后先不要移动或清洁任何东西",
+          "instructions_en": [
+            "Do not clean, move, fix, or organize anything yet.",
+            "First observe the whole room and the Smart Manikin station.",
+            "Get ready to capture before photos — the site must be photographed in its found state."
+          ],
+          "instructions_zh": [
+            "先不要清洁、搬动、修理或整理任何东西。",
+            "先观察整个房间和 Smart Manikin 训练站。",
+            "准备拍摄巡检前照片——必须先记录现场的原始状态。"
+          ],
+          "evidence_required": [],
+          "if_problem": [
+            "If the room is unsafe (water/electric hazard, fire, injury), stop and follow the safety/emergency step first, then report to ALLCPR."
+          ],
+          "do_not": [
+            "Do not clean, move, or organize before the before photos are taken.",
+            "Do not start repairs."
+          ],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · pre_check_photos / acknowledgement"
+        },
+        {
+          "id": "step_2_before_photos",
+          "title_en": "Take before photos",
+          "title_zh": "拍摄巡检前照片",
+          "instructions_en": [
+            "Before any cleaning or organizing, take site photos.",
+            "Whole room",
+            "Smart Manikin area",
+            "Supplies / consumables area",
+            "Door or signage",
+            "Abnormal / problem area, if any"
+          ],
+          "instructions_zh": [
+            "在开始清洁或整理前，先拍现场照片。",
+            "整个房间",
+            "Smart Manikin 区域",
+            "耗材 / 用品区域",
+            "门或路牌/指示牌",
+            "异常 / 问题区域（如有）"
+          ],
+          "evidence_required": [
+            "Before photo: whole room",
+            "Before photo: Smart Manikin area",
+            "Before photo: supplies / consumables area",
+            "Before photo: door or signage",
+            "Before photo: any abnormal / problem area"
+          ],
+          "if_problem": [
+            "If you cannot safely photograph an area, note why and continue; do not enter an unsafe area for a photo."
+          ],
+          "do_not": [
+            "Do not use old photos or staged/replacement photos.",
+            "Do not clean or move anything before these photos are taken."
+          ],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · pre_check_photos"
+        },
+        {
+          "id": "step_3_table_station_precheck",
+          "title_en": "Table / station pre-check",
+          "title_zh": "桌面 / 训练站预检查",
+          "instructions_en": [
+            "Before moving anything, check what is present on the table/station and compare it with the standard placement reference (page-3 diagram).",
+            "iPad present",
+            "Smart Manikin / manikins present",
+            "AED Training Pads present",
+            "Consumables area present",
+            "Tissues / simulated gauze present if supplied",
+            "Disinfecting wipes present",
+            "Disposable gloves present",
+            "Mask adaptors present",
+            "Face shield present if supplied / optional",
+            "Pocket Mask present",
+            "BVM / Bag-Valve-Mask present",
+            "iPad connected to power",
+            "Smart Manikin connected to power",
+            "Items in standard placement / not scattered"
+          ],
+          "instructions_zh": [
+            "移动任何东西前，先检查桌面/训练站上有哪些物品，并与标准摆放参考（第 3 页图）对比。",
+            "iPad 在现场",
+            "Smart Manikin / 假人在现场",
+            "AED Training Pads 在现场",
+            "耗材区域在现场",
+            "纸巾 / 模拟纱布如有配置应在现场",
+            "消毒湿巾在现场",
+            "一次性手套在现场",
+            "Mask adaptors 在现场",
+            "Face shield 如有配置应在现场",
+            "Pocket Mask 在现场",
+            "BVM / 球囊面罩在现场",
+            "iPad 已连接电源",
+            "Smart Manikin 已连接电源",
+            "物品按标准位置摆放，没有明显散乱"
+          ],
+          "evidence_required": [
+            "For each item: mark Present / Missing / Problem",
+            "Photo of any missing or problem item, if safe"
+          ],
+          "if_problem": [
+            "Mark the item Missing or Problem.",
+            "Take a photo if safe.",
+            "Write a short note.",
+            "Include it in the Weekly Site Check Report.",
+            "Report to ALLCPR if it cannot be fixed on site."
+          ],
+          "do_not": [
+            "Do not invent a replacement or a repair.",
+            "Do not dismantle or repair the Smart Manikin / iPad.",
+            "Do not treat the placement diagram as repair instructions."
+          ],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · equipment_placement / site_checklist"
+        },
+        {
+          "id": "step_4_room_and_cleanliness",
+          "title_en": "Room and cleanliness check",
+          "title_zh": "房间与卫生检查",
+          "instructions_en": [
+            "Check overall hygiene and site cleanliness.",
+            "Empty the trash can and replace the trash bag if needed.",
+            "Keep the floor clean; clear visible mess.",
+            "Record the status — do not rely only on the photo."
+          ],
+          "instructions_zh": [
+            "检查整体卫生与现场清洁。",
+            "倒空垃圾桶，必要时更换垃圾袋。",
+            "保持地面干净，清理可见杂物。",
+            "记录状态——不要只依赖照片。"
+          ],
+          "evidence_required": ["Cleanliness status recorded (OK / fixed / problem)"],
+          "if_problem": [
+            "If cleaning cannot be completed on site, note it and include in the report."
+          ],
+          "do_not": ["Do not skip recording just because you cleaned it."],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · site_checklist (hygiene, trash)"
+        },
+        {
+          "id": "step_5_supplies_and_disinfection",
+          "title_en": "Supplies and disinfection check",
+          "title_zh": "耗材与消毒检查",
+          "instructions_en": [
+            "Confirm disinfecting supplies are enough for one week.",
+            "Disinfect all teaching equipment.",
+            "Note any low or missing consumables (wipes, gloves, mask adaptors)."
+          ],
+          "instructions_zh": [
+            "确认消毒用品够用一周。",
+            "对所有教学设备进行消毒。",
+            "记录不足或缺失的耗材（湿巾、手套、面罩转接头）。"
+          ],
+          "evidence_required": ["Supplies status recorded", "Note low/missing consumables"],
+          "if_problem": [
+            "Mark low/missing supplies and include restock need in the report; report to ALLCPR if you cannot restock on site."
+          ],
+          "do_not": [
+            "Do not make a student responsible for staff disinfection or restocking."
+          ],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · site_checklist (disinfection)"
+        },
+        {
+          "id": "step_6_equipment_function_placement",
+          "title_en": "Equipment function and placement check",
+          "title_zh": "设备功能与摆放检查",
+          "instructions_en": [
+            "Check Smart Manikin, iPad, AED Pads, BVM, Pocket Mask are complete and normal.",
+            "Confirm the iPad and Smart Manikin are connected to power cables.",
+            "Confirm equipment is placed in the standard position."
+          ],
+          "instructions_zh": [
+            "检查 Smart Manikin、iPad、AED Pads、BVM、Pocket Mask 是否齐全且正常。",
+            "确认 iPad 与 Smart Manikin 已连接电源线。",
+            "确认设备摆放在标准位置。"
+          ],
+          "evidence_required": ["Equipment status recorded", "Photo of any broken/unresponsive device"],
+          "if_problem": [
+            "If a device is broken or unresponsive, take a photo, note the symptom, and report to ALLCPR."
+          ],
+          "do_not": [
+            "Do not dismantle or repair the Smart Manikin, iPad, camera, or access control.",
+            "Do not improvise an undocumented reset or calibration step."
+          ],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · site_checklist (equipment, power) / do_not_repair"
+        },
+        {
+          "id": "step_7_access_camera_wifi_signage_safety",
+          "title_en": "Access, camera, Wi-Fi, signage, and safety check",
+          "title_zh": "门禁、摄像头、Wi-Fi、路牌与安全检查",
+          "instructions_en": [
+            "Check door access, Lockbox, or Access Code are normal (do not expose codes in the workflow; staff unlock internal access only when needed).",
+            "Confirm the camera is online.",
+            "Confirm Wi-Fi is normal.",
+            "Check signs are complete and clear.",
+            "Check for visible water/electric/equipment safety hazards."
+          ],
+          "instructions_zh": [
+            "检查门禁、Lockbox 或 Access Code 是否正常（流程中不显示密码；员工仅在需要时解锁内部权限）。",
+            "确认摄像头在线。",
+            "确认 Wi-Fi 正常。",
+            "检查指示牌/路牌是否完整清晰。",
+            "检查可见的水/电/设备安全隐患。"
+          ],
+          "evidence_required": ["Access/camera/Wi-Fi/signage/safety status recorded"],
+          "if_problem": [
+            "If there is a safety concern, stop and avoid unsafe use, then report to ALLCPR.",
+            "If access fails, contact venue/property and record attempts; escalate if class is delayed."
+          ],
+          "do_not": [
+            "Do not force a door or guess passcodes.",
+            "Do not share access codes outside internal operations."
+          ],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · site_checklist (access, camera, network, signage, safety)"
+        },
+        {
+          "id": "step_8_fix_safe_simple_issues",
+          "title_en": "Fix only safe, simple on-site issues",
+          "title_zh": "只处理安全、简单的现场问题",
+          "instructions_en": [
+            "If an issue can be safely fixed on site, fix it and document what you did.",
+            "If it cannot be fixed on site, take photos and report to ALLCPR promptly."
+          ],
+          "instructions_zh": [
+            "如果问题可以安全地现场解决，处理并记录你做了什么。",
+            "如果无法现场解决，拍照并及时上报 ALLCPR。"
+          ],
+          "evidence_required": ["Action taken recorded", "Photo before/after fix, if any"],
+          "if_problem": [
+            "If not fixable on site, photograph it, note it, and report to ALLCPR."
+          ],
+          "do_not": [
+            "Do not dismantle or repair the Smart Manikin, iPad, camera, or access control."
+          ],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · on_site_handling / do_not_repair"
+        },
+        {
+          "id": "step_9_after_photos",
+          "title_en": "Take after photos",
+          "title_zh": "拍摄巡检后照片",
+          "instructions_en": [
+            "After all inspection and cleaning is complete, take site photos again.",
+            "Keep photo angles as consistent as possible with the before photos.",
+            "Whole room",
+            "Smart Manikin area",
+            "Supplies / consumables area",
+            "Door or signage",
+            "If an issue was fixed, take a photo of the corrected result."
+          ],
+          "instructions_zh": [
+            "完成所有巡检与清洁整理后，再次拍现场照片。",
+            "拍照角度尽量与巡检前照片一致。",
+            "整个房间",
+            "Smart Manikin 区域",
+            "耗材 / 用品区域",
+            "门或路牌/指示牌",
+            "如果处理了问题，拍一张修复结果照片。"
+          ],
+          "evidence_required": [
+            "After photo: whole room",
+            "After photo: Smart Manikin area",
+            "After photo: supplies / consumables area",
+            "After photo: door or signage",
+            "After photo: fixed-issue result, if any"
+          ],
+          "if_problem": ["If an area still has an unresolved issue, keep the problem photo for the report."],
+          "do_not": ["Do not use old or staged photos."],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · post_check_photos"
+        },
+        {
+          "id": "step_10_weekly_site_check_report",
+          "title_en": "Complete the Weekly Site Check Report",
+          "title_zh": "填写每周分点巡检表",
+          "instructions_en": [
+            "Site check result",
+            "Problems found",
+            "Actions taken",
+            "Whether ALLCPR support is needed",
+            "Everything must be truthful and complete."
+          ],
+          "instructions_zh": [
+            "现场检查结果",
+            "发现的问题",
+            "已采取的处理",
+            "是否需要 ALLCPR 支持",
+            "所有内容必须真实、完整。"
+          ],
+          "evidence_required": ["Completed Weekly Site Check Report"],
+          "if_problem": ["Record any unresolved problem and mark that ALLCPR support is needed."],
+          "do_not": ["Do not leave the report incomplete or enter false information."],
+          "source_ref": "ICPIS Weekly Site Check Report.docx · weekly_site_check_report"
+        },
+        {
+          "id": "step_11_upload_materials",
+          "title_en": "Upload materials",
+          "title_zh": "上传资料",
+          "instructions_en": [
+            "Upload to the corresponding site Google Drive folder.",
+            "Before photos",
+            "After photos",
+            "Completed Weekly Site Check Report",
+            "Issue photos, if any",
+            "Recommended: same day after inspection."
+          ],
+          "instructions_zh": [
+            "上传到对应分点的 Google Drive 文件夹。",
+            "巡检前照片",
+            "巡检后照片",
+            "已填写的每周分点巡检表",
+            "问题照片（如有）",
+            "建议：巡检当天完成上传。"
+          ],
+          "evidence_required": ["Before photos uploaded", "After photos uploaded", "Report uploaded", "Issue photos uploaded if any"],
+          "if_problem": ["If upload fails, retry and note the delay; do not skip the upload."],
+          "do_not": ["Do not upload old or staged photos."],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · upload_materials"
+        },
+        {
+          "id": "step_12_final_log_status",
+          "title_en": "Final log / status",
+          "title_zh": "最终记录 / 状态",
+          "instructions_en": [
+            "completed — if no unresolved issue remains.",
+            "needs_support — if an unresolved issue remains.",
+            "safety_escalation — if there is a safety issue.",
+            "Include the missing/problem counts."
+          ],
+          "instructions_zh": [
+            "completed —— 若没有未解决问题。",
+            "needs_support —— 若存在未解决问题。",
+            "safety_escalation —— 若存在安全问题。",
+            "包含缺失/问题数量。"
+          ],
+          "evidence_required": ["Final status recorded with missing/problem counts"],
+          "if_problem": ["Any unresolved or safety issue must escalate to ALLCPR, not close silently."],
+          "do_not": ["Do not mark completed while an unresolved or safety issue remains."],
+          "source_ref": "Smart Manikin 专员分点巡检 SOP.docx · weekly_site_check_report / on_site_handling"
+        }
+      ]
+    },
+    {
+      "workflow_id": "student_quick_class_readiness_check",
+      "title_en": "Quick Class Readiness Check",
+      "title_zh": "快速上课准备检查",
+      "scenario": "student_site_check",
+      "source_files": [
+        "SOP_library/01_Core_SOPs/Smart Manikin 专员分点巡检 SOP.docx"
+      ],
+      "applies_to": ["student"],
+      "not_for": ["staff_only_duties"],
+      "requires_staff_pin": false,
+      "report_only": true,
+      "excludes": [
+        "Weekly Site Check Report",
+        "Google Drive upload",
+        "passcodes",
+        "lockbox code checks",
+        "staff-only supply responsibility",
+        "staff-only cleaning responsibility",
+        "repair instructions"
+      ],
+      "steps": [
+        {
+          "id": "step_1_can_enter",
+          "title_en": "Check if you can enter",
+          "title_zh": "检查你是否能进入",
+          "instructions_en": ["Check whether you can enter the class area."],
+          "instructions_zh": ["检查你是否能进入上课区域。"],
+          "evidence_required": [],
+          "if_problem": ["Report that you cannot enter; add site and class time. Photo of the entrance if safe."],
+          "do_not": ["Do not force entry or use staff-only access."],
+          "source_ref": "quick class readiness (report-only, source-safe subset)"
+        },
+        {
+          "id": "step_2_room_safe",
+          "title_en": "Check if the room looks safe and usable",
+          "title_zh": "检查房间是否安全可用",
+          "instructions_en": ["Check whether the room looks safe and usable."],
+          "instructions_zh": ["检查房间看起来是否安全可用。"],
+          "evidence_required": [],
+          "if_problem": ["Report an unsafe/messy/blocked room or a water/electrical concern; photo if safe."],
+          "do_not": ["Do not touch hazards."],
+          "source_ref": "quick class readiness (report-only, source-safe subset)"
+        },
+        {
+          "id": "step_3_station_visible",
+          "title_en": "Check if the Smart Manikin / iPad station is visible",
+          "title_zh": "检查是否能看到 Smart Manikin / iPad 训练站",
+          "instructions_en": ["Check whether you can see the Smart Manikin / iPad training station."],
+          "instructions_zh": ["检查你是否能看到 Smart Manikin / iPad 训练站。"],
+          "evidence_required": [],
+          "if_problem": ["Report if it is missing or not set up; photo if safe."],
+          "do_not": ["Do not move equipment around."],
+          "source_ref": "quick class readiness (report-only, source-safe subset)"
+        },
+        {
+          "id": "step_4_ipad_opens",
+          "title_en": "Check if the iPad / app opens",
+          "title_zh": "检查 iPad / 应用是否能打开",
+          "instructions_en": ["Check whether the iPad/app opens normally."],
+          "instructions_zh": ["检查 iPad/应用是否能正常打开。"],
+          "evidence_required": [],
+          "if_problem": ["Report a black screen / not opening / no response."],
+          "do_not": ["Do not reset, repair, or dismantle equipment."],
+          "source_ref": "quick class readiness (report-only, source-safe subset)"
+        },
+        {
+          "id": "step_5_manikin_connected",
+          "title_en": "Check if the Smart Manikin appears connected / usable",
+          "title_zh": "检查 Smart Manikin 是否已连接 / 可用",
+          "instructions_en": ["Check whether the Smart Manikin appears connected and usable."],
+          "instructions_zh": ["检查 Smart Manikin 是否已连接且可用。"],
+          "evidence_required": [],
+          "if_problem": ["Report a Bluetooth / connection / data problem."],
+          "do_not": ["Do not repair or dismantle."],
+          "source_ref": "quick class readiness (report-only, source-safe subset)"
+        },
+        {
+          "id": "step_6_report_visible_issue",
+          "title_en": "Report any missing / dirty / broken visible issue",
+          "title_zh": "报告任何缺失 / 脏乱 / 损坏的可见问题",
+          "instructions_en": ["Report anything visibly missing, dirty, damaged, or wrong."],
+          "instructions_zh": ["报告任何明显缺失、脏乱、损坏或不对的问题。"],
+          "evidence_required": [],
+          "if_problem": ["Describe what is wrong; photo/video only if safe."],
+          "do_not": ["Do not perform staff maintenance unless instructed."],
+          "source_ref": "quick class readiness (report-only, source-safe subset)"
+        },
+        {
+          "id": "step_7_submit_quick_report",
+          "title_en": "Submit the quick report",
+          "title_zh": "提交快速报告",
+          "instructions_en": ["Submit the quick report for staff review."],
+          "instructions_zh": ["提交快速报告，交由员工审核。"],
+          "evidence_required": [],
+          "if_problem": ["A safety concern is submitted as a safety escalation; stop using the area if unsafe."],
+          "do_not": ["Do not include Weekly Site Check Report, Google Drive upload, passcodes, or repair steps."],
+          "source_ref": "quick class readiness (report-only, source-safe subset)"
+        }
+      ]
+    },
+    {
+      "workflow_id": "smart_manikin_new_site_assessment",
+      "title_en": "Smart Manikin New Site Assessment (reference)",
+      "title_zh": "Smart Manikin 新点考察（参考）",
+      "scenario": "smart_manikin_new_site_assessment",
+      "status": "reference_only",
+      "wired_into_ui": false,
+      "source_files": [
+        "SOP_library/01_Core_SOPs/Smart Manikins 新地点开发 SOP.docx",
+        "SOP_library/02_Forms_and_Templates/Smart Manikin 现场考察表.docx",
+        "SOP_library/02_Forms_and_Templates/SMART MANIKIN SITE FIELD ASSESSMENT FORM.pdf",
+        "SOP_library/02_Forms_and_Templates/Smart Manikin 选址评分表.xlsm",
+        "SOP_library/02_Forms_and_Templates/新点审批 邮件申请模版.docx"
+      ],
+      "applies_to": ["bd", "staff"],
+      "not_for": ["student"],
+      "requires_staff_pin": true,
+      "steps": [
+        {
+          "id": "step_1_site_info",
+          "title_en": "Record site info",
+          "title_zh": "记录场地信息",
+          "instructions_en": ["Record basic info: address, building, floor, room, contact, and commercial terms."],
+          "instructions_zh": ["记录基本信息：地址、楼栋、楼层、房间、联系人与商务条件。"],
+          "evidence_required": ["Field Assessment Form basic-info section"],
+          "if_problem": ["If key info is missing, mark Need-info and do not score yet."],
+          "do_not": ["Do not self-approve anything affecting cost, liability, contract, insurance, safety, or operations."],
+          "source_ref": "Smart Manikins 新地点开发 SOP.docx · 现场考察表"
+        },
+        {
+          "id": "step_2_access_parking_room_visibility_power_network_safety",
+          "title_en": "Assess access, parking, room, visibility, power, network, safety",
+          "title_zh": "评估门禁、停车、房间、可见度、供电、网络、安全",
+          "instructions_en": [
+            "Assess accessibility/parking, room/infrastructure, visibility/signage, power, and network.",
+            "Apply the hard-elimination gate: access control not installable, camera not installable, network not adequate, unfixable blind spot, or high safety risk."
+          ],
+          "instructions_zh": [
+            "评估可达性/停车、房间/基础设施、可见度/指示、供电与网络。",
+            "应用硬性淘汰条件：门禁无法安装、摄像头无法安装、网络不足、无法消除的盲区或高安全风险。"
+          ],
+          "evidence_required": ["Field Assessment Form location/property/operational sections"],
+          "if_problem": ["If any hard-elimination condition is met, mark Reject and stop."],
+          "do_not": ["Do not score around a hard-elimination condition."],
+          "source_ref": "Smart Manikin 选址评分表.xlsm · hard-elimination gate"
+        },
+        {
+          "id": "step_3_scoring_and_photos",
+          "title_en": "Score the site and collect evidence",
+          "title_zh": "为场地评分并收集证据",
+          "instructions_en": [
+            "Fill the site-selection scoring sheet within 24h and collect photos/video for the submission packet.",
+            "Decision bands: >=85 Priority Candidate; 75-84.9 Management Review; 65-74.9 Hold/Compare; <65 Reject."
+          ],
+          "instructions_zh": [
+            "24 小时内填写选址评分表，并为提交包收集照片/视频。",
+            "决策区间：>=85 优先候选；75-84.9 管理层审核；65-74.9 观望/比较；<65 拒绝。"
+          ],
+          "evidence_required": ["Scoring sheet updated", "Photos/video in the site funnel (场地漏斗) folder"],
+          "if_problem": ["If the score is borderline, route to Management Review rather than deciding."],
+          "do_not": ["Do not skip the submission packet standard."],
+          "source_ref": "Smart Manikin 选址评分表.xlsm · decision bands"
+        },
+        {
+          "id": "step_4_approval",
+          "title_en": "Approval / escalation",
+          "title_zh": "审批 / 升级",
+          "instructions_en": [
+            "Submit to BD review, then management approval.",
+            "Use the new-site approval email template for the approval request."
+          ],
+          "instructions_zh": [
+            "提交 BD 复核，再由管理层审批。",
+            "使用新点审批邮件模板提交审批申请。"
+          ],
+          "evidence_required": ["BD review conclusion", "Management approval record"],
+          "if_problem": ["Anything touching cost/lease/insurance/safety escalates to management; staff do not self-approve."],
+          "do_not": ["Do not promise a lease, payment, or opening date before approval."],
+          "source_ref": "新点审批 邮件申请模版.docx · approval workflow"
+        }
+      ]
+    },
+    {
+      "workflow_id": "business_trip_process",
+      "title_en": "Short-Term Business Trip Process (reference)",
+      "title_zh": "短期出差流程（参考）",
+      "scenario": "business_trip_process",
+      "status": "reference_only",
+      "wired_into_ui": false,
+      "not_part_of_site_inspection": true,
+      "source_files": [
+        "SOP_library/01_Core_SOPs/Short Term Business Trip SOP.docx",
+        "SOP_library/03_Business_Trip_Forms/01_Business_Trip_Request_出差申请表.docx",
+        "SOP_library/03_Business_Trip_Forms/02_Approval_Record_出差审批记录.docx",
+        "SOP_library/03_Business_Trip_Forms/03_Itinerary_Pre_Trip_Checklist_出发行程与准备清单.docx",
+        "SOP_library/03_Business_Trip_Forms/04_Daily_Activity_Log_Evidence_出差执行记录与证据清单.docx",
+        "SOP_library/03_Business_Trip_Forms/05_Business_Trip_Report_出差总结报告.docx",
+        "SOP_library/03_Business_Trip_Forms/06_Expense_Package_出差费用报销包.docx",
+        "SOP_library/03_Business_Trip_Forms/07_Follow_up_Action_List_出差后续行动清单.docx",
+        "SOP_library/04_Policies/Mileage Reimbursement Policy for ALLCPR Instructor.docx"
+      ],
+      "applies_to": ["staff"],
+      "not_for": ["student"],
+      "requires_staff_pin": true,
+      "steps": [
+        {"id": "step_1_request", "title_en": "Submit trip request", "title_zh": "提交出差申请", "instructions_en": ["Submit the Business Trip Request form."], "instructions_zh": ["提交出差申请表。"], "evidence_required": ["01_Business_Trip_Request"], "if_problem": [], "do_not": ["Do not book before approval."], "source_ref": "Short Term Business Trip SOP.docx"},
+        {"id": "step_2_approval", "title_en": "Get approval", "title_zh": "获得审批", "instructions_en": ["Record the approval decision."], "instructions_zh": ["记录审批结论。"], "evidence_required": ["02_Approval_Record"], "if_problem": [], "do_not": ["Do not self-approve."], "source_ref": "Short Term Business Trip SOP.docx"},
+        {"id": "step_3_itinerary", "title_en": "Prepare itinerary & pre-trip checklist", "title_zh": "准备行程与出发前清单", "instructions_en": ["Complete the itinerary and pre-trip checklist."], "instructions_zh": ["完成行程与出发前准备清单。"], "evidence_required": ["03_Itinerary_Pre_Trip_Checklist"], "if_problem": [], "do_not": [], "source_ref": "Short Term Business Trip SOP.docx"},
+        {"id": "step_4_daily_log", "title_en": "Keep daily log & evidence", "title_zh": "记录每日执行与证据", "instructions_en": ["Log daily activity and keep evidence."], "instructions_zh": ["记录每日执行并保留证据。"], "evidence_required": ["04_Daily_Activity_Log_Evidence"], "if_problem": [], "do_not": [], "source_ref": "Short Term Business Trip SOP.docx"},
+        {"id": "step_5_report", "title_en": "Write trip report", "title_zh": "撰写出差总结报告", "instructions_en": ["Complete the trip report."], "instructions_zh": ["完成出差总结报告。"], "evidence_required": ["05_Business_Trip_Report"], "if_problem": [], "do_not": [], "source_ref": "Short Term Business Trip SOP.docx"},
+        {"id": "step_6_expense", "title_en": "Assemble expense package", "title_zh": "整理费用报销包", "instructions_en": ["Assemble the expense package; apply the mileage reimbursement policy."], "instructions_zh": ["整理费用报销包；适用里程报销政策。"], "evidence_required": ["06_Expense_Package", "Mileage Reimbursement Policy"], "if_problem": [], "do_not": ["Do not claim outside policy."], "source_ref": "Short Term Business Trip SOP.docx · Mileage Reimbursement Policy"},
+        {"id": "step_7_follow_up", "title_en": "Follow-up actions", "title_zh": "后续行动", "instructions_en": ["Complete the follow-up action list."], "instructions_zh": ["完成出差后续行动清单。"], "evidence_required": ["07_Follow_up_Action_List"], "if_problem": [], "do_not": [], "source_ref": "Short Term Business Trip SOP.docx"}
+      ]
+    }
+  ],
+  "image_references": [
+    {
+      "image_id": "equipment_placement_diagram",
+      "source_file": "SOP_library/01_Core_SOPs/Smart Manikin 专员分点巡检 SOP.docx (page 3)",
+      "media_index_id": "50ff47d9ca77",
+      "what_it_shows": "The standard Smart Manikin table/station placement: iPad, manikins, AED Training Pads, consumables, Pocket Mask, and BVM in their standard positions (source-backed labels only; no image analysis).",
+      "when_to_show": "During the Table / Station Pre-check and equipment placement steps of the full site inspection.",
+      "what_user_should_compare": "Compare the actual station against the standard placement before moving anything; check each item is present and in its standard position.",
+      "related_workflow_step": "smart_manikin_full_site_inspection#step_3_table_station_precheck",
+      "caution_notes": "Reference only; do not repair or dismantle equipment. If the picture does not match the actual site, mark the item Missing/Problem, photograph it, note it, and report to ALLCPR — do not rearrange to force a match beyond standard placement."
+    }
+  ]
+}

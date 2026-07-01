@@ -626,6 +626,12 @@
   .role-choice-lb{font-size:14.5px;font-weight:800;color:var(--ink)}
   .role-choice-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
   .role-choice-help{font-size:11.5px;color:var(--muted-2);line-height:1.45}
+  .role-choice-tag{display:inline-block;align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--navy);background:rgba(30,58,138,.08);border-radius:6px;padding:2px 7px;margin:1px 0 2px}
+  .role-choice-tag.alt{color:#2457b8;background:rgba(36,87,184,.09)}
+  .role-pin{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;background:var(--bg)}
+  .role-pin-prompt{font-size:13px;color:var(--ink);margin:0 0 10px;line-height:1.5}
+  .role-pin-row{display:flex;gap:8px}
+  .role-pin-row input{flex:1;min-width:0;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit}
   /* ---------- table / station pre-check ---------- */
   .insp-st.sel-missing{border-color:var(--red);background:var(--red-soft);color:#8a1417}
   .insp-sec.precheck{background:var(--bg)}
@@ -1057,11 +1063,12 @@
       <button type="button" class="insp-x" id="role-close" aria-label="Close">&times;</button>
     </div>
     <p class="role-sub" data-i18n="roleSubtitle">Pick the workflow that matches what you need to do right now.</p>
-    <div class="role-choices">
+    <div class="role-choices" id="role-choices">
       <button type="button" class="role-choice" id="role-full">
         <span class="role-choice-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span>
         <span class="role-choice-tx">
           <span class="role-choice-lb" data-i18n="roleFull">Full Site Inspection</span>
+          <span class="role-choice-tag" data-i18n="roleFullTag">Staff only · PIN required</span>
           <span class="role-choice-desc" data-i18n="roleFullDesc">For site representatives completing the weekly Smart Manikin inspection.</span>
           <span class="role-choice-help" data-i18n="roleFullHelp">Includes full checklist, before/after photos, Weekly Site Check Report, and upload reminders.</span>
         </span>
@@ -1070,12 +1077,23 @@
         <span class="role-choice-ic alt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg></span>
         <span class="role-choice-tx">
           <span class="role-choice-lb" data-i18n="roleQuick">Quick Class Readiness Check</span>
-          <span class="role-choice-desc" data-i18n="roleQuickDesc">For a quick class-start check or visible issue report.</span>
+          <span class="role-choice-tag alt" data-i18n="roleQuickTag">Students only · no PIN</span>
+          <span class="role-choice-desc" data-i18n="roleQuickDesc">For students — a quick class-start check or visible issue report.</span>
           <span class="role-choice-help" data-i18n="roleQuickHelp">Use this if you only need to report access, room, equipment, iPad, or safety problems.</span>
         </span>
       </button>
     </div>
+    <!-- Full Site Inspection staff-PIN gate (shown when a staff token isn't already held) -->
+    <div class="role-pin" id="role-pin" hidden>
+      <p class="role-pin-prompt" data-i18n="roleFullPinPrompt">Full Site Inspection is staff only. Enter the staff PIN to continue.</p>
+      <div class="role-pin-row">
+        <input id="role-pin-input" type="password" inputmode="numeric" autocomplete="off" aria-label="Staff PIN" />
+        <button type="button" class="sa-btn primary" id="role-pin-go" data-i18n="roleFullPinGo">Unlock &amp; start</button>
+      </div>
+      <p class="sa-err" id="role-pin-err" hidden data-i18n="staffPinInvalid">Invalid staff PIN</p>
+    </div>
     <div class="insp-ack-actions">
+      <button type="button" class="sa-btn" id="role-pin-back" data-i18n="roleFullPinBack" hidden>Back</button>
       <button type="button" class="sa-btn" id="role-cancel" data-i18n="roleCancel">Cancel</button>
     </div>
   </div>
@@ -1383,11 +1401,16 @@ const COPY = {
     roleTitle:'Choose check type',
     roleSubtitle:'Pick the workflow that matches what you need to do right now.',
     roleFull:'Full Site Inspection',
+    roleFullTag:'Staff only · PIN required',
     roleFullDesc:'For site representatives completing the weekly Smart Manikin inspection.',
     roleFullHelp:'Includes full checklist, before/after photos, Weekly Site Check Report, and upload reminders.',
+    roleFullPinPrompt:'Full Site Inspection is staff only. Enter the staff PIN to continue.',
+    roleFullPinGo:'Unlock & start',
+    roleFullPinBack:'Back',
     roleQuick:'Quick Class Readiness Check',
-    roleQuickDesc:'For a quick class-start check or visible issue report.',
-    roleQuickHelp:'Use this if you only need to report access, room, equipment, iPad, or safety problems.',
+    roleQuickTag:'Students only · no PIN',
+    roleQuickDesc:'For students — a quick class-start check or visible issue report.',
+    roleQuickHelp:'Use this if you only need to report access, room, equipment, iPad, or safety problems. No staff PIN needed.',
     roleCancel:'Cancel',
     // ---- table / station pre-check (full staff mode) ----
     tablePrecheckTitle:'Table / Station Pre-check',
@@ -1396,7 +1419,7 @@ const COPY = {
     tpPresent:'Present / OK', tpMissing:'Missing', tpProblem:'Problem',
     // ---- quick class readiness check (light user mode) ----
     quickTitle:'Quick Class Readiness Check',
-    quickSubtitle:'Report visible problems only. Do not repair, move equipment, force entry, or use staff-only access.',
+    quickSubtitle:'Students only — report visible problems only. Do not repair, move equipment, force entry, or use staff-only access.',
     quickChecks:[
       {cat:'access', q:'Can you enter the class area?', ok:'Yes', issue:'No / door locked / cannot enter', guide:'Do not force entry or use staff-only access. Report site, class time, and entrance photo if safe.'},
       {cat:'room', q:'Does the room look safe and usable?', ok:'Looks okay', issue:'Unsafe / messy / blocked / water or electrical concern', guide:'Do not touch hazards. Take photo/video if safe and report immediately.', safety:true},
@@ -1648,11 +1671,16 @@ const COPY = {
     roleTitle:'选择检查类型',
     roleSubtitle:'请选择最符合当前情况的流程。',
     roleFull:'完整分点巡检',
+    roleFullTag:'仅限员工 · 需要 PIN',
     roleFullDesc:'适用于分点专员完成每周 Smart Manikin 巡检。',
     roleFullHelp:'包含完整检查清单、巡检前后照片、每周分点巡检表和上传提醒。',
+    roleFullPinPrompt:'完整分点巡检仅限员工。请输入员工 PIN 继续。',
+    roleFullPinGo:'解锁并开始',
+    roleFullPinBack:'返回',
     roleQuick:'快速上课检查',
-    roleQuickDesc:'适用于上课前/上课中快速检查并报告可见问题。',
-    roleQuickHelp:'用于报告门口、房间、设备、iPad 或安全问题。',
+    roleQuickTag:'仅限学生 · 无需 PIN',
+    roleQuickDesc:'面向学生——上课前/上课中快速检查并报告可见问题。',
+    roleQuickHelp:'用于报告门口、房间、设备、iPad 或安全问题。无需员工 PIN。',
     roleCancel:'取消',
     // ---- table / station pre-check (full staff mode) ----
     tablePrecheckTitle:'桌面 / 训练站预检查',
@@ -1661,7 +1689,7 @@ const COPY = {
     tpPresent:'正常', tpMissing:'缺失', tpProblem:'有问题',
     // ---- quick class readiness check (light user mode) ----
     quickTitle:'快速上课检查',
-    quickSubtitle:'只报告可见问题。不要维修、移动设备、强行进入或使用员工专用门禁。',
+    quickSubtitle:'仅限学生——只报告可见问题。不要维修、移动设备、强行进入或使用员工专用门禁。',
     quickChecks:[
       {cat:'access', q:'你能进入上课区域吗？', ok:'能', issue:'不能 / 门锁了 / 无法进入', guide:'不要强行进入或使用员工专用门禁。请报告分点、课程时间，并在安全情况下拍入口照片。'},
       {cat:'room', q:'房间看起来安全吗？可以正常使用吗？', ok:'看起来正常', issue:'不安全 / 脏乱 / 被堵 / 有水或电气隐患', guide:'不要触碰安全隐患。在安全情况下拍照/录像并立即报告。', safety:true},
@@ -2653,7 +2681,7 @@ function inspPhotoList(items, group){
 /* Table / Station Pre-check: a compact card staff complete BEFORE moving
    anything, so the station can be compared against the standard setup. It only
    records what is present/missing/has a problem — never a repair instruction. */
-function inspPrecheck(){
+function inspPrecheck(stepNo){
   const c = copy();
   const items = c.tablePrecheckItems || [];
   if(!inspState.tablePrecheck.length){
@@ -2675,7 +2703,8 @@ function inspPrecheck(){
       </div>
     </div>`;
   }).join('');
-  return inspSec(c.tablePrecheckTitle, 'clip',
+  const title = (stepNo ? stepNo + '. ' : '') + c.tablePrecheckTitle;
+  return inspSec(title, 'clip',
     `<p class="insp-sec-sub">${esc(c.tablePrecheckSub)}</p>${rows}`, 'precheck');
 }
 function renderInspectionSections(){
@@ -2685,10 +2714,12 @@ function renderInspectionSections(){
   if(!inspState.items.length){
     inspState.items = (c.inspChecklistItems || []).map(() => ({status:'', issue:''}));
   }
-  const precheck = inspPrecheck();
-  const before = inspSec(c.inspBeforeTitle, 'image',
+  // Ordered, numbered steps per the SOP: before photos come first (take them
+  // before touching anything), then the table/station pre-check, then the rest.
+  const before = inspSec('1. ' + c.inspBeforeTitle, 'image',
     `<p class="insp-sec-warn">${svg('alert')} ${esc(c.inspBeforeWarn)}</p>${inspPhotoList(c.inspBeforeItems, 'before')}`);
-  const checklist = inspSec(c.inspChecklistTitle, 'clip',
+  const precheck = inspPrecheck(2);
+  const checklist = inspSec('3. ' + c.inspChecklistTitle, 'clip',
     (c.inspChecklistItems || []).map((label, i) => {
       const st = inspState.items[i] || {status:''};
       const btn = (val, lab, selcls) =>
@@ -2709,16 +2740,16 @@ function renderInspectionSections(){
         </div>
       </div>`;
     }).join(''));
-  const after = inspSec(c.inspAfterTitle, 'image',
+  const after = inspSec('4. ' + c.inspAfterTitle, 'image',
     `<p class="insp-sec-warn">${esc(c.inspAfterNote)}</p>${inspPhotoList(c.inspAfterItems, 'after')}`);
-  const report = inspSec(c.inspReportTitle, 'report',
+  const report = inspSec('5. ' + c.inspReportTitle, 'report',
     `<ul>${(c.inspReportItems || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>
      <label class="insp-check"><input type="checkbox" data-insp-report /><span>${esc(c.inspReportDone)}</span></label>`);
-  const upload = inspSec(c.inspUploadTitle, 'flag',
+  const upload = inspSec('6. ' + c.inspUploadTitle, 'flag',
     `${inspCheckList(c.inspUploadItems, 'upload')}<p class="insp-note-row">${esc(c.inspUploadNote)}</p>`);
   const donot = inspSec(c.inspDoNotTitle, 'alert',
     `<ul>${(c.inspDoNotItems || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>`, 'donot');
-  wrap.innerHTML = precheck + before + checklist + after + report + upload + donot;
+  wrap.innerHTML = before + precheck + checklist + after + report + upload + donot;
   updateInspProgress();
 }
 function updateInspProgress(){
@@ -2876,18 +2907,69 @@ async function finishInspection(){
    Start Inspection opens a subtle workflow choice rather than the full staff
    checklist directly: "Full Site Inspection" (staff) opens the existing flow;
    "Quick Class Readiness Check" (light user) opens the short report-only flow. */
+function resetRoleView(){
+  // Show the two choices; hide the staff-PIN gate. Called whenever the picker
+  // opens/closes so Full Site Inspection always re-asks for the PIN each session.
+  if($('#role-choices')) $('#role-choices').hidden = false;
+  if($('#role-pin')) $('#role-pin').hidden = true;
+  if($('#role-pin-back')) $('#role-pin-back').hidden = true;
+  if($('#role-pin-err')) $('#role-pin-err').hidden = true;
+  if($('#role-pin-input')) $('#role-pin-input').value = '';
+}
 function openRolePicker(){
+  resetRoleView();
   const ov = $('#role-overlay');
   if(ov){ ov.hidden = false; ov.setAttribute('aria-hidden', 'false'); }
 }
 function closeRolePicker(){
   const ov = $('#role-overlay');
   if(ov){ ov.hidden = true; ov.setAttribute('aria-hidden', 'true'); }
+  resetRoleView();
+}
+// Full Site Inspection is staff-only: it requires a valid staff PIN before the
+// guided checklist opens. If a staff token is already held this session, skip
+// straight in; otherwise reveal the inline PIN gate.
+function showRolePinGate(){
+  if($('#role-choices')) $('#role-choices').hidden = true;
+  if($('#role-pin')) $('#role-pin').hidden = false;
+  if($('#role-pin-back')) $('#role-pin-back').hidden = false;
+  const inp = $('#role-pin-input');
+  if(inp){ inp.value = ''; inp.focus(); }
+}
+async function submitRolePin(){
+  const c = copy();
+  const inp = $('#role-pin-input'), err = $('#role-pin-err');
+  const pin = inp ? inp.value.trim() : '';
+  if(err) err.hidden = true;
+  if(!pin){ if(inp) inp.focus(); return; }
+  try{
+    const resp = await fetch(API_BASE + '/api/staff-access/unlock', {
+      method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({pin})
+    });
+    if(resp.status === 503){
+      // Staff access not configured on this deploy — can't gate what isn't set;
+      // let the inspection proceed rather than locking staff out entirely.
+      closeRolePicker(); openInspection(); return;
+    }
+    if(!resp.ok){ if(err){ err.textContent = c.staffPinInvalid; err.hidden = false; } if(inp) inp.select(); return; }
+    const data = await resp.json();
+    setStaffToken(data.token || '');   // reveals staff-gated panels for the session
+    closeRolePicker();
+    openInspection();
+  }catch(e){ if(err){ err.textContent = c.staffPinInvalid; err.hidden = false; } }
+}
+function startFullInspection(){
+  if(staffToken()){ closeRolePicker(); openInspection(); return; }
+  showRolePinGate();
 }
 (function wireRolePicker(){
   const full = $('#role-full'), quick = $('#role-quick'), cancel = $('#role-cancel'), close = $('#role-close'), overlay = $('#role-overlay');
-  if(full) full.onclick = () => { closeRolePicker(); openInspection(); };
+  const pinGo = $('#role-pin-go'), pinBack = $('#role-pin-back'), pinInput = $('#role-pin-input');
+  if(full) full.onclick = startFullInspection;
   if(quick) quick.onclick = () => { closeRolePicker(); openQuickCheck(); };
+  if(pinGo) pinGo.onclick = submitRolePin;
+  if(pinBack) pinBack.onclick = resetRoleView;
+  if(pinInput) pinInput.addEventListener('keydown', e => { if(e.key === 'Enter') submitRolePin(); });
   if(cancel) cancel.onclick = closeRolePicker;
   if(close) close.onclick = closeRolePicker;
   if(overlay) overlay.addEventListener('click', e => { if(e.target === overlay) closeRolePicker(); });
