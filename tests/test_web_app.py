@@ -820,10 +820,11 @@ def test_ui_has_sop_knowledge_base_and_ai_summary_labels():
               "SOP knowledge base · SOP-backed", "AI 整理后的 SOP 智能知识库 · 基于 SOP",
               "Searching SOP knowledge base…", "正在查询 SOP 知识库…"):
         assert s in body
-    # the SOP-backed expansion is fetched only after staff unlock
+    # AI summaries run for public users; the AI-off SOP fallback still waits for
+    # staff unlock.
     assert "data.sop_assist_pending" in body
-    assert "tok && (data.ai_pending || data.sop_assist_pending)" in body
-    assert "if(!tok) return" in body
+    assert "data.ai_pending || (tok && data.sop_assist_pending)" in body
+    assert "if(!tok && !aiPending) return" in body
     assert "sopMatchHTML" in body
 
 
@@ -963,29 +964,34 @@ def test_ask_is_deterministic_and_fast_when_ai_disabled(monkeypatch):
 
 def test_ask_sets_ai_pending_but_does_not_block_on_ai(monkeypatch):
     # When AI is enabled, /ask still returns the deterministic answer immediately
-    # and only flags ai_pending after staff unlock — it must NOT call the model
-    # on this path.
+    # and flags ai_pending for public users too — it must NOT call the model on
+    # this path.
     _enable_ai(monkeypatch)
     _throw_if_called(monkeypatch)
     client = TestClient(web_app.app)
-    token = _staff_token_with_env(monkeypatch, client)
     d = client.post(
-        _ASK, json={"question": "power outage", "language": "en", "staff_access_token": token}
+        _ASK, json={"question": "power outage", "language": "en"}
     ).json()
     assert d["scenario"] == "electricity_outage"
     assert d["ai_pending"] is True
     assert d["ai_used"] is False
 
 
-def test_ai_summary_and_pending_are_staff_gated(monkeypatch):
+def test_ai_summary_runs_for_nonstaff_when_enabled(monkeypatch):
     _enable_ai(monkeypatch)
-    _throw_if_called(monkeypatch)
+    intent = {"normalized_question": "power outage", "scenario_hint": "electricity_outage", "confidence": "high"}
+    summary = {"short_title": "Outage", "plain_summary": "Save evidence and escalate.",
+               "top_3_steps": ["Check scope"], "clarifying_question": ""}
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
     client = TestClient(web_app.app)
     d = client.post(_ASK, json={"question": "power outage", "language": "en"}).json()
-    assert d["ai_pending"] is False
+    assert d["ai_pending"] is True
     assert d["sop_assist_pending"] is False
     resp = client.post(_AI_SUMMARY, json={"question": "power outage"})
-    assert resp.status_code == 401
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["ai_used"] is True
+    assert body["ai_short_title"] == "Outage"
 
 
 def test_ai_summary_endpoint_returns_ai_used_false_when_disabled(monkeypatch):

@@ -2753,7 +2753,7 @@ async function ask(){
     render(data);
     // Optional AI summary: fetch it separately and pop it in on top when ready,
     // so the deterministic instructions never wait on the model.
-    if(tok && (data.ai_pending || data.sop_assist_pending)) fetchAiSummary(q, ctx, tok, data.incident_log_id, seq, !!data.ai_pending);
+    if(data.ai_pending || (tok && data.sop_assist_pending)) fetchAiSummary(q, ctx, tok, data.incident_log_id, seq, !!data.ai_pending);
     if(data.incident_log_id) await loadLogs(data.incident_log_id);
   }catch(err){
     if(seq !== askSeq) return;
@@ -2769,7 +2769,7 @@ async function ask(){
    (or removes it silently on failure / when AI returns nothing). A sequence guard
    ignores results from a question the user has since replaced. */
 function fetchAiSummary(q, ctx, tok, logId, seq, aiPending){
-  if(!tok) return;
+  if(!tok && !aiPending) return;
   const card = $('#out .ans-card');
   if(!card) return;
   const head = card.querySelector('.ac-head');
