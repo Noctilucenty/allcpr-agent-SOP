@@ -4,6 +4,12 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AllCPR Operations — Internal SOP Assistant</title>
+<!-- Fancier type: Fraunces (editorial serif display) + Plus Jakarta Sans (UI).
+     Latin only; Chinese falls back to the CJK stack below. Degrades to system
+     fonts if Google Fonts is unreachable (offline-safe). -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
   :root{
     --red:#d7282f;
@@ -30,13 +36,16 @@
     --shadow:0 1px 3px rgba(16,24,40,.07),0 8px 22px rgba(16,24,40,.06);
     --radius:14px;
     --radius-sm:10px;
+    /* Type: sans for body/UI, serif display for headings. CJK fonts kept in
+       both stacks so Chinese always has a real glyph. */
+    --font-sans:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif;
+    --font-display:"Fraunces",Georgia,"Songti SC","PingFang SC","Microsoft YaHei",serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{
     min-height:100vh;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC",
-      "Hiragino Sans GB","Microsoft YaHei",Helvetica,Arial,sans-serif;
+    font-family:var(--font-sans);
     color:var(--ink);
     background:
       radial-gradient(1200px 380px at 50% -120px, #fbeaea 0%, rgba(251,234,234,0) 70%),
@@ -44,6 +53,13 @@
     line-height:1.55;
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
+  }
+  /* Editorial serif display on the prominent headings. Small uppercase labels
+     stay in the sans for legibility. */
+  h1,.panel-head h2,.insp-ack-head h2,.insp-flow-head h2{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-optical-sizing:auto;
   }
 
   /* ---------- header ---------- */
@@ -86,7 +102,7 @@
   }
   .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--red);
     box-shadow:0 0 0 3px rgba(215,40,47,.18)}
-  h1{font-size:30px;line-height:1.12;margin:0 0 7px;letter-spacing:-.6px}
+  h1{font-size:31px;line-height:1.1;margin:0 0 7px;letter-spacing:-.3px}
   .hero p{margin:0;color:var(--muted);font-size:15px}
 
   .layout{display:grid;grid-template-columns:minmax(0,1fr) 312px;gap:18px;align-items:start}
@@ -103,7 +119,7 @@
     display:flex;align-items:center;justify-content:center;flex:0 0 auto;border:1px solid var(--red-line);
   }
   .panel-head .ico svg{width:16px;height:16px}
-  .panel-head h2{font-size:15.5px;margin:0;font-weight:800;letter-spacing:-.2px}
+  .panel-head h2{font-size:16.5px;margin:0;font-weight:600;letter-spacing:-.1px}
   textarea{
     width:100%;min-height:120px;resize:vertical;border:1px solid var(--line);
     border-radius:var(--radius-sm);padding:14px 15px;font:inherit;font-size:15px;
@@ -540,7 +556,7 @@
 	  .insp-ack-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
 	  .insp-ack-ico{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--amber-soft);color:#9a6700;flex:0 0 auto}
 	  .insp-ack-ico svg{width:19px;height:19px}
-	  .insp-ack-head h2,.insp-flow-head h2{font-size:17px;margin:0;font-weight:800}
+	  .insp-ack-head h2,.insp-flow-head h2{font-size:18px;margin:0;font-weight:600;letter-spacing:-.1px}
 	  .insp-ack-body{font-size:13px;line-height:1.6;color:var(--ink-soft);margin:0 0 16px}
 	  .insp-ack-actions,.insp-foot{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
 	  .insp-flow-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
