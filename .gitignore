@@ -30,3 +30,6 @@ env/
 
 # Runtime incident logs are local to the running instance.
 /data/*.jsonl
+
+# Word/Office temp lock files
+~$*

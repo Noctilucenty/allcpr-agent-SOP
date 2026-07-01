@@ -62,8 +62,9 @@ def test_3_audit_includes_every_library_file():
     on_disk = {
         p.relative_to(PROJECT_ROOT).as_posix()
         for p in SOP_LIBRARY.rglob("*")
-        # skip OS metadata / dotfiles (e.g. .DS_Store) — they aren't SOP documents
-        if p.is_file() and not p.name.startswith(".")
+        # skip OS metadata / dotfiles (.DS_Store) and Word temp-lock files (~$...)
+        # — they aren't SOP documents
+        if p.is_file() and not p.name.startswith((".", "~$"))
     }
     missing = on_disk - audited
     assert not missing, f"audit is missing files: {sorted(missing)}"
@@ -80,8 +81,10 @@ def test_4_each_entry_has_required_fields():
 
 
 def test_5_inspection_sop_is_active_workflow():
-    entries = {e["filename"]: e for e in sop_workflows.audit_entries()}
-    insp = entries["Smart Manikin 专员分点巡检 SOP.docx"]
+    # Look up by the canonical 01_Core_SOPs path (the filename is not unique — a
+    # duplicate copy may sit at the SOP_library root, classified archive_only).
+    by_path = {e["path"]: e for e in sop_workflows.audit_entries()}
+    insp = by_path["SOP_library/01_Core_SOPs/Smart Manikin 专员分点巡检 SOP.docx"]
     assert insp["category"] == "active_workflow"
 
 
@@ -277,6 +280,39 @@ def test_18_qa_order_returns_step_by_step_order():
         assert a.steps[0].startswith("1.")
         # before photos appear early in the ordered list (step 1 or 2)
         assert any(_before_photos_first(s, zh) for s in a.steps[:3])
+
+
+def test_20_ipad_no_battery_returns_step_by_step():
+    # English and Chinese battery/charge phrasing must route to the iPad power
+    # sub-issue and return an ordered step-by-step (not just images), and must
+    # not mis-route to a building power outage.
+    for q, zh in (
+        ("ipad no battery", False),
+        ("iPad won't charge", False),
+        ("ipad dead", False),
+        ("tablet dead", False),
+        ("tablet not turning on", False),
+        ("tablet no power", False),
+        ("平板没电", True),
+        ("ipad没电", True),
+        ("平板打不开", True),
+    ):
+        a = answer_question(q)
+        assert a.scenario == "smart_manikin_troubleshooting", q
+        assert a.smart_manikin_subissue == "ipad_pad_power_or_open", q
+        assert len(a.steps) >= 4, q
+        blob = " ".join(a.steps)
+        if zh:
+            assert "充电" in blob or "电源" in blob
+            assert "上报" in blob or "升级" in blob  # report / escalate
+            assert "拆" in blob or "维修" in blob      # do-not-repair
+        else:
+            low = blob.lower()
+            assert "charg" in low or "power" in low
+            assert "escalate" in low or "allcpr" in low
+            assert "repair" in low or "reset" in low
+    # a genuine building outage still routes to electricity_outage
+    assert answer_question("教室没电了").scenario == "electricity_outage"
 
 
 def test_19_qa_does_not_expose_passcodes():

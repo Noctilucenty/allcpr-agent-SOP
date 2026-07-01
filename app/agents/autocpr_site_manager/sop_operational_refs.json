@@ -348,7 +348,7 @@
     {
       "id": "smart_manikin_ipad_power_open_no_fix",
       "scenario": "smart_manikin_troubleshooting",
-      "title": "iPad / PAD open or power issue",
+      "title": "iPad / PAD power, battery, or open issue",
       "applies_to": [
         "ipad打不开",
         "iPad won't open",
@@ -358,7 +358,23 @@
         "平板打不开",
         "平板开不了",
         "pad not opening",
-        "tablet black screen"
+        "tablet black screen",
+        "ipad no battery",
+        "no battery",
+        "ipad battery",
+        "dead battery",
+        "out of battery",
+        "won't charge",
+        "not charging",
+        "ipad no power",
+        "tablet dead",
+        "tablet not turning on",
+        "tablet no power",
+        "平板没电",
+        "ipad没电",
+        "没电",
+        "充不进电",
+        "不充电"
       ],
       "source_status": "Smart Manikin source + needs engineer/vendor confirmation",
       "priority": 115,

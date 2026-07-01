@@ -362,10 +362,31 @@ def classify(question: str, context: Optional[Dict[str, Any]] = None) -> str:
     toward ``zip_site_evaluation`` rather than ``unknown``.
     """
     text = (question or "").lower()
+    matched = ""
     for scenario, keywords in _RULES:
         for kw in keywords:
             if kw in text:
-                return scenario
+                matched = scenario
+                break
+        if matched:
+            break
+
+    # Disambiguate a *device* battery/charge problem (e.g. "iPad 没电",
+    # "平板没电", "manikin won't charge") from a *building* power/internet
+    # outage — the outage rule also matches the broad "没电". Only override when
+    # the outage rules claimed it (or nothing did); safety/access still win.
+    if matched in ("", "electricity_outage", "internet_outage"):
+        device_words = ("ipad", "i pad", "tablet", "平板", "假人", "manikin", "smart manikin")
+        battery_words = (
+            "no battery", "battery", "won't charge", "wont charge", "not charging",
+            "won't power on", "wont power on", "no power", "not turning on",
+            "won't turn on", "wont turn on", "dead", "没电", "电量", "充电",
+            "充不进", "没充电",
+        )
+        if any(d in text for d in device_words) and any(b in text for b in battery_words):
+            return "smart_manikin_troubleshooting"
+    if matched:
+        return matched
 
     ctx = context or {}
     if any(ctx.get(k) for k in ("zip", "city")):
