@@ -2,11 +2,16 @@
 # Deploy: push this repo to GitHub, then in Render -> "New +" -> "Blueprint"
 # and point it at this repo. Render reads this file automatically.
 #
-# The app is a single FastAPI service (web_app:app) served by uvicorn. It is
-# fully local/deterministic: no external API keys and no database. The only
-# secret is the staff-access unlock PIN (ALLCPR_STAFF_ACCESS_PIN) below.
+# The app is a single FastAPI service (web_app:app) served by uvicorn. It runs
+# fully local/deterministic by default (no external API, no database). The only
+# committed secret is the staff-access unlock PIN (ALLCPR_STAFF_ACCESS_PIN).
 # SOP images are extracted on first request from the committed SOP/ folder into
 # app/web/static/sop_media (ephemeral disk is fine — they rebuild on boot).
+#
+# Optional AI layer: setting ALLCPR_AI_ENABLED=true turns on the interpret/
+# summarize layer, but ONLY if OPENAI_API_KEY is also present. The key is a
+# billing credential and is NEVER committed here — it is declared sync:false so
+# its value lives only in the Render dashboard (Environment tab).
 services:
   - type: web
     name: allcpr-agent
@@ -26,3 +31,14 @@ services:
       # rotate this value and move it to a Render dashboard secret (sync:false).
       - key: ALLCPR_STAFF_ACCESS_PIN
         value: "2745"
+      # --- Optional AI orchestration layer ---
+      # Flag + model are not secrets, so they can live here.
+      - key: ALLCPR_AI_ENABLED
+        value: "true"
+      - key: ALLCPR_AI_MODEL
+        value: "gpt-4o-mini"
+      # Billing credential: value is dashboard-managed only (never in git).
+      # Set it in Render -> allcpr-agent -> Environment -> OPENAI_API_KEY,
+      # using a freshly rotated key. Until it is set, the app runs deterministic.
+      - key: OPENAI_API_KEY
+        sync: false
