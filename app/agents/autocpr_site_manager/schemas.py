@@ -148,6 +148,9 @@ class AgentAnswer(BaseModel):
     # / ``ai_subtype_hint`` are validated against known labels; the summary fields
     # are scrubbed against real secret values.
     ai_used: bool = False
+    # ``ai_pending`` = the deterministic answer was returned fast and an AI summary
+    # is being fetched separately (client then calls the ai-summary endpoint).
+    ai_pending: bool = False
     ai_stage: str = ""  # "" | "intent" | "summary" | "both"
     ai_confidence: str = ""  # "" | "low" | "medium" | "high"
     ai_scenario_hint: str = ""

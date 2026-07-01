@@ -794,6 +794,13 @@
   .ac-ai-steps li{margin:2px 0}
   .ac-ai-q{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#6a5b00;background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:9px;padding:8px 10px;margin:9px 0 0}
   .ac-ai-q svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px;color:var(--amber)}
+  /* async states: a "preparing…" chip, then the banner pops in */
+  .ac-ai-loading{display:flex;align-items:center;opacity:.9}
+  .ac-ai-loading .ac-ai-tag{color:#6b63b8}
+  .ai-spin{width:12px;height:12px;border:2px solid #d3d3f0;border-top-color:#4b3fb0;border-radius:50%;display:inline-block;animation:ai-spin .7s linear infinite}
+  @keyframes ai-spin{to{transform:rotate(360deg)}}
+  @keyframes ac-ai-pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+  .ac-ai-pop{animation:ac-ai-pop .28s ease-out}
   .ac-now{margin-bottom:12px}
   .ac-now-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--ink);margin:0 0 10px}
   .ac-now-title svg{width:15px;height:15px;color:var(--red)}
@@ -1249,6 +1256,7 @@ const COPY = {
     // concise on-site action card
     whatToDoNow:'What to do now',
     aiLabel:'AI-assisted summary · SOP-backed',
+    aiLoading:'Preparing AI summary…',
     requiredEvidence:'Required evidence',
     escalateTo:'Escalate to',
     doNot:'Do not',
@@ -1516,6 +1524,7 @@ const COPY = {
     // 现场行动卡
     whatToDoNow:'现在先做什么',
     aiLabel:'AI 辅助整理 · SOP 来源支持',
+    aiLoading:'正在整理 AI 摘要…',
     requiredEvidence:'必须收集',
     escalateTo:'升级给谁',
     doNot:'不要做',
@@ -2206,6 +2215,19 @@ function treeHTML(data, c){
    evidence, escalation, and "do not". Only source provenance, info-to-collect,
    and the raw payload stay in one small collapsed "details" block. Nothing that
    guides the user is hidden behind a tab. */
+/* The "AI-assisted summary" banner. Rendered inline by render() when the answer
+   already carries AI fields, and injected on top afterwards when the async
+   ai-summary request resolves (see ask()). */
+function aiBannerHTML(d, c){
+  if(!(d && d.ai_used && (d.ai_short_title || d.ai_summary || (d.ai_top_steps && d.ai_top_steps.length) || d.ai_clarifying_question))) return '';
+  return `<div class="ac-ai">
+    <span class="ac-ai-tag">${svg('bolt')}${esc(c.aiLabel)}</span>
+    ${d.ai_short_title ? `<p class="ac-ai-title">${esc(d.ai_short_title)}</p>` : ''}
+    ${d.ai_summary ? `<p class="ac-ai-sum">${esc(d.ai_summary)}</p>` : ''}
+    ${(d.ai_top_steps && d.ai_top_steps.length) ? `<ol class="ac-ai-steps">${d.ai_top_steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
+    ${d.ai_clarifying_question ? `<p class="ac-ai-q">${svg('alert')}<span>${esc(d.ai_clarifying_question)}</span></p>` : ''}
+  </div>`;
+}
 function render(data){
   const c = COPY[data.language] || copy();
   const sev = (data.severity || 'info').toLowerCase();
@@ -2223,15 +2245,7 @@ function render(data){
   /* AI-assisted summary — a short, source-backed rephrasing shown on top only
      when the optional AI layer is enabled. The full source-backed sections below
      are unchanged; this never replaces them. */
-  const aiBanner = (data.ai_used && (data.ai_short_title || data.ai_summary || data.ai_clarifying_question))
-    ? `<div class="ac-ai">
-         <span class="ac-ai-tag">${svg('bolt')}${esc(c.aiLabel)}</span>
-         ${data.ai_short_title ? `<p class="ac-ai-title">${esc(data.ai_short_title)}</p>` : ''}
-         ${data.ai_summary ? `<p class="ac-ai-sum">${esc(data.ai_summary)}</p>` : ''}
-         ${(data.ai_top_steps && data.ai_top_steps.length) ? `<ol class="ac-ai-steps">${data.ai_top_steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
-         ${data.ai_clarifying_question ? `<p class="ac-ai-q">${svg('alert')}<span>${esc(data.ai_clarifying_question)}</span></p>` : ''}
-       </div>`
-    : '';
+  const aiBanner = aiBannerHTML(data, c);
 
   /* Safety warning — shown for danger, or whenever a safety check is present. */
   const safety = (data.immediate_safety_check || []).slice(0, 4);
@@ -2489,6 +2503,7 @@ async function ask(){
   const tok = staffToken();
   if(tok) body.staff_access_token = tok;
 
+  const seq = ++askSeq;
   setBusy(true);
   try{
     const resp = await fetch(API_BASE + '/api/agents/autocpr-site-manager/ask', {
@@ -2496,11 +2511,16 @@ async function ask(){
       headers:{'content-type':'application/json'},
       body:JSON.stringify(body)
     });
-	    if(!resp.ok) throw new Error('HTTP ' + resp.status);
-	    const data = await resp.json();
-	    render(data);
-	    if(data.incident_log_id) await loadLogs(data.incident_log_id);
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if(seq !== askSeq) return;                 // a newer ask superseded this one
+    render(data);
+    // Optional AI summary: fetch it separately and pop it in on top when ready,
+    // so the deterministic instructions never wait on the model.
+    if(data.ai_pending) fetchAiSummary(q, ctx, tok, data.incident_log_id, seq);
+    if(data.incident_log_id) await loadLogs(data.incident_log_id);
   }catch(err){
+    if(seq !== askSeq) return;
     $('#out').innerHTML = `<div class="err">${esc(copy().error)}: ${esc(err.message)}</div>`;
     $('#out').style.display = 'block';
   }finally{
@@ -2508,6 +2528,39 @@ async function ask(){
   }
 }
 
+/* Fetch the AI summary after the deterministic answer is already on screen. Shows
+   a small "preparing…" chip on top of the card, then replaces it with the banner
+   (or removes it silently on failure / when AI returns nothing). A sequence guard
+   ignores results from a question the user has since replaced. */
+function fetchAiSummary(q, ctx, tok, logId, seq){
+  const card = $('#out .ans-card');
+  if(!card) return;
+  const head = card.querySelector('.ac-head');
+  const ph = document.createElement('div');
+  ph.className = 'ac-ai ac-ai-loading';
+  ph.innerHTML = `<span class="ac-ai-tag"><span class="ai-spin" aria-hidden="true"></span>${esc(copy().aiLoading)}</span>`;
+  if(head) head.after(ph); else card.prepend(ph);
+
+  const body = {question:q, context:Object.assign({}, ctx, {incident_log_id:logId || ''})};
+  if(tok) body.staff_access_token = tok;
+  const clear = () => { const p = ($('#out .ans-card') || document).querySelector('.ac-ai-loading'); if(p) p.remove(); };
+  fetch(API_BASE + '/api/agents/autocpr-site-manager/ai-summary', {
+    method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body)
+  }).then(r => r.ok ? r.json() : null).then(ai => {
+    if(seq !== askSeq){ clear(); return; }
+    const cur = $('#out .ans-card');
+    const placeholder = cur ? cur.querySelector('.ac-ai-loading') : null;
+    const html = (ai && ai.ai_used) ? aiBannerHTML(ai, copy()) : '';
+    if(!html){ if(placeholder) placeholder.remove(); return; }
+    const tmp = document.createElement('div'); tmp.innerHTML = html;
+    const banner = tmp.firstElementChild;
+    banner.classList.add('ac-ai-pop');
+    if(placeholder) placeholder.replaceWith(banner);
+    else { const h = cur && cur.querySelector('.ac-head'); if(h) h.after(banner); }
+  }).catch(clear);
+}
+
+let askSeq = 0;
 $('#go').onclick = ask;
 $('#q').addEventListener('keydown', event => {
   if((event.metaKey || event.ctrlKey) && event.key === 'Enter') ask();

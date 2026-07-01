@@ -41,6 +41,7 @@ The project is intentionally separate from `maps-scraper-intel`: opening
 | Agent UI | `/` |
 | Agent UI alias | `/agent` |
 | Structured API | `POST /api/agents/autocpr-site-manager/ask` |
+| AI summary (optional) | `POST /api/agents/autocpr-site-manager/ai-summary` |
 | Staff passcode unlock | `POST /api/staff-access/unlock` |
 | Incident logs | `GET/POST /api/incident-logs`, `GET/PATCH /api/incident-logs/{id}` |
 | Inspection logs | `GET/POST /api/inspection-logs`, `GET/PATCH /api/inspection-logs/{id}` |
@@ -119,6 +120,16 @@ secret-free view of the answer, and its output is scrubbed against real secret
 values. On any failure the app falls back to deterministic text. Logs record
 only `ai_used` / `ai_stage` / `ai_confidence` / `ai_scenario_hint` /
 `ai_subtype_hint` — never the key, prompt, passcodes, or AI text.
+
+**Two-phase UX (no waiting on the model).** `POST /ask` returns the deterministic
+answer immediately and sets `ai_pending: true` when AI is enabled. The browser
+renders those instructions right away, shows a small "Preparing AI summary…"
+chip, and calls `POST /ai-summary` separately; when it resolves, the
+"AI-assisted summary" banner pops in on top. If it fails or returns nothing, the
+chip disappears and the deterministic answer stays. Because the fast answer must
+not wait on the model, AI does **not** re-route the scenario — it summarizes the
+same deterministic answer the card already shows. The default model is
+`gpt-5.4-mini` (a reasoning model; the client sends no `temperature`).
 
 ## Local Quick Start
 

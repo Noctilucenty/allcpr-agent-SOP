@@ -15,13 +15,15 @@ from fastapi.staticfiles import StaticFiles
 
 from app.agents.autocpr_site_manager import answer_question
 from app.agents.autocpr_site_manager.ai_orchestrator import (
-    answer_with_orchestration,
+    ai_enabled,
+    ai_summary_payload,
     status_line as ai_status_line,
 )
 from app.agents.autocpr_site_manager.incident_logs import (
     append_answer_log,
     get_log,
     list_logs,
+    patch_ai_metadata,
     patch_log,
 )
 from app.agents.autocpr_site_manager.inspection_logs import (
@@ -110,14 +112,38 @@ def api_staff_access_unlock(req: StaffAccessUnlockRequest) -> dict:
 
 @app.post("/api/agents/autocpr-site-manager/ask", response_model=AgentAnswer)
 def api_agent_site_manager_ask(req: AgentAskRequest) -> AgentAnswer:
-    # Deterministic-first, with an optional AI interpret/summarize layer. When AI
-    # is disabled (default) this returns the exact deterministic answer.
-    answer = answer_with_orchestration(
+    # Fast path: return the deterministic, source-backed answer immediately so the
+    # UI can render instructions without waiting on the AI. When AI is enabled,
+    # ``ai_pending`` tells the client to fetch the summary separately (it "pops in"
+    # on top when ready). AI never blocks or changes this answer.
+    answer = answer_question(
         req.question, req.context, staff_access_token=req.staff_access_token
     )
+    answer.ai_pending = ai_enabled()
     entry = append_answer_log(req.question, req.context, answer)
     answer.incident_log_id = str(entry.get("id", ""))
     return answer
+
+
+@app.post("/api/agents/autocpr-site-manager/ai-summary")
+def api_agent_site_manager_ai_summary(req: AgentAskRequest) -> dict:
+    """Optional AI summary for a question already answered by ``/ask``.
+
+    Runs the interpret/summarize layer and returns only the AI fields. Slower than
+    ``/ask`` (it calls the model), so the client fetches it after rendering the
+    deterministic answer. Returns ``ai_used: false`` if AI is off or the call
+    fails — the client then keeps the instructions it already showed.
+    """
+    payload = ai_summary_payload(
+        req.question, req.context, staff_access_token=req.staff_access_token
+    )
+    # Record the safe AI metadata onto the log entry created by /ask, if given.
+    log_id = ""
+    if isinstance(req.context, dict):
+        log_id = str(req.context.get("incident_log_id") or "")
+    if log_id and payload.get("ai_used"):
+        patch_ai_metadata(log_id, payload)
+    return payload
 
 
 @app.post("/api/incident-logs")

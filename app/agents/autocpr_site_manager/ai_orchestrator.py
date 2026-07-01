@@ -325,53 +325,55 @@ def _stage(used_intent: bool, used_summary: bool) -> str:
     return ""
 
 
-def answer_with_orchestration(
+# Keys the ai-summary endpoint returns (and that the log patch records).
+AI_FIELDS = (
+    "ai_used", "ai_stage", "ai_confidence", "ai_scenario_hint", "ai_subtype_hint",
+    "ai_short_title", "ai_summary", "ai_top_steps", "ai_clarifying_question",
+)
+
+
+def ai_summary_payload(
     question: str,
     context: Optional[Dict[str, Any]] = None,
     *,
     staff_access_token: Optional[str] = None,
-) -> AgentAnswer:
-    """Deterministic-first answer with an optional AI interpret/summarize layer.
+) -> Dict[str, Any]:
+    """Just the AI fields, for the async "pop in on top" summary request.
 
-    Always returns a valid ``AgentAnswer``. The AI is best-effort: any failure
-    (disabled, no key, network error, bad JSON) falls back to the exact
-    deterministic answer. Sensitive decisions never pass through the AI.
+    Routes on the RAW question — the same deterministic answer the fast ``/ask``
+    path returned — so the summary banner always matches the displayed card.
+    Returns ``ai_used: False`` when AI is off or the model call fails; the client
+    then simply keeps the deterministic instructions it already rendered.
     """
-    # Local import avoids an import cycle with agent.py.
+    empty = {k: ([] if k == "ai_top_steps" else ("" if k != "ai_used" else False)) for k in AI_FIELDS}
+    if not ai_enabled():
+        return empty
+
     from .agent import answer_question
 
-    intent = refine_intent(question, context) if ai_enabled() else None
-    used_intent = intent is not None
+    answer = answer_question(question, context, staff_access_token=staff_access_token)
+    intent = refine_intent(question, context)
+    summary = summarize_answer(answer)
+    if intent is None and summary is None:
+        return empty
 
-    # The deterministic classifier remains authoritative — the AI only supplies a
-    # cleaner phrasing of the user's own words as its input.
-    routed_question = question
-    if intent and intent.get("normalized_question"):
-        routed_question = intent["normalized_question"]
-
-    answer = answer_question(routed_question, context, staff_access_token=staff_access_token)
-
-    if intent:
-        answer.ai_scenario_hint = intent.get("scenario_hint", "")
-        answer.ai_subtype_hint = intent.get("subtype_hint", "")
-        answer.ai_confidence = intent.get("confidence", "")
-        answer.ai_clarifying_question = intent.get("suggested_clarifying_question", "")
-
-    summary = summarize_answer(answer) if ai_enabled() else None
-    used_summary = summary is not None
-    if summary:
-        answer.ai_short_title = summary.get("short_title", "")
-        answer.ai_summary = summary.get("plain_summary", "")
-        answer.ai_top_steps = summary.get("top_3_steps", [])
-        if summary.get("clarifying_question"):
-            answer.ai_clarifying_question = summary["clarifying_question"]
-
-    answer.ai_used = used_intent or used_summary
-    answer.ai_stage = _stage(used_intent, used_summary)
-
+    intent = intent or {}
+    summary = summary or {}
+    out = {
+        "ai_used": True,
+        "ai_stage": _stage(bool(intent), bool(summary)),
+        "ai_confidence": intent.get("confidence", ""),
+        "ai_scenario_hint": intent.get("scenario_hint", ""),
+        "ai_subtype_hint": intent.get("subtype_hint", ""),
+        "ai_short_title": summary.get("short_title", ""),
+        "ai_summary": summary.get("plain_summary", ""),
+        "ai_top_steps": summary.get("top_3_steps", []),
+        "ai_clarifying_question": summary.get("clarifying_question", "")
+        or intent.get("suggested_clarifying_question", ""),
+    }
     # Defense-in-depth: scrub every AI-authored field against real secrets.
-    answer.ai_short_title = redact_text(answer.ai_short_title)
-    answer.ai_summary = redact_text(answer.ai_summary)
-    answer.ai_top_steps = [redact_text(s) for s in answer.ai_top_steps]
-    answer.ai_clarifying_question = redact_text(answer.ai_clarifying_question)
-    return answer
+    out["ai_short_title"] = redact_text(out["ai_short_title"])
+    out["ai_summary"] = redact_text(out["ai_summary"])
+    out["ai_top_steps"] = [redact_text(s) for s in out["ai_top_steps"]]
+    out["ai_clarifying_question"] = redact_text(out["ai_clarifying_question"])
+    return out

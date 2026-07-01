@@ -145,7 +145,10 @@ def build_log_entry(
         **_access_ref_flags(answer),
         **_smart_manikin_flags(answer),
         # AI orchestration metadata only — never secrets, prompts, or AI text.
+        # ``ai_used`` starts false on the fast path and is patched in later by the
+        # async ai-summary call (see patch_ai_metadata).
         "ai_used": bool(getattr(answer, "ai_used", False)),
+        "ai_pending": bool(getattr(answer, "ai_pending", False)),
         "ai_stage": str(getattr(answer, "ai_stage", "") or ""),
         "ai_confidence": str(getattr(answer, "ai_confidence", "") or ""),
         "ai_scenario_hint": str(getattr(answer, "ai_scenario_hint", "") or ""),
@@ -235,6 +238,38 @@ def patch_log(
                         "created_by": _scrub(created_by or "staff"),
                     }
                 )
+        patched = _scrub(entry)
+        break
+    if patched is None:
+        return None
+    path = _log_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as fh:
+        for entry in entries:
+            fh.write(json.dumps(_scrub(entry), ensure_ascii=False, separators=(",", ":")) + "\n")
+    return patched
+
+
+# Only these safe AI-metadata keys may be recorded — never AI text, prompts, or
+# secrets (matches the AI-logging allowlist).
+_AI_META_KEYS = {"ai_used", "ai_stage", "ai_confidence", "ai_scenario_hint", "ai_subtype_hint"}
+
+
+def patch_ai_metadata(log_id: str, meta: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Record the async AI summary's metadata onto an existing log entry.
+
+    Filtered to the safe allowlist; ``ai_summary`` / ``ai_short_title`` /
+    ``ai_top_steps`` (the AI-authored text) are deliberately ignored.
+    """
+    safe = {k: meta.get(k) for k in _AI_META_KEYS if k in meta}
+    if not safe:
+        return None
+    entries = _read_all()
+    patched: Optional[Dict[str, Any]] = None
+    for entry in entries:
+        if entry.get("id") != log_id:
+            continue
+        entry.update({k: (bool(v) if k == "ai_used" else str(v or "")) for k, v in safe.items()})
         patched = _scrub(entry)
         break
     if patched is None:
