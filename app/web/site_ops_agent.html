@@ -1107,6 +1107,7 @@
       <button type="button" class="insp-x" id="quick-close" aria-label="Close">&times;</button>
     </div>
     <p class="insp-sec-warn quick-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/></svg><span data-i18n="quickSubtitle">Report visible problems only. Do not repair, move equipment, force entry, or use staff-only access.</span></p>
+    <div class="insp-reference" id="quick-reference" hidden></div>
     <div class="quick-checks" id="quick-checks"></div>
     <div class="quick-report" id="quick-report"></div>
     <div class="insp-foot">
@@ -2630,23 +2631,32 @@ function acknowledgeInspection(){
   renderInspectionSections();
   loadInspectionReference();
 }
-async function loadInspectionReference(){
-  const box = $('#insp-reference');
+/* Source-backed equipment placement reference (the page-3 diagram). Shown in
+   both the staff Full Site Inspection and the student Quick Class Readiness
+   Check so a light user can compare the actual station to the standard setup.
+   The backend caution ("Reference only; do not repair or dismantle equipment.")
+   is rendered so the picture is never read as a repair instruction. */
+async function loadReferenceInto(boxSel){
+  const box = $(boxSel);
   if(!box) return;
   const c = copy();
   try{
-    const resp = await fetch(API_BASE + '/api/inspection-reference');
-    if(!resp.ok) return;
+    const lang = selectedLang === 'zh' ? 'zh' : 'en';
+    const resp = await fetch(API_BASE + '/api/inspection-reference?lang=' + lang);
+    if(!resp.ok){ box.hidden = true; return; }
     const items = await resp.json();
     if(!items || !items.length){ box.hidden = true; return; }
+    const caution = items[0].caution || c.noAnalysis;
     box.innerHTML = `<p class="insp-ref-title">${svg('image')}${esc(c.inspReference)}</p>` +
       items.slice(0, 2).map(it =>
         `<a href="${esc(it.url)}" target="_blank" rel="noopener"><img class="insp-ref-img" src="${esc(it.url)}" alt="${esc(it.title || '')}" loading="lazy" /></a>`
       ).join('') +
-      `<p class="insp-ref-note">${svg('alert')} ${esc(c.noAnalysis)}</p>`;
+      `<p class="insp-ref-note">${svg('alert')} ${esc(caution)}</p>`;
     box.hidden = false;
   }catch(e){ box.hidden = true; }
 }
+function loadInspectionReference(){ return loadReferenceInto('#insp-reference'); }
+function loadQuickReference(){ return loadReferenceInto('#quick-reference'); }
 function inspSec(title, icon, inner, cls){
   return `<div class="insp-sec ${cls||''}"><p class="insp-sec-title">${svg(icon)}${esc(title)}</p>${inner}</div>`;
 }
@@ -2986,6 +2996,7 @@ function openQuickCheck(){
   quickState = newQuickState();
   renderQuickChecks();
   renderQuickReport();
+  loadQuickReference();
   if($('#quick-save-msg')) $('#quick-save-msg').hidden = true;
   const submit = $('#quick-submit');
   if(submit){ submit.textContent = copy().quickSubmit; delete submit.dataset.done; }
