@@ -175,6 +175,11 @@ class InspectionLogRequest(BaseModel):
     needs_support_count: int = 0
     status: Optional[str] = None
     notes: Optional[str] = None
+    # Full-site-inspection extras: a compact Table/Station pre-check (what is
+    # present on the Smart Manikin table) plus who/what mode ran the inspection.
+    inspection_actor_type: Optional[str] = None
+    inspection_mode: Optional[str] = None
+    table_precheck: Any = None
     language: str = "en"
 
 
@@ -184,6 +189,26 @@ class InspectionLogPatch(BaseModel):
     status: Optional[str] = None
     note: Optional[str] = None
     created_by: Optional[str] = None
+
+
+class StudentSiteCheckRequest(BaseModel):
+    """A lightweight quick class-readiness report from a light user.
+
+    Report-only: the user simply flags visible problems (access, room, station,
+    iPad, manikin, supplies) before/during class. Carries no staff duties. Stores
+    only these plain fields — never raw image bytes, local paths, passcodes, staff
+    PINs, or answer keys.
+    """
+
+    site: Optional[str] = None
+    class_time: Optional[str] = None
+    name_optional: Optional[str] = None
+    issue_categories: List[str] = []
+    description: Optional[str] = None
+    photo_taken: bool = False
+    class_blocked: bool = False
+    safety_concern: bool = False
+    language: str = "en"
 
 
 class OnboardingAttemptRequest(BaseModel):

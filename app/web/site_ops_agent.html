@@ -597,6 +597,46 @@
 	  .insp-save-msg.support{color:#9a6700}
 	  .insp-save-msg.err{color:#8a1417}
 	  @media (max-width:620px){ .insp-meta{grid-template-columns:1fr} }
+  /* ---------- inspection mode picker ---------- */
+  .role-modal{max-width:520px}
+  .role-sub{font-size:13px;color:var(--ink-soft);margin:0 0 14px;line-height:1.5}
+  .role-choices{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+  .role-choice{display:flex;gap:12px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px 14px;cursor:pointer;font:inherit;transition:border-color .12s,box-shadow .12s}
+  .role-choice:hover{border-color:var(--muted-2);box-shadow:var(--shadow)}
+  .role-choice-ic{flex:0 0 auto;width:38px;height:38px;border-radius:10px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center}
+  .role-choice-ic.alt{background:#2457b8}
+  .role-choice-ic svg{width:20px;height:20px}
+  .role-choice-tx{display:flex;flex-direction:column;gap:3px}
+  .role-choice-lb{font-size:14.5px;font-weight:800;color:var(--ink)}
+  .role-choice-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+  .role-choice-help{font-size:11.5px;color:var(--muted-2);line-height:1.45}
+  /* ---------- table / station pre-check ---------- */
+  .insp-st.sel-missing{border-color:var(--red);background:var(--red-soft);color:#8a1417}
+  .insp-sec.precheck{background:var(--bg)}
+  .insp-sec-sub{font-size:11.5px;color:var(--muted-2);margin:0 0 8px;line-height:1.45}
+  /* ---------- quick class readiness check ---------- */
+  .quick-sub{margin-bottom:12px}
+  .quick-item{border-top:1px solid var(--line);padding:10px 0}
+  .quick-item:first-child{border-top:none}
+  .quick-q{font-size:13px;font-weight:700;color:var(--ink);margin:0 0 7px}
+  .quick-opts{display:flex;gap:7px;flex-wrap:wrap}
+  .quick-opt{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 11px;font:inherit;font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer}
+  .quick-opt.sel-ok{border-color:#0a7a37;background:#e7f6ec;color:#0a7a37}
+  .quick-opt.sel-issue{border-color:var(--red);background:var(--red-soft);color:#8a1417}
+  .quick-guide{display:flex;gap:7px;align-items:flex-start;margin-top:8px;font-size:12px;color:#8a1417;background:var(--red-soft);border:1px solid var(--red-line);border-radius:9px;padding:8px 10px;line-height:1.45}
+  .quick-guide[hidden]{display:none}
+  .quick-guide svg{width:14px;height:14px;flex:0 0 auto;margin-top:1px}
+  .quick-report{margin-top:12px;border-top:1px solid var(--line-2);padding-top:12px;display:flex;flex-direction:column;gap:9px}
+  .quick-field{display:flex;flex-direction:column;gap:4px}
+  .quick-field label{font-size:11.5px;font-weight:750;color:var(--muted-2)}
+  .quick-field input,.quick-field textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;font-size:12.5px}
+  .quick-field textarea{min-height:56px;resize:vertical}
+  .quick-urg{display:flex;gap:7px;flex-wrap:wrap}
+  .quick-urg-btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 11px;font:inherit;font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer}
+  .quick-urg-btn.sel{border-color:var(--ink);background:var(--ink);color:#fff}
+  .quick-urg-btn.sel-safety{border-color:var(--red);background:var(--red);color:#fff}
+  .quick-photo-toggle{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink-soft);cursor:pointer}
+  .quick-photo-toggle input{width:16px;height:16px;accent-color:var(--red)}
 	  /* ---------- onboarding test ---------- */
 	  .onb-cta{margin-top:9px;border-color:#c7d7f5;background:#eef3fd}
 	  .onb-cta:hover{border-color:#2457b8}
@@ -976,6 +1016,55 @@
   </div>
 </div>
 
+<!-- Inspection mode picker: choose the workflow that matches the task -->
+<div class="insp-overlay" id="role-overlay" hidden aria-hidden="true">
+  <div class="insp-modal role-modal" role="dialog" aria-modal="true" aria-labelledby="role-title">
+    <div class="insp-flow-head">
+      <h2 id="role-title" data-i18n="roleTitle">Choose check type</h2>
+      <button type="button" class="insp-x" id="role-close" aria-label="Close">&times;</button>
+    </div>
+    <p class="role-sub" data-i18n="roleSubtitle">Pick the workflow that matches what you need to do right now.</p>
+    <div class="role-choices">
+      <button type="button" class="role-choice" id="role-full">
+        <span class="role-choice-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span>
+        <span class="role-choice-tx">
+          <span class="role-choice-lb" data-i18n="roleFull">Full Site Inspection</span>
+          <span class="role-choice-desc" data-i18n="roleFullDesc">For site representatives completing the weekly Smart Manikin inspection.</span>
+          <span class="role-choice-help" data-i18n="roleFullHelp">Includes full checklist, before/after photos, Weekly Site Check Report, and upload reminders.</span>
+        </span>
+      </button>
+      <button type="button" class="role-choice" id="role-quick">
+        <span class="role-choice-ic alt" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg></span>
+        <span class="role-choice-tx">
+          <span class="role-choice-lb" data-i18n="roleQuick">Quick Class Readiness Check</span>
+          <span class="role-choice-desc" data-i18n="roleQuickDesc">For a quick class-start check or visible issue report.</span>
+          <span class="role-choice-help" data-i18n="roleQuickHelp">Use this if you only need to report access, room, equipment, iPad, or safety problems.</span>
+        </span>
+      </button>
+    </div>
+    <div class="insp-ack-actions">
+      <button type="button" class="sa-btn" id="role-cancel" data-i18n="roleCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Class Readiness Check: light-user, report-only workflow -->
+<div class="insp-overlay" id="quick-overlay" hidden aria-hidden="true">
+  <div class="insp-modal" role="dialog" aria-modal="true" aria-labelledby="quick-title">
+    <div class="insp-flow-head">
+      <h2 id="quick-title" data-i18n="quickTitle">Quick Class Readiness Check</h2>
+      <button type="button" class="insp-x" id="quick-close" aria-label="Close">&times;</button>
+    </div>
+    <p class="insp-sec-warn quick-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/></svg><span data-i18n="quickSubtitle">Report visible problems only. Do not repair, move equipment, force entry, or use staff-only access.</span></p>
+    <div class="quick-checks" id="quick-checks"></div>
+    <div class="quick-report" id="quick-report"></div>
+    <div class="insp-foot">
+      <p class="insp-save-msg" id="quick-save-msg" hidden></p>
+      <button type="button" class="sa-btn primary" id="quick-submit" data-i18n="quickSubmit">Submit Quick Report</button>
+    </div>
+  </div>
+</div>
+
 <div class="insp-overlay onb-overlay" id="onb-overlay" hidden aria-hidden="true">
   <div class="insp-modal" role="dialog" aria-modal="true" aria-labelledby="onb-title">
     <!-- Step 0: staff details + start -->
@@ -1255,6 +1344,41 @@ const COPY = {
     inspSavedCompleted:'Inspection recorded — completed',
     inspSavedNeedsSupport:'Inspection recorded — ALLCPR support needed',
     inspSaveError:'Could not save the inspection. Please try again.',
+    // ---- inspection mode picker ----
+    roleTitle:'Choose check type',
+    roleSubtitle:'Pick the workflow that matches what you need to do right now.',
+    roleFull:'Full Site Inspection',
+    roleFullDesc:'For site representatives completing the weekly Smart Manikin inspection.',
+    roleFullHelp:'Includes full checklist, before/after photos, Weekly Site Check Report, and upload reminders.',
+    roleQuick:'Quick Class Readiness Check',
+    roleQuickDesc:'For a quick class-start check or visible issue report.',
+    roleQuickHelp:'Use this if you only need to report access, room, equipment, iPad, or safety problems.',
+    roleCancel:'Cancel',
+    // ---- table / station pre-check (full staff mode) ----
+    tablePrecheckTitle:'Table / Station Pre-check',
+    tablePrecheckSub:'Before moving anything, confirm what is present on the Smart Manikin table.',
+    tablePrecheckItems:['iPad present','Smart Manikin / manikins present','AED Training Pads present','Consumables area present','Tissues / simulated gauze present if available','Disinfecting wipes present','Disposable gloves present','Mask adaptors present','Face shield present if supplied / optional','Pocket Mask present','BVM / Bag-Valve-Mask present','iPad connected to power','Smart Manikin connected to power','Items are in standard placement / not scattered'],
+    tpPresent:'Present / OK', tpMissing:'Missing', tpProblem:'Problem',
+    // ---- quick class readiness check (light user mode) ----
+    quickTitle:'Quick Class Readiness Check',
+    quickSubtitle:'Report visible problems only. Do not repair, move equipment, force entry, or use staff-only access.',
+    quickChecks:[
+      {cat:'access', q:'Can you enter the class area?', ok:'Yes', issue:'No / door locked / cannot enter', guide:'Do not force entry or use staff-only access. Report site, class time, and entrance photo if safe.'},
+      {cat:'room', q:'Does the room look safe and usable?', ok:'Looks okay', issue:'Unsafe / messy / blocked / water or electrical concern', guide:'Do not touch hazards. Take photo/video if safe and report immediately.', safety:true},
+      {cat:'station', q:'Can you see the Smart Manikin / iPad training station?', ok:'Yes', issue:'Missing / not set up / cannot find it', guide:'Do not move equipment around. Take a photo if safe and report the issue.'},
+      {cat:'ipad', q:'Is the iPad/app opening normally?', ok:'Yes', issue:'No / black screen / not opening / no response', guide:'Do not reset, repair, or dismantle equipment. Record the symptom and report it.'},
+      {cat:'manikin', q:'Does the Smart Manikin appear connected and usable?', ok:'Yes', issue:'No / Bluetooth / connection / data problem', guide:'Do not repair or dismantle. Record the symptom and report it.'},
+      {cat:'supplies', q:'Is anything visibly missing, dirty, damaged, or wrong?', ok:'No visible problem', issue:'Yes, visible issue', guide:'Report what is wrong. Photo/video if safe. Do not perform staff maintenance unless instructed.'}
+    ],
+    quickName:'Name (optional)', quickSite:'Site / location', quickClassTime:'Class time (optional)',
+    quickDesc:'Description', quickDescPh:'Briefly describe what you saw.',
+    quickPhotoTaken:'I took a photo/video (only if safe)',
+    quickUrgency:'Urgency', quickUrgNormal:'Normal', quickUrgBlocked:'Class blocked', quickUrgSafety:'Safety concern',
+    quickSubmit:'Submit Quick Report',
+    quickSuccess:'Report submitted for staff review. Do not repair, dismantle, or force access.',
+    quickSafetySuccess:'Safety concern submitted. Stop using the area if unsafe and notify staff immediately.',
+    quickError:'Could not submit the report. Please try again.',
+    quickSiteRequired:'Please enter the site / location.',
     // inspection decision chips
     ciFrequency:'Frequency', ciBefore:'Before photos', ciChecklist:'Site checklist', ciEquip:'Equipment / supplies',
     ciAccess:'Access / camera / Wi-Fi', ciSafety:'Safety hazards', ciAfter:'After photos', ciReport:'Weekly report',
@@ -1483,6 +1607,41 @@ const COPY = {
     inspSavedCompleted:'巡检已记录——已完成',
     inspSavedNeedsSupport:'巡检已记录——需要 ALLCPR 支持',
     inspSaveError:'保存巡检失败，请重试。',
+    // ---- inspection mode picker ----
+    roleTitle:'选择检查类型',
+    roleSubtitle:'请选择最符合当前情况的流程。',
+    roleFull:'完整分点巡检',
+    roleFullDesc:'适用于分点专员完成每周 Smart Manikin 巡检。',
+    roleFullHelp:'包含完整检查清单、巡检前后照片、每周分点巡检表和上传提醒。',
+    roleQuick:'快速上课检查',
+    roleQuickDesc:'适用于上课前/上课中快速检查并报告可见问题。',
+    roleQuickHelp:'用于报告门口、房间、设备、iPad 或安全问题。',
+    roleCancel:'取消',
+    // ---- table / station pre-check (full staff mode) ----
+    tablePrecheckTitle:'桌面 / 训练站预检查',
+    tablePrecheckSub:'移动或整理前，先确认 Smart Manikin 桌面/训练站上有哪些物品。',
+    tablePrecheckItems:['iPad 在现场','Smart Manikin / 假人在现场','AED Training Pads 在现场','耗材区域在现场','纸巾 / 模拟纱布如有应在现场','消毒湿巾在现场','一次性手套在现场','Mask adaptors 在现场','Face shield 如有配置应在现场','Pocket Mask 在现场','BVM / 球囊面罩在现场','iPad 已连接电源','Smart Manikin 已连接电源','物品按标准位置摆放，没有明显散乱'],
+    tpPresent:'正常', tpMissing:'缺失', tpProblem:'有问题',
+    // ---- quick class readiness check (light user mode) ----
+    quickTitle:'快速上课检查',
+    quickSubtitle:'只报告可见问题。不要维修、移动设备、强行进入或使用员工专用门禁。',
+    quickChecks:[
+      {cat:'access', q:'你能进入上课区域吗？', ok:'能', issue:'不能 / 门锁了 / 无法进入', guide:'不要强行进入或使用员工专用门禁。请报告分点、课程时间，并在安全情况下拍入口照片。'},
+      {cat:'room', q:'房间看起来安全吗？可以正常使用吗？', ok:'看起来正常', issue:'不安全 / 脏乱 / 被堵 / 有水或电气隐患', guide:'不要触碰安全隐患。在安全情况下拍照/录像并立即报告。', safety:true},
+      {cat:'station', q:'你能看到 Smart Manikin / iPad 训练区域吗？', ok:'能', issue:'缺失 / 未布置 / 找不到', guide:'不要移动设备。在安全情况下拍照并报告问题。'},
+      {cat:'ipad', q:'iPad / App 能正常打开吗？', ok:'能', issue:'不能 / 黑屏 / 打不开 / 无响应', guide:'不要重置、维修或拆卸设备。记录具体情况并报告。'},
+      {cat:'manikin', q:'Smart Manikin 看起来已连接并可使用吗？', ok:'是', issue:'否 / 蓝牙 / 连接 / 数据问题', guide:'不要维修或拆卸。记录具体情况并报告。'},
+      {cat:'supplies', q:'是否有明显缺失、脏乱、损坏或异常？', ok:'没有明显问题', issue:'有，存在可见问题', guide:'请报告具体问题。安全情况下拍照/录像。未经指示不要进行员工维护工作。'}
+    ],
+    quickName:'姓名（可选）', quickSite:'分点 / 位置', quickClassTime:'上课时间（可选）',
+    quickDesc:'问题描述', quickDescPh:'简要描述你看到的情况。',
+    quickPhotoTaken:'我已拍照/录像（仅在安全情况下）',
+    quickUrgency:'紧急程度', quickUrgNormal:'一般', quickUrgBlocked:'无法上课', quickUrgSafety:'安全问题',
+    quickSubmit:'提交快速报告',
+    quickSuccess:'报告已提交，等待工作人员查看。不要维修、拆卸设备或强行进入。',
+    quickSafetySuccess:'安全问题已提交。如现场不安全，请停止使用该区域并立即通知工作人员。',
+    quickError:'提交失败，请重试。',
+    quickSiteRequired:'请填写分点 / 位置。',
     // inspection decision chips
     ciFrequency:'巡检频率', ciBefore:'巡检前拍照', ciChecklist:'现场检查项', ciEquip:'设备/耗材',
     ciAccess:'门禁/监控/网络', ciSafety:'安全隐患', ciAfter:'巡检后拍照', ciReport:'填写巡检表',
@@ -2320,7 +2479,7 @@ $('#q').addEventListener('keydown', event => {
 let inspState = null;
 function newInspState(){
   return {acknowledged:false, acknowledgedAt:'', startedAt:'', before:{}, after:{}, report:false, upload:{}, items:[],
-    photos:{before:{}, after:{}, issue:{}}};
+    tablePrecheck:[], photos:{before:{}, after:{}, issue:{}}};
 }
 function openInspection(){
   inspState = newInspState();
@@ -2396,6 +2555,34 @@ function inspPhotoList(items, group){
     </div>`;
   }).join('');
 }
+/* Table / Station Pre-check: a compact card staff complete BEFORE moving
+   anything, so the station can be compared against the standard setup. It only
+   records what is present/missing/has a problem — never a repair instruction. */
+function inspPrecheck(){
+  const c = copy();
+  const items = c.tablePrecheckItems || [];
+  if(!inspState.tablePrecheck.length){
+    inspState.tablePrecheck = items.map(() => ({status:'', issue:''}));
+  }
+  const rows = items.map((label, i) => {
+    const st = inspState.tablePrecheck[i] || {status:''};
+    const btn = (val, lab, selcls) =>
+      `<button type="button" class="insp-st${st.status === val ? ' '+selcls : ''}" data-tp-status="${i}" data-val="${val}">${esc(lab)}</button>`;
+    const showIssue = st.status === 'missing' || st.status === 'problem';
+    return `<div class="insp-item">
+      <div class="insp-item-name">${esc(label)}</div>
+      <div class="insp-statuses">
+        ${btn('present', c.tpPresent, 'sel-ok')}${btn('missing', c.tpMissing, 'sel-missing')}${btn('problem', c.tpProblem, 'sel-problem')}
+      </div>
+      <div class="insp-issue" data-tp-issue="${i}" ${showIssue ? '' : 'hidden'}>
+        <input type="text" data-tp-issue-input="${i}" placeholder="${esc(c.inspIssueDesc)}" value="${esc(st.issue || '')}" />
+        <p class="insp-photo-note">${esc(c.inspPhotoReminder)} · ${esc(c.inspNeedSupport)}</p>
+      </div>
+    </div>`;
+  }).join('');
+  return inspSec(c.tablePrecheckTitle, 'clip',
+    `<p class="insp-sec-sub">${esc(c.tablePrecheckSub)}</p>${rows}`, 'precheck');
+}
 function renderInspectionSections(){
   const c = copy();
   const wrap = $('#insp-sections');
@@ -2403,6 +2590,7 @@ function renderInspectionSections(){
   if(!inspState.items.length){
     inspState.items = (c.inspChecklistItems || []).map(() => ({status:'', issue:''}));
   }
+  const precheck = inspPrecheck();
   const before = inspSec(c.inspBeforeTitle, 'image',
     `<p class="insp-sec-warn">${svg('alert')} ${esc(c.inspBeforeWarn)}</p>${inspPhotoList(c.inspBeforeItems, 'before')}`);
   const checklist = inspSec(c.inspChecklistTitle, 'clip',
@@ -2435,7 +2623,7 @@ function renderInspectionSections(){
     `${inspCheckList(c.inspUploadItems, 'upload')}<p class="insp-note-row">${esc(c.inspUploadNote)}</p>`);
   const donot = inspSec(c.inspDoNotTitle, 'alert',
     `<ul>${(c.inspDoNotItems || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>`, 'donot');
-  wrap.innerHTML = before + checklist + after + report + upload + donot;
+  wrap.innerHTML = precheck + before + checklist + after + report + upload + donot;
   updateInspProgress();
 }
 function updateInspProgress(){
@@ -2467,6 +2655,20 @@ async function finishInspection(){
     needs_support: it.status === 'problem'
   }));
   const problems = items.filter(i => i.needs_support).map(i => i.issue || i.item);
+  // Table/Station pre-check — a safe {items, counts} object; no repair actions.
+  const enTP = COPY.en.tablePrecheckItems || [];
+  const tpItems = (inspState.tablePrecheck || []).map((it, i) => ({
+    item: enTP[i] || ('tp_' + i),
+    status: it.status || 'pending',
+    issue: it.issue || '',
+    needs_support: it.status === 'missing' || it.status === 'problem'
+  }));
+  const tpProblems = tpItems.filter(i => i.needs_support).map(i => i.issue || i.item);
+  const tablePrecheck = {
+    items: tpItems,
+    missing_count: tpItems.filter(i => i.status === 'missing').length,
+    problem_count: tpItems.filter(i => i.status === 'problem').length
+  };
   const payload = {
     site: ($('#insp-site') && $('#insp-site').value.trim()) || '',
     staff: ($('#insp-staff') && $('#insp-staff').value.trim()) || '',
@@ -2479,9 +2681,12 @@ async function finishInspection(){
     post_photo_checks: mapChecks('after', COPY.en.inspAfterItems || []),
     weekly_report_completed: !!inspState.report,
     upload_completed: (COPY.en.inspUploadItems || []).every((_, i) => inspState.upload[i]),
-    problems_found: problems,
+    problems_found: problems.concat(tpProblems),
     fixed_on_site_count: items.filter(i => i.fixed_on_site).length,
-    needs_support_count: items.filter(i => i.needs_support).length,
+    needs_support_count: items.filter(i => i.needs_support).length + tpItems.filter(i => i.needs_support).length,
+    inspection_actor_type: 'staff',
+    inspection_mode: 'full_site_inspection',
+    table_precheck: tablePrecheck,
     language: selectedLang
   };
   const msg = $('#insp-save-msg');
@@ -2505,7 +2710,7 @@ async function finishInspection(){
 }
 (function wireInspection(){
   const cta = $('#start-inspection');
-  if(cta) cta.onclick = openInspection;
+  if(cta) cta.onclick = openRolePicker;
   const ackOk = $('#insp-ack-ok'), ackCancel = $('#insp-ack-cancel'), closeBtn = $('#insp-close'), finish = $('#insp-finish'), overlay = $('#insp-overlay');
   if(ackOk) ackOk.onclick = acknowledgeInspection;
   if(ackCancel) ackCancel.onclick = closeInspection;
@@ -2514,6 +2719,14 @@ async function finishInspection(){
   if(finish) finish.onclick = () => { if(finish.dataset.done === '1'){ closeInspection(); } else { finishInspection(); } };
   const sections = $('#insp-sections');
   if(sections) sections.addEventListener('click', e => {
+    const tpBtn = e.target.closest('[data-tp-status]');
+    if(tpBtn){
+      const i = +tpBtn.dataset.tpStatus, val = tpBtn.dataset.val;
+      inspState.tablePrecheck[i] = inspState.tablePrecheck[i] || {status:'', issue:''};
+      inspState.tablePrecheck[i].status = val;
+      renderInspectionSections();
+      return;
+    }
     const stBtn = e.target.closest('[data-insp-status]');
     if(stBtn){
       const i = +stBtn.dataset.inspStatus, val = stBtn.dataset.val;
@@ -2527,6 +2740,8 @@ async function finishInspection(){
     if(chk){ const g = chk.dataset.inspCheck; inspState[g][+chk.dataset.i] = chk.checked; updateInspProgress(); return; }
     const rep = e.target.closest('[data-insp-report]');
     if(rep){ inspState.report = rep.checked; updateInspProgress(); return; }
+    const tpIssue = e.target.closest('[data-tp-issue-input]');
+    if(tpIssue){ const i = +tpIssue.dataset.tpIssueInput; if(inspState.tablePrecheck[i]) inspState.tablePrecheck[i].issue = tpIssue.value; return; }
     const issue = e.target.closest('[data-insp-issue-input]');
     if(issue){ const i = +issue.dataset.inspIssueInput; if(inspState.items[i]) inspState.items[i].issue = issue.value; }
   });
@@ -2558,6 +2773,133 @@ async function finishInspection(){
       inspState.photos.issue[i] = inspState.photos.issue[i] || [];
       addThumbs(ip.files, inspState.photos.issue[i], sections.querySelector(`[data-issue-thumbs="${i}"]`));
       ip.value = '';
+    }
+  });
+})();
+
+/* ---------- inspection mode picker ----------
+   Start Inspection opens a subtle workflow choice rather than the full staff
+   checklist directly: "Full Site Inspection" (staff) opens the existing flow;
+   "Quick Class Readiness Check" (light user) opens the short report-only flow. */
+function openRolePicker(){
+  const ov = $('#role-overlay');
+  if(ov){ ov.hidden = false; ov.setAttribute('aria-hidden', 'false'); }
+}
+function closeRolePicker(){
+  const ov = $('#role-overlay');
+  if(ov){ ov.hidden = true; ov.setAttribute('aria-hidden', 'true'); }
+}
+(function wireRolePicker(){
+  const full = $('#role-full'), quick = $('#role-quick'), cancel = $('#role-cancel'), close = $('#role-close'), overlay = $('#role-overlay');
+  if(full) full.onclick = () => { closeRolePicker(); openInspection(); };
+  if(quick) quick.onclick = () => { closeRolePicker(); openQuickCheck(); };
+  if(cancel) cancel.onclick = closeRolePicker;
+  if(close) close.onclick = closeRolePicker;
+  if(overlay) overlay.addEventListener('click', e => { if(e.target === overlay) closeRolePicker(); });
+})();
+
+/* ---------- quick class readiness check ----------
+   A light, report-only workflow. Reports visible problems (access, room,
+   station, iPad, manikin, supplies) to /api/student-site-checks. Never includes
+   staff duties, passcodes, staff PIN, manager review, upload, or repair steps. A
+   safety concern is submitted with a safety_escalation status server-side. */
+let quickState = null;
+function newQuickState(){ return {items:{}, urgency:'normal'}; }
+function openQuickCheck(){
+  quickState = newQuickState();
+  renderQuickChecks();
+  renderQuickReport();
+  if($('#quick-save-msg')) $('#quick-save-msg').hidden = true;
+  const submit = $('#quick-submit');
+  if(submit){ submit.textContent = copy().quickSubmit; delete submit.dataset.done; }
+  const ov = $('#quick-overlay');
+  if(ov){ ov.hidden = false; ov.setAttribute('aria-hidden', 'false'); }
+}
+function closeQuickCheck(){
+  const ov = $('#quick-overlay');
+  if(ov){ ov.hidden = true; ov.setAttribute('aria-hidden', 'true'); }
+}
+function renderQuickChecks(){
+  const c = copy();
+  const wrap = $('#quick-checks');
+  if(!wrap) return;
+  wrap.innerHTML = (c.quickChecks || []).map((it, i) => {
+    const sel = quickState.items[it.cat];
+    const opt = (val, lab, selcls) =>
+      `<button type="button" class="quick-opt${sel === val ? ' '+selcls : ''}" data-quick-opt="${it.cat}" data-val="${val}">${esc(lab)}</button>`;
+    return `<div class="quick-item">
+      <p class="quick-q">${i+1}. ${esc(it.q)}</p>
+      <div class="quick-opts">${opt('ok', it.ok, 'sel-ok')}${opt('issue', it.issue, 'sel-issue')}</div>
+      <div class="quick-guide" data-quick-guide="${it.cat}" ${sel === 'issue' ? '' : 'hidden'}>${svg('alert')}<span>${esc(it.guide)}</span></div>
+    </div>`;
+  }).join('');
+}
+function renderQuickReport(){
+  const c = copy();
+  const wrap = $('#quick-report');
+  if(!wrap) return;
+  const urg = quickState.urgency;
+  const ub = (val, lab, safety) =>
+    `<button type="button" class="quick-urg-btn${urg === val ? (safety ? ' sel-safety' : ' sel') : ''}" data-quick-urg="${val}">${esc(lab)}</button>`;
+  wrap.innerHTML = `
+    <div class="quick-field"><label>${esc(c.quickSite)}</label><input type="text" id="quick-site" /></div>
+    <div class="quick-field"><label>${esc(c.quickClassTime)}</label><input type="text" id="quick-classtime" /></div>
+    <div class="quick-field"><label>${esc(c.quickName)}</label><input type="text" id="quick-name" /></div>
+    <div class="quick-field"><label>${esc(c.quickDesc)}</label><textarea id="quick-desc" placeholder="${esc(c.quickDescPh)}"></textarea></div>
+    <label class="quick-photo-toggle"><input type="checkbox" id="quick-photo" /><span>${esc(c.quickPhotoTaken)}</span></label>
+    <div class="quick-field"><label>${esc(c.quickUrgency)}</label><div class="quick-urg">${ub('normal', c.quickUrgNormal)}${ub('class_blocked', c.quickUrgBlocked)}${ub('safety', c.quickUrgSafety, true)}</div></div>`;
+}
+async function submitQuickCheck(){
+  const c = copy();
+  const submit = $('#quick-submit');
+  if(submit && submit.dataset.done === '1'){ closeQuickCheck(); return; }
+  const msg = $('#quick-save-msg');
+  const site = ($('#quick-site') && $('#quick-site').value.trim()) || '';
+  if(!site){ if(msg){ msg.textContent = c.quickSiteRequired; msg.className = 'insp-save-msg err'; msg.hidden = false; } return; }
+  const urg = quickState.urgency;
+  const payload = {
+    site,
+    class_time: ($('#quick-classtime') && $('#quick-classtime').value.trim()) || '',
+    name_optional: ($('#quick-name') && $('#quick-name').value.trim()) || '',
+    issue_categories: Object.keys(quickState.items).filter(k => quickState.items[k] === 'issue'),
+    description: ($('#quick-desc') && $('#quick-desc').value.trim()) || '',
+    photo_taken: !!($('#quick-photo') && $('#quick-photo').checked),
+    class_blocked: urg === 'class_blocked',
+    safety_concern: urg === 'safety',
+    language: selectedLang
+  };
+  try{
+    const resp = await fetch(API_BASE + '/api/student-site-checks', {
+      method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(payload)
+    });
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const saved = await resp.json();
+    if(msg){
+      const safety = saved.status === 'safety_escalation';
+      msg.textContent = safety ? c.quickSafetySuccess : c.quickSuccess;
+      msg.className = 'insp-save-msg ' + (safety ? 'support' : 'ok');
+      msg.hidden = false;
+    }
+    if(submit){ submit.textContent = c.inspClose; submit.dataset.done = '1'; }
+  }catch(e){
+    if(msg){ msg.textContent = c.quickError; msg.className = 'insp-save-msg err'; msg.hidden = false; }
+  }
+}
+(function wireQuickCheck(){
+  const close = $('#quick-close'), overlay = $('#quick-overlay'), submit = $('#quick-submit'), checks = $('#quick-checks'), report = $('#quick-report');
+  if(close) close.onclick = closeQuickCheck;
+  if(overlay) overlay.addEventListener('click', e => { if(e.target === overlay) closeQuickCheck(); });
+  if(submit) submit.onclick = submitQuickCheck;
+  if(checks) checks.addEventListener('click', e => {
+    const opt = e.target.closest('[data-quick-opt]');
+    if(opt){ quickState.items[opt.dataset.quickOpt] = opt.dataset.val; renderQuickChecks(); }
+  });
+  if(report) report.addEventListener('click', e => {
+    const urg = e.target.closest('[data-quick-urg]');
+    if(urg){
+      quickState.urgency = urg.dataset.quickUrg;
+      report.querySelectorAll('.quick-urg-btn').forEach(b => b.classList.remove('sel', 'sel-safety'));
+      urg.classList.add(urg.dataset.quickUrg === 'safety' ? 'sel-safety' : 'sel');
     }
   });
 })();

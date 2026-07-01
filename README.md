@@ -44,6 +44,7 @@ The project is intentionally separate from `maps-scraper-intel`: opening
 | Staff passcode unlock | `POST /api/staff-access/unlock` |
 | Incident logs | `GET/POST /api/incident-logs`, `GET/PATCH /api/incident-logs/{id}` |
 | Inspection logs | `GET/POST /api/inspection-logs`, `GET/PATCH /api/inspection-logs/{id}` |
+| Quick class-readiness reports | `GET/POST /api/student-site-checks` |
 | Inspection reference image | `GET /api/inspection-reference` |
 | Health check | `/health` |
 
@@ -58,11 +59,27 @@ default screen answers "what am I doing right now?":
 2. Pick English or Chinese.
 3. Use the **Site Tools** row to *Start Inspection* or take the *Onboarding
    Test*.
-4. Read one concise answer card: scenario, severity, and the top 3 next steps
-   first. Evidence, escalation, "do not", full SOP, and source references are
-   collapsed behind tabs and expand on click (one at a time).
+4. Read one answer card that shows the full guidance: scenario, severity, all
+   next steps, the source-recorded steps for the issue, SOP images, required
+   evidence, escalation, and "do not" — no tab-hunting.
 5. Optionally expand **Advanced details** for site, class time, or attachment
    description metadata.
+
+**Start Inspection** first asks *Choose check type* — a subtle workflow picker,
+not a permission gate:
+
+- **Full Site Inspection** (site representatives) opens the existing guided
+  staff flow. It now begins with a compact **Table / Station Pre-check** —
+  confirm what is present on the Smart Manikin table (present / missing /
+  problem) before moving anything — followed by before photos, the full
+  checklist, after photos, Weekly Site Check Report, upload reminders, and the
+  do-not-repair warning.
+- **Quick Class Readiness Check** (light users) opens a short, report-only flow:
+  six visible checks (access, room, station, iPad, manikin, supplies) plus a
+  quick report. It carries no staff duties — no Weekly Report, Google Drive
+  upload, access codes, staff PIN, or manager review. Reports post to
+  `/api/student-site-checks`; a safety concern is stored with a
+  `safety_escalation` status.
 
 Staff-only tooling — staff access unlock, the live site log, and the
 staff-gated **Manager Review** panel — lives in the **Activity** drawer

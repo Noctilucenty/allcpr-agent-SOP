@@ -102,6 +102,9 @@ def build_inspection_entry(payload: Dict[str, Any]) -> Dict[str, Any]:
         "needs_support_count": needs_support_count,
         "status": status,
         "notes": notes,
+        "inspection_actor_type": payload.get("inspection_actor_type") or "staff",
+        "inspection_mode": payload.get("inspection_mode") or "full_site_inspection",
+        "table_precheck": payload.get("table_precheck") or {},
     }
     return _scrub(entry)
 

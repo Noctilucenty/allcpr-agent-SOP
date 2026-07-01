@@ -14,6 +14,9 @@ def isolated_incident_log(monkeypatch, tmp_path):
     monkeypatch.setenv(
         "ALLCPR_ONBOARDING_ATTEMPT_PATH", str(tmp_path / "onboarding_attempts.jsonl")
     )
+    monkeypatch.setenv(
+        "ALLCPR_STUDENT_CHECK_LOG_PATH", str(tmp_path / "student_site_checks.jsonl")
+    )
 
 
 def _completed_inspection_payload(**overrides):
@@ -731,3 +734,130 @@ def test_allcpr_logo_static_route_available():
     resp = client.get("/static/ALLCPR.webp")
     assert resp.status_code == 200
     assert resp.headers["content-type"] == "image/webp"
+
+
+# ---------------------------------------------------------------------------
+# Inspection mode picker + table pre-check + quick class readiness check
+# ---------------------------------------------------------------------------
+
+def _quick_slice(body: str) -> str:
+    """The Quick Class Readiness Check modal markup, isolated from staff markup."""
+    start = body.index('id="quick-overlay"')
+    end = body.index('id="onb-overlay"')
+    return body[start:end]
+
+
+def test_ui_inspection_mode_picker_exists():
+    body = TestClient(web_app.app).get("/agent").text
+    for s in ("Choose check type", "选择检查类型",
+              "Full Site Inspection", "完整分点巡检",
+              "Quick Class Readiness Check", "快速上课检查"):
+        assert s in body
+    # Start Inspection opens the picker, not the full flow directly
+    assert "cta.onclick = openRolePicker" in body
+    assert 'id="role-overlay"' in body
+
+
+def test_ui_full_inspection_still_has_staff_sections():
+    body = TestClient(web_app.app).get("/agent").text
+    for s in ("Before photos", "Weekly Site Check Report", "Upload materials",
+              "Do not dismantle or repair",
+              "Table / Station Pre-check", "桌面 / 训练站预检查"):
+        assert s in body
+
+
+def test_ui_table_precheck_items_present():
+    body = TestClient(web_app.app).get("/agent").text
+    for item in ("iPad present", "AED Training Pads present", "Pocket Mask present",
+                 "BVM / Bag-Valve-Mask present", "Disinfecting wipes present",
+                 "Smart Manikin connected to power", "standard placement"):
+        assert item in body
+    # Chinese pre-check items too
+    for item in ("iPad 在现场", "Pocket Mask 在现场", "Smart Manikin 已连接电源"):
+        assert item in body
+
+
+def test_ui_quick_check_exists():
+    body = TestClient(web_app.app).get("/agent").text
+    for s in ("Quick Class Readiness Check", "快速上课检查",
+              "Report visible problems only", "只报告可见问题",
+              "Submit Quick Report", "提交快速报告"):
+        assert s in body
+
+
+def test_ui_quick_check_modal_has_no_staff_only_content():
+    body = TestClient(web_app.app).get("/agent").text
+    quick = _quick_slice(body)
+    # sanity: it really is the quick modal
+    assert 'data-i18n="quickTitle"' in quick
+    assert 'data-i18n="quickSubtitle"' in quick
+    # the light-user modal must not carry staff-only responsibilities/secrets
+    for banned in ("Weekly Site Check Report", "Google Drive", "Staff PIN",
+                   "staff PIN", "Manager Review", "Manager review"):
+        assert banned not in quick
+    for secret in ("2745", "224466", "6285", "DoBeUSA", "DoBesince2016"):
+        assert secret not in quick
+
+
+def test_quick_check_submit_normal_report():
+    client = TestClient(web_app.app)
+    resp = client.post("/api/student-site-checks", json={
+        "site": "Santa Clara", "class_time": "10:00", "name_optional": "",
+        "issue_categories": ["ipad", "manikin"], "description": "iPad black screen",
+        "photo_taken": True, "class_blocked": True, "safety_concern": False,
+        "language": "en",
+    })
+    assert resp.status_code == 200
+    entry = resp.json()
+    assert entry["log_type"] == "student_site_check"
+    assert entry["inspection_actor_type"] == "quick_check"
+    assert entry["inspection_mode"] == "quick_class_readiness"
+    assert entry["status"] == "needs_staff_review"
+    assert entry["class_blocked"] is True
+    assert entry["issue_categories"] == ["ipad", "manikin"]
+
+    listed = client.get("/api/student-site-checks?limit=10").json()
+    assert listed[0]["id"] == entry["id"]
+
+
+def test_quick_check_submit_safety_escalation():
+    client = TestClient(web_app.app)
+    resp = client.post("/api/student-site-checks", json={
+        "site": "Newark", "description": "water near an outlet", "safety_concern": True,
+    })
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "safety_escalation"
+
+
+def test_quick_check_does_not_store_local_paths_or_passcodes():
+    client = TestClient(web_app.app)
+    client.post("/api/student-site-checks", json={
+        "site": "/Users/someone/Desktop/site",
+        "description": "photo at /Users/someone/Pictures/x.png passcode 2745",
+    })
+    blob = str(client.get("/api/student-site-checks").json()[0])
+    assert "/Users/" not in blob
+
+
+def test_inspection_log_stores_table_precheck_and_mode():
+    client = TestClient(web_app.app)
+    payload = _completed_inspection_payload(
+        inspection_actor_type="staff",
+        inspection_mode="full_site_inspection",
+        table_precheck={
+            "items": [
+                {"item": "iPad present", "status": "present", "needs_support": False},
+                {"item": "Pocket Mask present", "status": "missing",
+                 "issue": "not on table", "needs_support": True},
+            ],
+            "missing_count": 1,
+            "problem_count": 0,
+        },
+    )
+    resp = client.post("/api/inspection-logs", json=payload)
+    assert resp.status_code == 200
+    entry = resp.json()
+    assert entry["inspection_mode"] == "full_site_inspection"
+    assert entry["inspection_actor_type"] == "staff"
+    assert entry["table_precheck"]["missing_count"] == 1
+    assert entry["table_precheck"]["items"][1]["status"] == "missing"

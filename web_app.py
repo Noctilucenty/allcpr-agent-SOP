@@ -34,6 +34,10 @@ from app.agents.autocpr_site_manager.onboarding_quiz import (
     TOTAL_QUESTIONS,
     public_questions,
 )
+from app.agents.autocpr_site_manager.student_checks import (
+    append_student_check,
+    list_student_checks,
+)
 from app.agents.autocpr_site_manager import staff_access
 from app.agents.autocpr_site_manager.schemas import (
     AgentAnswer,
@@ -43,6 +47,7 @@ from app.agents.autocpr_site_manager.schemas import (
     InspectionLogRequest,
     OnboardingAttemptRequest,
     StaffAccessUnlockRequest,
+    StudentSiteCheckRequest,
 )
 from app.agents.autocpr_site_manager.sop_media_index import MEDIA_ROOT
 
@@ -146,6 +151,19 @@ def api_create_inspection_log(req: InspectionLogRequest) -> dict:
 @app.get("/api/inspection-logs")
 def api_list_inspection_logs(limit: int = Query(default=50, ge=1, le=200)) -> list[dict]:
     return list_inspection_logs(limit)
+
+
+@app.post("/api/student-site-checks")
+def api_create_student_check(req: StudentSiteCheckRequest) -> dict:
+    """Save a lightweight quick class-readiness report (report-only, no staff
+    duties). A safety concern is stored with a ``safety_escalation`` status."""
+    payload = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+    return append_student_check(payload)
+
+
+@app.get("/api/student-site-checks")
+def api_list_student_checks(limit: int = Query(default=50, ge=1, le=200)) -> list[dict]:
+    return list_student_checks(limit)
 
 
 @app.get("/api/inspection-reference")
