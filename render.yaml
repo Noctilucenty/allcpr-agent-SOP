@@ -35,8 +35,10 @@ services:
       # Flag + model are not secrets, so they can live here.
       - key: ALLCPR_AI_ENABLED
         value: "true"
+      # Model id must match OpenAI's exact spelling (see platform.openai.com/docs/models).
+      # An unknown id makes the AI call fail and fall back to deterministic mode.
       - key: ALLCPR_AI_MODEL
-        value: "gpt-4o-mini"
+        value: "gpt-5.4-mini"
       # Billing credential: value is dashboard-managed only (never in git).
       # Set it in Render -> allcpr-agent -> Environment -> OPENAI_API_KEY,
       # using a freshly rotated key. Until it is set, the app runs deterministic.
