@@ -689,19 +689,28 @@ def test_ui_activity_drawer_closed_by_default():
     assert 'id="log-list"' in body
 
 
-def test_ui_answer_card_is_collapsed_tabs_by_default():
+def test_ui_answer_card_shows_full_guidance_expanded():
     body = TestClient(web_app.app).get("/agent").text
-    # redesigned primary card + the five tabs, with panels hidden in the template
+    # calm card shell is kept, but guidance is no longer buried behind tabs:
+    # the decision tree (source-recorded operational references), SOP images,
+    # evidence, escalation and "do not" all render as visible sections.
     assert 'class="ans-card"' in body
-    assert 'class="ac-tab"' in body
-    assert 'data-acpanel="${key}" hidden' in body  # panels start collapsed
-    for key in ("addTab('evidence'", "addTab('escalate'", "addTab('donot'",
-                "addTab('sop'", "addTab('sources'"):
-        assert key in body
-    # tab labels defined in both languages
-    assert body.count("tabEvidence:") >= 2
-    assert body.count("tabFullSop:") >= 2
-    assert body.count("tabSources:") >= 2
+    assert 'class="ac-now"' in body
+    # tab machinery is gone — nothing starts collapsed/hidden by default
+    assert 'class="ac-tab"' not in body
+    assert 'data-acpanel="${key}" hidden' not in body
+    # full guidance rendered inline in render()
+    assert "treeHTML(data" in body          # recorded operational references
+    assert "mediaGridHTML(imgs" in body      # SOP images shown when present
+    assert "escalateChips(data.contacts" in body
+    assert "section(c.doNot" in body
+    assert "section(c.requiredEvidence" in body
+    # source-recorded steps get their own always-visible section
+    assert "section(c.recordedSteps" in body
+    assert "refEntriesHTML(recEntries" in body
+    assert body.count("recordedSteps:") >= 2  # en + zh
+    # all steps are shown, not capped at three
+    assert "now.slice(0, 3)" not in body
 
 
 def test_ui_initial_html_has_no_passcodes_or_answer_key():

@@ -1163,6 +1163,7 @@ const COPY = {
     approvalNeedSop:'Official SOP source needed for the policy or amount.',
     // ---- decision tree ----
     treeTitle:'What do you need next?',
+    recordedSteps:'Recorded steps for this issue',
     pUseWhen:'Use when', pDoNow:'Do now', pCollect:'Collect', pSendTo:'Send to', pDoNot:'Do not', pSource:'Source status',
     copyDraft:'Copy draft', copied:'Copied',
     subApproval:'Needs approval', subSop:'SOP reference', subDoc:'Documented', subNoFix:'No documented fix', subDraft:'Draft', subRef:'Open reference',
@@ -1399,6 +1400,7 @@ const COPY = {
     dnNetwork:'请场地 / 物业或授权技术处理设备。',
     // ---- 决策树 ----
     treeTitle:'下一步需要什么？',
+    recordedSteps:'该问题的记录步骤',
     pUseWhen:'适用情况', pDoNow:'现在做', pCollect:'收集', pSendTo:'发送给', pDoNot:'不要做', pSource:'来源状态',
     copyDraft:'复制草稿', copied:'已复制',
     subApproval:'需要批准', subSop:'SOP 参考', subDoc:'已记录', subNoFix:'无记录修复', subDraft:'草稿', subRef:'打开参考',
@@ -2010,11 +2012,13 @@ function treeHTML(data, c){
   return section(c.treeTitle, 'steps', menu + `<div class="tree-panels">${panels}</div>`);
 }
 
-/* Redesigned answer: one primary action card first (scenario, severity, review,
-   safety warning, top 3 steps, primary escalation), then everything else behind
-   collapsed tabs (Evidence / Escalate / Do not / Full SOP / Source refs). The
-   decision tree + operational references live inside the Escalate tab, so that
-   source-backed routing is preserved but hidden until asked for. */
+/* Answer card: a complete, self-contained field guide, visible by default.
+   Header (scenario / severity / human review), safety warning, every "what to
+   do now" step, then the source-recorded decision tree — operational references
+   surface here with the matching sub-issue open — SOP images, required
+   evidence, escalation, and "do not". Only source provenance, info-to-collect,
+   and the raw payload stay in one small collapsed "details" block. Nothing that
+   guides the user is hidden behind a tab. */
 function render(data){
   const c = COPY[data.language] || copy();
   const sev = (data.severity || 'info').toLowerCase();
@@ -2029,63 +2033,69 @@ function render(data){
     review ? `<span class="ac-review">${svg('alert')}${esc(c.needsReview)}</span>` : ''
   ].filter(Boolean).join('');
 
-  /* Safety warning shown by default only when it is a real danger. */
-  const safety = (data.immediate_safety_check || []).slice(0, 3);
+  /* Safety warning — shown for danger, or whenever a safety check is present. */
+  const safety = (data.immediate_safety_check || []).slice(0, 4);
   const safetyBanner = (isDanger || safety.length)
     ? `<div class="ac-safety">${svg('alert')}<div><strong>${esc(c.safety)}</strong>${safety.length ? `<ul>${safety.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : ''}</div></div>`
     : '';
 
-  /* Top 3 steps only. */
-  let now = hasSteps ? data.steps
+  /* What to do now — ALL steps (no cap). */
+  const now = hasSteps ? data.steps
     : (Array.isArray(data.next_actions) && data.next_actions.length ? data.next_actions
     : (data.immediate_safety_check || []));
-  now = now.slice(0, 3);
   const nowHTML = now.length
     ? `<div class="ac-now"><p class="ac-now-title">${svg('bolt')}${esc(c.whatToDoNow)}</p><ol>${now.map(s => `<li>${esc(s)}</li>`).join('')}</ol></div>`
     : (data.answer_summary ? `<p class="ac-lead">${esc(data.answer_summary)}</p>` : '');
 
-  /* Primary escalation stays visible only when human review is needed. */
-  const contacts = data.contacts || [];
-  const primEsc = (review && contacts.length)
-    ? `<p class="ac-primesc">${svg('flag')}<span><strong>${esc(c.escalateTo)}:</strong> ${esc(shortLabel(String(contacts[0]).replace(/[（(].*$/, '').trim()))}</span></p>`
+  /* Source-recorded steps for THIS issue — shown by default, never hidden.
+     Passcode/code items are excluded here; they stay in the gated passcode
+     path of the decision tree so they remain staff-locked. */
+  const recEntries = refEntries(opRefs(data), item => !isCodeItem(item), 12);
+  const recordedSec = recEntries.length
+    ? section(c.recordedSteps, 'steps', refEntriesHTML(recEntries)) : '';
+
+  /* Decision tree ("what do you need next?") — the interactive router for
+     other paths (passcode, escalation note, incident report, etc.). */
+  const treeSec = treeHTML(data, c);
+
+  /* SOP images — shown inline, at hand, whenever the source provides them. */
+  const imgs = data.sop_images || [];
+  const mediaSec = imgs.length
+    ? `<div id="sop-images">${section(c.sopImageRef, 'image', mediaGridHTML(imgs, c))}</div>` : '';
+
+  /* Required evidence + escalation, side by side. */
+  const evid = dropMatch(data.evidence_requested, SAFE_PHOTO_RE).slice(0, 6);
+  const evSec = evid.length ? section(c.requiredEvidence, 'clip', checklist(evid, 6)) : '';
+  const escal = escalateChips(data.contacts);
+  const esSec = escal ? section(c.escalateTo, 'flag', escal) : '';
+  const primaryPair = (evSec && esSec) ? `<div class="dual">${evSec}${esSec}</div>` : (evSec + esSec);
+
+  /* Do not (approval-gated actions). */
+  const dontItems = (data.do_not_decide_without_approval || []).map(x => String(x).replace(/^[-•]\s*/, ''));
+  const dontSec = dontItems.length
+    ? section(c.doNot, 'alert', `<ul class="dont-list">${dontItems.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`, 'dont')
     : '';
 
-  /* Collapsed tabs. */
-  const evid = dropMatch(data.evidence_requested, SAFE_PHOTO_RE);
-  const escal = escalateChips(contacts);
-  const tree = treeHTML(data, c);
-  const dont = (data.do_not_decide_without_approval || []).map(x => String(x).replace(/^[-•]\s*/, ''));
-  const imgs = data.sop_images || [];
-
-  const tabs = [];
-  const panels = [];
-  const addTab = (key, label, inner) => {
-    if(!inner) return;
-    tabs.push(`<button type="button" class="ac-tab" data-actab="${key}">${esc(label)}</button>`);
-    panels.push(`<div class="ac-panel" data-acpanel="${key}" hidden>${inner}</div>`);
-  };
-
-  addTab('evidence', c.tabEvidence, checklist(evid, 8));
-  addTab('escalate', c.tabEscalate, (escal || '') + (tree || ''));
-  addTab('donot', c.tabDoNot, dont.length ? `<ul class="dont-list">${dont.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : '');
-  const fullInner =
-    (list(data.steps, true, 99) || '')
-    + (data.information_to_collect && data.information_to_collect.length ? `<p class="ac-sub">${esc(c.information)}</p>${list(data.information_to_collect, false, 99)}` : '')
-    + (imgs.length ? `<div id="sop-images">${mediaGridHTML(imgs, c)}</div>` : '')
-    + `<details class="ac-raw"><summary>${esc(c.accFull)}</summary><pre>${esc(data.answer || '')}</pre></details>`;
-  addTab('sop', c.tabFullSop, fullInner);
-  const srcInner = `<p class="src-list">${esc((data.sources || []).length ? data.sources.join(', ') : '—')}</p>`
+  /* Secondary detail — info to collect, source provenance, raw answer. */
+  const accInfo = (data.information_to_collect && data.information_to_collect.length)
+    ? accSub(c.information, list(data.information_to_collect, false, 99)) : '';
+  const accSources =
+    `<p class="src-list">${esc((data.sources || []).length ? data.sources.join(', ') : '—')}</p>`
     + `<div class="src-tags">${sourceTagsHTML(data.source_status || [], data.language) || ''}</div>`
     + `<p class="media-note">${svg('alert')}<span>${esc(c.provenanceShort)}</span></p>`;
-  addTab('sources', c.tabSources, srcInner);
-
-  const tabsHTML = tabs.length
-    ? `<div class="ac-tabs" role="tablist">${tabs.join('')}</div><div class="ac-panels">${panels.join('')}</div>`
-    : '';
+  const detailsBlock = accordion(c.accSources, accInfo + accSources)
+    + `<details class="full"><summary>${svg('report')}<span>${esc(c.accFull)}</span>${chev()}</summary><pre class="raw">${esc(data.answer || '')}</pre></details>`;
 
   $('#out').innerHTML = `<div class="ans-card">
     <div class="ac-head">${head}</div>
-    ${safetyBanner}${nowHTML}${primEsc}${tabsHTML}
+    ${safetyBanner}
+    ${nowHTML}
+    ${recordedSec}
+    ${treeSec}
+    ${mediaSec}
+    ${primaryPair}
+    ${dontSec}
+    <div class="accordions">${detailsBlock}</div>
   </div>`;
   $('#out').style.display = 'block';
   $('#out').scrollIntoView({behavior:'smooth', block:'start'});
@@ -2103,22 +2113,6 @@ $('#out').addEventListener('click', event => {
       else { box.removeAttribute('readonly'); box.select(); document.execCommand('copy'); box.setAttribute('readonly', ''); }
       const lbl = copyBtn.querySelector('span');
       if(lbl){ lbl.textContent = (copy().copied || 'Copied'); }
-    }
-    return;
-  }
-  const acTab = event.target.closest('.ac-tab[data-actab]');
-  if(acTab){
-    const card = acTab.closest('.ans-card');
-    if(card){
-      const key = acTab.dataset.actab;
-      const wasOpen = acTab.classList.contains('open');
-      card.querySelectorAll('.ac-tab.open').forEach(t => t.classList.remove('open'));
-      card.querySelectorAll('.ac-panel').forEach(p => { p.hidden = true; });
-      if(!wasOpen){
-        acTab.classList.add('open');
-        const panel = card.querySelector(`.ac-panel[data-acpanel="${key}"]`);
-        if(panel) panel.hidden = false;
-      }
     }
     return;
   }
