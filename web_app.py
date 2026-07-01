@@ -6,6 +6,7 @@ deterministic local agent endpoint. No paid APIs, no secrets, no dashboard.
 """
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Header, HTTPException, Query
@@ -13,7 +14,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.agents.autocpr_site_manager import answer_question
-from app.agents.autocpr_site_manager.ai_orchestrator import answer_with_orchestration
+from app.agents.autocpr_site_manager.ai_orchestrator import (
+    answer_with_orchestration,
+    status_line as ai_status_line,
+)
 from app.agents.autocpr_site_manager.incident_logs import (
     append_answer_log,
     get_log,
@@ -57,7 +61,14 @@ SITE_OPS_AGENT_HTML = ROOT / "app" / "web" / "site_ops_agent.html"
 STATIC_ROOT = ROOT / "app" / "web" / "static"
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 
-app = FastAPI(title="AllCPR Site Operations Agent")
+@asynccontextmanager
+async def _lifespan(_app: "FastAPI"):
+    # One secret-free line so Render logs show which mode/model the app booted in.
+    print(ai_status_line(), flush=True)
+    yield
+
+
+app = FastAPI(title="AllCPR Site Operations Agent", lifespan=_lifespan)
 STATIC_ROOT.mkdir(parents=True, exist_ok=True)
 MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
 app.mount("/static/sop_media", StaticFiles(directory=str(MEDIA_ROOT)), name="sop_media")

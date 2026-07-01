@@ -100,7 +100,7 @@ smarter without touching any safety, security, or policy decision.
 ```bash
 export ALLCPR_AI_ENABLED=true
 export OPENAI_API_KEY=sk-...        # your own key; never commit it
-export ALLCPR_AI_MODEL=gpt-4o-mini  # optional, this is the default
+export ALLCPR_AI_MODEL=gpt-5.4-mini  # optional, this is the default
 ```
 
 If the flag is false or the key is missing, every response is exactly the

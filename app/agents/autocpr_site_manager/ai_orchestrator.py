@@ -37,7 +37,7 @@ from .sop_operational_refs import load_operational_ref_payload
 ENABLED_ENV = "ALLCPR_AI_ENABLED"
 KEY_ENV = "OPENAI_API_KEY"
 MODEL_ENV = "ALLCPR_AI_MODEL"
-DEFAULT_MODEL = "gpt-4o-mini"
+DEFAULT_MODEL = "gpt-5.4-mini"
 API_URL = "https://api.openai.com/v1/chat/completions"
 
 # Labels the AI is allowed to choose from. Anything else is ignored.
@@ -67,6 +67,19 @@ def ai_enabled() -> bool:
 
 def _model() -> str:
     return (os.environ.get(MODEL_ENV) or "").strip() or DEFAULT_MODEL
+
+
+def status_line() -> str:
+    """A one-line, secret-free description of the AI mode for boot logs.
+
+    Reports enabled/disabled, the model, and *why* it is off (missing flag vs
+    missing key) — never the key itself.
+    """
+    if ai_enabled():
+        return f"AI: enabled (model={_model()})"
+    if not _truthy(os.environ.get(ENABLED_ENV)):
+        return "AI: disabled (ALLCPR_AI_ENABLED not true) — deterministic mode"
+    return "AI: disabled (OPENAI_API_KEY not set) — deterministic mode"
 
 
 # ---------------------------------------------------------------------------
@@ -138,9 +151,11 @@ def _complete(system: str, user: str) -> str:
     import urllib.request
 
     key = os.environ[KEY_ENV]
+    # No ``temperature`` override: GPT-5-class reasoning models reject a non-default
+    # temperature on chat/completions (400), which would make every call fall back
+    # to deterministic. JSON mode keeps the output parseable across model families.
     body = json.dumps({
         "model": _model(),
-        "temperature": 0,
         "response_format": {"type": "json_object"},
         "messages": [
             {"role": "system", "content": system},
