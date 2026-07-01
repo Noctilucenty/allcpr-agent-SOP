@@ -543,7 +543,9 @@
 	  .insp-bar-fill{display:block;height:100%;width:0;background:var(--red);transition:width .2s ease}
 	  .insp-sec{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px}
 	  .insp-sec-title{display:flex;align-items:center;gap:7px;font-weight:800;font-size:13.5px;margin:0 0 4px}
-	  .insp-sec-warn{font-size:11.5px;color:#9a6700;font-weight:700;margin:0 0 8px}
+	  .insp-sec-title svg{width:15px;height:15px;flex:0 0 auto;color:var(--red)}
+	  .insp-sec-warn{display:flex;align-items:flex-start;gap:6px;font-size:11.5px;color:#9a6700;font-weight:700;margin:0 0 8px}
+	  .insp-sec-warn svg{width:13px;height:13px;flex:0 0 auto;margin-top:1px}
 	  .insp-sec.donot{background:var(--red-soft);border-color:var(--red-line)}
 	  .insp-sec.donot li{color:#8a1417}
 	  .insp-check{display:flex;align-items:flex-start;gap:9px;padding:6px 0;font-size:13px;color:var(--ink-soft);cursor:pointer}
@@ -560,6 +562,16 @@
 	  .insp-issue[hidden]{display:none}
 	  .insp-issue input{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;font-size:12.5px}
 	  .insp-issue .insp-photo-note{font-size:11px;color:var(--muted-2);margin:5px 0 0}
+	  .insp-photo-item{padding:6px 0;border-top:1px solid var(--line)}
+	  .insp-photo-item:first-child{border-top:none}
+	  .insp-photo-row{display:flex;align-items:center;gap:8px}
+	  .insp-photo-row .insp-check{flex:1;padding:0}
+	  .insp-photo-add{display:inline-flex;align-items:center;gap:5px;border:1px dashed var(--red-line);border-radius:8px;padding:5px 9px;font-size:11px;font-weight:750;color:var(--red);cursor:pointer;background:#fff;white-space:nowrap}
+	  .insp-photo-add:hover{border-color:var(--red);background:var(--red-soft)}
+	  .insp-photo-add svg{width:13px;height:13px}
+	  .insp-thumbs{display:flex;flex-wrap:wrap;gap:6px}
+	  .insp-thumbs:not(:empty){margin-top:7px}
+	  .insp-thumb{width:54px;height:54px;object-fit:cover;border-radius:7px;border:1px solid var(--line)}
 	  .insp-sec ul{margin:4px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);line-height:1.5}
 	  .insp-note-row{font-size:11.5px;color:var(--muted-2);margin:7px 0 0}
 	  .insp-save-msg{margin:0;font-size:12.5px;font-weight:750;flex:1}
@@ -998,6 +1010,7 @@ const COPY = {
     inspUnderstand:'I understand', inspCancel:'Cancel', inspClose:'Close',
     inspSite:'Site', inspStaff:'Inspector',
     inspBeforeTitle:'Before photos', inspBeforeWarn:'Take before photos before cleaning or moving anything.',
+    inspAddPhoto:'Add photo',
     inspBeforeItems:['Whole room','Smart Manikin area','Supplies / consumables area','Door or signage','Abnormal / problem area, if any'],
     inspChecklistTitle:'Site checklist',
     inspChecklistItems:['Hygiene / site cleanliness','Trash and trash bag','Disinfection supplies enough for one week','Disinfect teaching equipment','Smart Manikin, iPad, AED Pads, BVM, Pocket Mask complete and normal','Equipment placed in standard position','iPad and Smart Manikin connected to power cables','Door / access / Lockbox / Access Code normal','Camera online','Wi-Fi normal','Signage complete and clear','Visible water/electric/equipment safety hazards'],
@@ -1185,6 +1198,7 @@ const COPY = {
     inspUnderstand:'我已知晓', inspCancel:'取消', inspClose:'关闭',
     inspSite:'分点', inspStaff:'巡检人',
     inspBeforeTitle:'巡检前拍照', inspBeforeWarn:'开始清洁或整理前必须先拍巡检前照片。',
+    inspAddPhoto:'添加照片',
     inspBeforeItems:['整个房间','Smart Manikin 区域','耗材 / 用品区域','门或路牌','异常 / 问题区域（如有）'],
     inspChecklistTitle:'现场检查',
     inspChecklistItems:['卫生 / 现场清洁','垃圾与垃圾袋','消毒用品够用一周','对教学设备进行消毒','Smart Manikin、iPad、AED Pads、BVM、Pocket Mask 齐全且正常','设备摆放在标准位置','iPad 与 Smart Manikin 已连接电源线','门禁 / Lockbox / Access Code 正常','摄像头在线','Wi-Fi 正常','路牌完整清晰','可见的水/电/设备安全隐患'],
@@ -2014,7 +2028,8 @@ $('#q').addEventListener('keydown', event => {
    no images or local paths. */
 let inspState = null;
 function newInspState(){
-  return {acknowledged:false, acknowledgedAt:'', startedAt:'', before:{}, after:{}, report:false, upload:{}, items:[]};
+  return {acknowledged:false, acknowledgedAt:'', startedAt:'', before:{}, after:{}, report:false, upload:{}, items:[],
+    photos:{before:{}, after:{}, issue:{}}};
 }
 function openInspection(){
   inspState = newInspState();
@@ -2049,6 +2064,29 @@ function inspCheckList(items, group){
     `<label class="insp-check"><input type="checkbox" data-insp-check="${group}" data-i="${i}" /><span>${esc(label)}</span></label>`
   ).join('');
 }
+function inspThumbs(photos){
+  return (photos || []).map(p => `<img class="insp-thumb" src="${p.url}" alt="${esc(p.name || '')}" />`).join('');
+}
+/* Photo steps: real camera/file capture + inline thumbnail preview. Previews are
+   client-side only (object URLs); the log stores whether a photo was attached and
+   how many — never raw image bytes. Archival still goes to the site Google Drive
+   folder per SOP. */
+function inspPhotoList(items, group){
+  const c = copy();
+  return items.map((label, i) => {
+    const checked = inspState.before && inspState[group][i] ? ' checked' : '';
+    return `<div class="insp-photo-item">
+      <div class="insp-photo-row">
+        <label class="insp-check"><input type="checkbox" data-insp-check="${group}" data-i="${i}"${checked} /><span>${esc(label)}</span></label>
+        <label class="insp-photo-add">
+          <input type="file" accept="image/*" capture="environment" multiple hidden data-insp-photo="${group}" data-i="${i}" />
+          ${svg('image')}<span>${esc(c.inspAddPhoto)}</span>
+        </label>
+      </div>
+      <div class="insp-thumbs" data-thumbs="${group}-${i}">${inspThumbs(inspState.photos[group][i])}</div>
+    </div>`;
+  }).join('');
+}
 function renderInspectionSections(){
   const c = copy();
   const wrap = $('#insp-sections');
@@ -2057,7 +2095,7 @@ function renderInspectionSections(){
     inspState.items = (c.inspChecklistItems || []).map(() => ({status:'', issue:''}));
   }
   const before = inspSec(c.inspBeforeTitle, 'image',
-    `<p class="insp-sec-warn">${svg('alert')} ${esc(c.inspBeforeWarn)}</p>${inspCheckList(c.inspBeforeItems, 'before')}`);
+    `<p class="insp-sec-warn">${svg('alert')} ${esc(c.inspBeforeWarn)}</p>${inspPhotoList(c.inspBeforeItems, 'before')}`);
   const checklist = inspSec(c.inspChecklistTitle, 'clip',
     (c.inspChecklistItems || []).map((label, i) => {
       const st = inspState.items[i] || {status:''};
@@ -2070,12 +2108,17 @@ function renderInspectionSections(){
         </div>
         <div class="insp-issue" data-insp-issue="${i}" ${st.status === 'problem' ? '' : 'hidden'}>
           <input type="text" data-insp-issue-input="${i}" placeholder="${esc(c.inspIssueDesc)}" value="${esc(st.issue || '')}" />
+          <label class="insp-photo-add" style="margin-top:7px">
+            <input type="file" accept="image/*" capture="environment" multiple hidden data-insp-issue-photo="${i}" />
+            ${svg('image')}<span>${esc(c.inspAddPhoto)}</span>
+          </label>
+          <div class="insp-thumbs" data-issue-thumbs="${i}">${inspThumbs(inspState.photos.issue[i])}</div>
           <p class="insp-photo-note">${esc(c.inspPhotoReminder)} · ${esc(c.inspNeedSupport)}</p>
         </div>
       </div>`;
     }).join(''));
   const after = inspSec(c.inspAfterTitle, 'image',
-    `<p class="insp-sec-warn">${esc(c.inspAfterNote)}</p>${inspCheckList(c.inspAfterItems, 'after')}`);
+    `<p class="insp-sec-warn">${esc(c.inspAfterNote)}</p>${inspPhotoList(c.inspAfterItems, 'after')}`);
   const report = inspSec(c.inspReportTitle, 'report',
     `<ul>${(c.inspReportItems || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>
      <label class="insp-check"><input type="checkbox" data-insp-report /><span>${esc(c.inspReportDone)}</span></label>`);
@@ -2177,6 +2220,36 @@ async function finishInspection(){
     if(rep){ inspState.report = rep.checked; updateInspProgress(); return; }
     const issue = e.target.closest('[data-insp-issue-input]');
     if(issue){ const i = +issue.dataset.inspIssueInput; if(inspState.items[i]) inspState.items[i].issue = issue.value; }
+  });
+  // Real photo capture/upload: preview thumbnails inline; store previews in state
+  // (object URLs) so they survive re-renders. Raw bytes are never sent to the log.
+  const addThumbs = (files, store, container) => {
+    Array.from(files).forEach(file => {
+      if(!file.type || !file.type.startsWith('image/')) return;
+      const url = URL.createObjectURL(file);
+      store.push({url, name:file.name});
+      if(container){ const img = document.createElement('img'); img.className = 'insp-thumb'; img.src = url; img.alt = file.name; container.appendChild(img); }
+    });
+  };
+  if(sections) sections.addEventListener('change', e => {
+    const photo = e.target.closest('[data-insp-photo]');
+    if(photo && photo.files && photo.files.length){
+      const group = photo.dataset.inspPhoto, i = +photo.dataset.i;
+      inspState.photos[group][i] = inspState.photos[group][i] || [];
+      addThumbs(photo.files, inspState.photos[group][i], sections.querySelector(`[data-thumbs="${group}-${i}"]`));
+      const cb = sections.querySelector(`[data-insp-check="${group}"][data-i="${i}"]`);
+      if(cb){ cb.checked = true; inspState[group][i] = true; }
+      photo.value = '';
+      updateInspProgress();
+      return;
+    }
+    const ip = e.target.closest('[data-insp-issue-photo]');
+    if(ip && ip.files && ip.files.length){
+      const i = +ip.dataset.inspIssuePhoto;
+      inspState.photos.issue[i] = inspState.photos.issue[i] || [];
+      addThumbs(ip.files, inspState.photos.issue[i], sections.querySelector(`[data-issue-thumbs="${i}"]`));
+      ip.value = '';
+    }
   });
 })();
 
