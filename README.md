@@ -89,6 +89,37 @@ stays locked until staff access is unlocked.
 The UI does not claim to analyze uploaded or SOP images. SOP image labels come
 from source filenames, folders, and document names only.
 
+## Optional AI orchestration layer
+
+The deterministic SOP engine is the only source of truth. An optional AI layer
+(`app/agents/autocpr_site_manager/ai_orchestrator.py`) can make Q&A *feel*
+smarter without touching any safety, security, or policy decision.
+
+**Off by default.** It runs only when both are set:
+
+```bash
+export ALLCPR_AI_ENABLED=true
+export OPENAI_API_KEY=sk-...        # your own key; never commit it
+export ALLCPR_AI_MODEL=gpt-4o-mini  # optional, this is the default
+```
+
+If the flag is false or the key is missing, every response is exactly the
+deterministic one (`ai_used: false`).
+
+When enabled, the AI may only: **(1)** normalize messy user language into a
+cleaner question, **(2)** extract structured hints constrained to labels that
+already exist in this repo (unknown labels are dropped), and **(3)** rewrite the
+already source-backed answer into a short field summary (shown as an
+"AI-assisted summary · SOP-backed" banner above the unchanged SOP guidance).
+
+It may **not** invent SOP steps or policy, reveal passcodes/PINs, score
+onboarding tests, or approve refunds/reschedules/certificates/access — those
+stay in the deterministic endpoints. The summarizer's input is an allowlisted,
+secret-free view of the answer, and its output is scrubbed against real secret
+values. On any failure the app falls back to deterministic text. Logs record
+only `ai_used` / `ai_stage` / `ai_confidence` / `ai_scenario_hint` /
+`ai_subtype_hint` — never the key, prompt, passcodes, or AI text.
+
 ## Local Quick Start
 
 ```bash

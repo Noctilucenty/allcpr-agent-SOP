@@ -144,6 +144,12 @@ def build_log_entry(
         "policy_approval_required": answer.policy_approval_required,
         **_access_ref_flags(answer),
         **_smart_manikin_flags(answer),
+        # AI orchestration metadata only — never secrets, prompts, or AI text.
+        "ai_used": bool(getattr(answer, "ai_used", False)),
+        "ai_stage": str(getattr(answer, "ai_stage", "") or ""),
+        "ai_confidence": str(getattr(answer, "ai_confidence", "") or ""),
+        "ai_scenario_hint": str(getattr(answer, "ai_scenario_hint", "") or ""),
+        "ai_subtype_hint": str(getattr(answer, "ai_subtype_hint", "") or ""),
         "status": "open",
         "created_by": created_by or "staff",
         "assigned_to": "",

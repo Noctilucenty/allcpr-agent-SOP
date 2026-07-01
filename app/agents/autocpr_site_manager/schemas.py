@@ -142,6 +142,21 @@ class AgentAnswer(BaseModel):
     passcode_ref_available: bool = False
     passcode_revealed: bool = False
 
+    # --- optional AI orchestration layer (empty/false unless AI is enabled) ---
+    # The AI only interprets messy language and summarizes the already
+    # source-backed answer; it never changes any field above. ``ai_scenario_hint``
+    # / ``ai_subtype_hint`` are validated against known labels; the summary fields
+    # are scrubbed against real secret values.
+    ai_used: bool = False
+    ai_stage: str = ""  # "" | "intent" | "summary" | "both"
+    ai_confidence: str = ""  # "" | "low" | "medium" | "high"
+    ai_scenario_hint: str = ""
+    ai_subtype_hint: str = ""
+    ai_short_title: str = ""
+    ai_summary: str = ""
+    ai_top_steps: List[str] = []
+    ai_clarifying_question: str = ""
+
 
 class IncidentLogPatch(BaseModel):
     """Small mutable fields for a live incident log entry."""

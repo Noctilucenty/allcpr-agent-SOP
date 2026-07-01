@@ -17,6 +17,9 @@ def isolated_incident_log(monkeypatch, tmp_path):
     monkeypatch.setenv(
         "ALLCPR_STUDENT_CHECK_LOG_PATH", str(tmp_path / "student_site_checks.jsonl")
     )
+    # AI is off by default in tests regardless of the developer's environment;
+    # AI tests opt in explicitly. This never calls a real API.
+    monkeypatch.delenv("ALLCPR_AI_ENABLED", raising=False)
 
 
 def _completed_inspection_payload(**overrides):
@@ -861,3 +864,172 @@ def test_inspection_log_stores_table_precheck_and_mode():
     assert entry["inspection_actor_type"] == "staff"
     assert entry["table_precheck"]["missing_count"] == 1
     assert entry["table_precheck"]["items"][1]["status"] == "missing"
+
+
+# ---------------------------------------------------------------------------
+# Optional AI orchestration layer (never calls a real API — _complete is mocked)
+# ---------------------------------------------------------------------------
+import json as _json
+
+from app.agents.autocpr_site_manager import ai_orchestrator as ai
+
+
+def _enable_ai(monkeypatch):
+    monkeypatch.setenv("ALLCPR_AI_ENABLED", "true")
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-real")
+
+
+def _fake_complete(intent=None, summary=None):
+    """Return a _complete stand-in that answers by stage (intent vs summary)."""
+    def fake(system, user):
+        if ai.INTENT_TAG in system:
+            if intent is None:
+                raise RuntimeError("intent not mocked")
+            return _json.dumps(intent)
+        if ai.SUMMARY_TAG in system:
+            if summary is None:
+                raise RuntimeError("summary not mocked")
+            return _json.dumps(summary)
+        raise RuntimeError("unexpected AI call")
+    return fake
+
+
+def test_ai_disabled_leaves_behavior_unchanged(monkeypatch):
+    # if _complete were called it would blow up — proving no AI path runs
+    monkeypatch.setattr(ai, "_complete", lambda s, u: (_ for _ in ()).throw(AssertionError("AI called")))
+    client = TestClient(web_app.app)
+    resp = client.post("/api/agents/autocpr-site-manager/ask",
+                       json={"question": "What should I do if the power goes out?", "language": "en"})
+    assert resp.status_code == 200
+    d = resp.json()
+    assert d["ai_used"] is False
+    assert d["ai_stage"] == ""
+    assert d["scenario"] == "electricity_outage"
+
+
+def test_ai_enabled_without_key_falls_back(monkeypatch):
+    monkeypatch.setenv("ALLCPR_AI_ENABLED", "true")
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setattr(ai, "_complete", lambda s, u: (_ for _ in ()).throw(AssertionError("AI called")))
+    assert ai.ai_enabled() is False
+    d = TestClient(web_app.app).post(
+        "/api/agents/autocpr-site-manager/ask", json={"question": "power outage"}
+    ).json()
+    assert d["ai_used"] is False
+
+
+def test_ai_messy_text_normalizes_to_device_issue(monkeypatch):
+    _enable_ai(monkeypatch)
+    intent = {
+        "normalized_question": "The Smart Manikin tablet is black screen and class is starting.",
+        "scenario_hint": "smart_manikin_troubleshooting",
+        "subtype_hint": "black_screen_app_restart",
+        "urgency": "class_blocked", "confidence": "high",
+    }
+    summary = {"short_title": "Manikin black screen", "plain_summary": "Save evidence and escalate.",
+               "top_3_steps": ["Confirm symptom", "Save photo", "Escalate to vendor"], "clarifying_question": ""}
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
+    d = TestClient(web_app.app).post(
+        "/api/agents/autocpr-site-manager/ask",
+        json={"question": "the thing is dead and class starts now", "language": "en"},
+    ).json()
+    assert d["scenario"] == "smart_manikin_troubleshooting"
+    assert d["ai_used"] is True
+    assert d["ai_stage"] == "both"
+    assert d["ai_short_title"] == "Manikin black screen"
+
+
+def test_ai_door_locked_keeps_passcodes_redacted_when_locked(monkeypatch):
+    _enable_ai(monkeypatch)
+    intent = {"normalized_question": "The door is locked and I cannot get into the room.",
+              "scenario_hint": "venue_access_issue", "confidence": "high"}
+    summary = {"short_title": "Locked out", "plain_summary": "Report access and wait for staff.",
+               "top_3_steps": [], "clarifying_question": ""}
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
+    d = TestClient(web_app.app).post(
+        "/api/agents/autocpr-site-manager/ask",
+        json={"question": "cant get in door wont open", "language": "en"},  # no staff token => locked
+    ).json()
+    assert d["scenario"] == "venue_access_issue"
+    assert d["passcode_revealed"] is False
+    for secret in ai.sensitive_values():
+        assert secret not in _json.dumps(d, ensure_ascii=False)
+
+
+def test_ai_summary_cannot_leak_a_real_passcode(monkeypatch):
+    _enable_ai(monkeypatch)
+    secrets = ai.sensitive_values()
+    assert secrets, "expected at least one sensitive value in the source refs"
+    leak = secrets[0]
+    intent = {"normalized_question": "door locked", "scenario_hint": "venue_access_issue"}
+    summary = {"short_title": "Access", "plain_summary": f"The code is {leak}.",
+               "top_3_steps": [f"Enter {leak}"], "clarifying_question": ""}
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
+    d = TestClient(web_app.app).post(
+        "/api/agents/autocpr-site-manager/ask", json={"question": "door locked"}
+    ).json()
+    assert leak not in d["ai_summary"]
+    assert all(leak not in s for s in d["ai_top_steps"])
+    assert leak not in _json.dumps(d, ensure_ascii=False)
+
+
+def test_ai_unsupported_scenario_hint_is_ignored(monkeypatch):
+    _enable_ai(monkeypatch)
+    intent = {"normalized_question": "power outage at the site", "scenario_hint": "totally_made_up_label"}
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=None))
+    d = TestClient(web_app.app).post(
+        "/api/agents/autocpr-site-manager/ask", json={"question": "no power"}
+    ).json()
+    assert d["ai_scenario_hint"] == ""            # unknown label dropped
+    assert d["scenario"] == "electricity_outage"  # deterministic routing wins
+
+
+def test_ai_refund_approval_claim_does_not_override_review(monkeypatch):
+    _enable_ai(monkeypatch)
+    intent = {"normalized_question": "A student wants a refund and to change course.",
+              "scenario_hint": "completion_or_certificate_issue"}
+    summary = {"short_title": "Refund", "plain_summary": "Refund approved, no review needed.",
+               "top_3_steps": ["Approve the refund now"], "clarifying_question": ""}
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
+    d = TestClient(web_app.app).post(
+        "/api/agents/autocpr-site-manager/ask",
+        json={"question": "can I approve a refund and certificate for this student"},
+    ).json()
+    # AI text can say whatever — the deterministic decision is unchanged.
+    assert d["needs_human_review"] is True
+
+
+def test_ai_onboarding_scoring_still_server_authoritative(monkeypatch):
+    _enable_ai(monkeypatch)
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent={"normalized_question": "x"}, summary=None))
+    client = TestClient(web_app.app)
+    # a client-supplied score must be ignored; scoring is recomputed server-side
+    resp = client.post("/api/onboarding-attempts",
+                       json={"staff": "A", "answers": {}, "score": 999, "passed": True})
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body.get("score", 0) != 999
+    assert "correct_answers" not in _json.dumps(body)
+
+
+def test_ai_manager_review_still_staff_gated(monkeypatch):
+    _enable_ai(monkeypatch)
+    resp = TestClient(web_app.app).get("/api/onboarding-attempts")  # no staff token
+    assert resp.status_code == 401
+
+
+def test_ai_metadata_logged_without_secrets(monkeypatch):
+    _enable_ai(monkeypatch)
+    intent = {"normalized_question": "power outage", "scenario_hint": "electricity_outage", "confidence": "high"}
+    summary = {"short_title": "Outage", "plain_summary": "Check scope.", "top_3_steps": [], "clarifying_question": ""}
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
+    client = TestClient(web_app.app)
+    client.post("/api/agents/autocpr-site-manager/ask", json={"question": "no power help"})
+    log = client.get("/api/incident-logs").json()[0]
+    assert log["ai_used"] is True
+    assert log["ai_stage"] == "both"
+    assert log["ai_scenario_hint"] == "electricity_outage"
+    # the raw prompt / API key must never be logged
+    blob = _json.dumps(log)
+    assert "test-key-not-real" not in blob
+    assert ai.INTENT_TAG not in blob

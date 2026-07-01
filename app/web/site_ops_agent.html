@@ -784,6 +784,16 @@
   .ac-safety strong{font-size:12.5px;font-weight:800;display:block}
   .ac-safety ul{margin:5px 0 0;padding-left:17px;font-size:12.5px}
   .ac-lead{font-size:14px;color:var(--ink-soft);line-height:1.55;margin:0 0 12px}
+  /* AI-assisted summary banner — a calm indigo tint, distinct from red danger. */
+  .ac-ai{background:#f5f5ff;border:1px solid #dcdcf5;border-radius:12px;padding:12px 13px;margin:0 0 13px}
+  .ac-ai-tag{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#4b3fb0}
+  .ac-ai-tag svg{width:13px;height:13px}
+  .ac-ai-title{font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--ink);margin:7px 0 0}
+  .ac-ai-sum{font-size:13.5px;color:var(--ink-soft);line-height:1.55;margin:5px 0 0}
+  .ac-ai-steps{margin:8px 0 0;padding-left:19px;font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+  .ac-ai-steps li{margin:2px 0}
+  .ac-ai-q{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#6a5b00;background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:9px;padding:8px 10px;margin:9px 0 0}
+  .ac-ai-q svg{width:13px;height:13px;flex:0 0 auto;margin-top:2px;color:var(--amber)}
   .ac-now{margin-bottom:12px}
   .ac-now-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--ink);margin:0 0 10px}
   .ac-now-title svg{width:15px;height:15px;color:var(--red)}
@@ -1238,6 +1248,7 @@ const COPY = {
     confidence:'Confidence',
     // concise on-site action card
     whatToDoNow:'What to do now',
+    aiLabel:'AI-assisted summary · SOP-backed',
     requiredEvidence:'Required evidence',
     escalateTo:'Escalate to',
     doNot:'Do not',
@@ -1504,6 +1515,7 @@ const COPY = {
     confidence:'置信度',
     // 现场行动卡
     whatToDoNow:'现在先做什么',
+    aiLabel:'AI 辅助整理 · SOP 来源支持',
     requiredEvidence:'必须收集',
     escalateTo:'升级给谁',
     doNot:'不要做',
@@ -2208,6 +2220,19 @@ function render(data){
     review ? `<span class="ac-review">${svg('alert')}${esc(c.needsReview)}</span>` : ''
   ].filter(Boolean).join('');
 
+  /* AI-assisted summary — a short, source-backed rephrasing shown on top only
+     when the optional AI layer is enabled. The full source-backed sections below
+     are unchanged; this never replaces them. */
+  const aiBanner = (data.ai_used && (data.ai_short_title || data.ai_summary || data.ai_clarifying_question))
+    ? `<div class="ac-ai">
+         <span class="ac-ai-tag">${svg('bolt')}${esc(c.aiLabel)}</span>
+         ${data.ai_short_title ? `<p class="ac-ai-title">${esc(data.ai_short_title)}</p>` : ''}
+         ${data.ai_summary ? `<p class="ac-ai-sum">${esc(data.ai_summary)}</p>` : ''}
+         ${(data.ai_top_steps && data.ai_top_steps.length) ? `<ol class="ac-ai-steps">${data.ai_top_steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
+         ${data.ai_clarifying_question ? `<p class="ac-ai-q">${svg('alert')}<span>${esc(data.ai_clarifying_question)}</span></p>` : ''}
+       </div>`
+    : '';
+
   /* Safety warning — shown for danger, or whenever a safety check is present. */
   const safety = (data.immediate_safety_check || []).slice(0, 4);
   const safetyBanner = (isDanger || safety.length)
@@ -2263,6 +2288,7 @@ function render(data){
 
   $('#out').innerHTML = `<div class="ans-card">
     <div class="ac-head">${head}</div>
+    ${aiBanner}
     ${safetyBanner}
     ${nowHTML}
     ${recordedSec}

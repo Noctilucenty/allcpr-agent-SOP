@@ -13,6 +13,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.agents.autocpr_site_manager import answer_question
+from app.agents.autocpr_site_manager.ai_orchestrator import answer_with_orchestration
 from app.agents.autocpr_site_manager.incident_logs import (
     append_answer_log,
     get_log,
@@ -98,7 +99,9 @@ def api_staff_access_unlock(req: StaffAccessUnlockRequest) -> dict:
 
 @app.post("/api/agents/autocpr-site-manager/ask", response_model=AgentAnswer)
 def api_agent_site_manager_ask(req: AgentAskRequest) -> AgentAnswer:
-    answer = answer_question(
+    # Deterministic-first, with an optional AI interpret/summarize layer. When AI
+    # is disabled (default) this returns the exact deterministic answer.
+    answer = answer_with_orchestration(
         req.question, req.context, staff_access_token=req.staff_access_token
     )
     entry = append_answer_log(req.question, req.context, answer)
