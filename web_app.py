@@ -25,6 +25,15 @@ from app.agents.autocpr_site_manager.inspection_logs import (
     list_inspection_logs,
     patch_inspection_log,
 )
+from app.agents.autocpr_site_manager.onboarding_attempts import (
+    append_onboarding_attempt,
+    list_onboarding_attempts,
+)
+from app.agents.autocpr_site_manager.onboarding_quiz import (
+    PASSING_SCORE,
+    TOTAL_QUESTIONS,
+    public_questions,
+)
 from app.agents.autocpr_site_manager import staff_access
 from app.agents.autocpr_site_manager.schemas import (
     AgentAnswer,
@@ -32,6 +41,7 @@ from app.agents.autocpr_site_manager.schemas import (
     IncidentLogPatch,
     InspectionLogPatch,
     InspectionLogRequest,
+    OnboardingAttemptRequest,
     StaffAccessUnlockRequest,
 )
 from app.agents.autocpr_site_manager.sop_media_index import MEDIA_ROOT
@@ -172,6 +182,33 @@ def api_patch_inspection_log(log_id: str, patch: InspectionLogPatch) -> dict:
     if entry is None:
         raise HTTPException(status_code=404, detail="inspection log not found")
     return entry
+
+
+@app.get("/api/onboarding-quiz")
+def api_onboarding_quiz() -> dict:
+    """Return the 20 onboarding questions for the browser — without the answer
+    key. Scoring is server-side (POST /api/onboarding-attempts)."""
+    return {
+        "total": TOTAL_QUESTIONS,
+        "passing_score": PASSING_SCORE,
+        "questions": public_questions(),
+    }
+
+
+@app.post("/api/onboarding-attempts")
+def api_create_onboarding_attempt(req: OnboardingAttemptRequest) -> dict:
+    """Score a submitted attempt server-side and persist the result.
+
+    The frontend never decides pass/fail — the score is recomputed from the
+    answers in the storage layer, so a client-supplied score is ignored.
+    """
+    payload = req.model_dump() if hasattr(req, "model_dump") else req.dict()
+    return append_onboarding_attempt(payload)
+
+
+@app.get("/api/onboarding-attempts")
+def api_list_onboarding_attempts(limit: int = Query(default=50, ge=1, le=200)) -> list[dict]:
+    return list_onboarding_attempts(limit)
 
 
 @app.get("/", response_class=HTMLResponse)

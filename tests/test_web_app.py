@@ -11,6 +11,9 @@ import web_app
 def isolated_incident_log(monkeypatch, tmp_path):
     monkeypatch.setenv("ALLCPR_INCIDENT_LOG_PATH", str(tmp_path / "incident_logs.jsonl"))
     monkeypatch.setenv("ALLCPR_INSPECTION_LOG_PATH", str(tmp_path / "inspection_logs.jsonl"))
+    monkeypatch.setenv(
+        "ALLCPR_ONBOARDING_ATTEMPT_PATH", str(tmp_path / "onboarding_attempts.jsonl")
+    )
 
 
 def _completed_inspection_payload(**overrides):
@@ -438,6 +441,136 @@ def test_incident_log_does_not_store_local_paths():
     assert "/Users/" not in joined
     assert "/Desktop/Developer/" not in joined
     assert "noctilucenteasteliq" not in joined
+
+
+def _passing_answers(**overrides):
+    """A correct answer key, with optional per-question overrides for failures."""
+    from app.agents.autocpr_site_manager.onboarding_quiz import ONBOARDING_QUESTIONS
+
+    answers = {q["id"]: q["correct_answer"] for q in ONBOARDING_QUESTIONS}
+    answers.update(overrides)
+    return answers
+
+
+def test_onboarding_quiz_endpoint_returns_20_questions_without_answer_key():
+    client = TestClient(web_app.app)
+    resp = client.get("/api/onboarding-quiz")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total"] == 20
+    assert data["passing_score"] == 16
+    assert len(data["questions"]) == 20
+    for q in data["questions"]:
+        assert "correct_answer" not in q  # answer key must not leak to the browser
+        assert "explanation_en" not in q
+        assert q["prompt_en"] and q["prompt_zh"]
+        assert q["options_en"] and q["options_zh"]
+
+
+def test_onboarding_attempt_create_and_list():
+    client = TestClient(web_app.app)
+    resp = client.post(
+        "/api/onboarding-attempts",
+        json={"staff": "Alex", "site": "Santa Clara", "language": "en", "answers": _passing_answers()},
+    )
+    assert resp.status_code == 200
+    entry = resp.json()
+    assert entry["log_type"] == "onboarding_attempt"
+    assert entry["score"] == 20
+    assert entry["total"] == 20
+    assert entry["passing_score"] == 16
+    assert entry["passed"] is True
+    assert entry["status"] == "passed"
+    assert entry["critical_misses"] == []
+    assert entry["staff"] == "Alex"
+    assert entry["site"] == "Santa Clara"
+    assert entry["created_at"]
+
+    listed = client.get("/api/onboarding-attempts?limit=10").json()
+    assert listed[0]["id"] == entry["id"]
+    assert listed[0]["staff"] == "Alex"
+
+
+def test_onboarding_attempt_below_threshold_fails_by_score():
+    client = TestClient(web_app.app)
+    # miss 5 non-critical questions -> 15/20, no critical misses
+    wrong = {"q1": "Z", "q3": "Z", "q5": "Z", "q6": "Z", "q7": "Z"}
+    resp = client.post(
+        "/api/onboarding-attempts",
+        json={"staff": "Sam", "language": "en", "answers": _passing_answers(**wrong)},
+    )
+    entry = resp.json()
+    assert entry["score"] == 15
+    assert entry["passed"] is False
+    assert entry["status"] == "failed_score"
+    assert entry["critical_misses"] == []
+
+
+def test_onboarding_attempt_critical_miss_auto_fails_via_api():
+    client = TestClient(web_app.app)
+    # 19 correct but miss q2 (critical: before photos before cleaning)
+    resp = client.post(
+        "/api/onboarding-attempts",
+        json={"staff": "Robin", "language": "en", "answers": _passing_answers(q2="A")},
+    )
+    entry = resp.json()
+    assert entry["score"] == 19
+    assert entry["passed"] is False
+    assert entry["status"] == "failed_critical"
+    assert entry["critical_misses"][0]["id"] == "q2"
+    assert entry["critical_misses"][0]["concept"]
+
+
+def test_onboarding_attempt_server_ignores_client_supplied_score():
+    client = TestClient(web_app.app)
+    resp = client.post(
+        "/api/onboarding-attempts",
+        json={"staff": "Cheater", "language": "en", "answers": {}, "score": 20, "passed": True},
+    )
+    entry = resp.json()
+    assert entry["score"] == 0            # recomputed, not trusted
+    assert entry["passed"] is False
+
+
+def test_onboarding_attempt_does_not_store_local_paths_or_private_usernames():
+    client = TestClient(web_app.app)
+    client.post(
+        "/api/onboarding-attempts",
+        json={
+            "staff": "/Users/noctilucenteasteliq/Desktop/Developer/allcpr_agent",
+            "site": "/Users/noctilucenteasteliq/sites/sc",
+            "language": "en",
+            "answers": _passing_answers(),
+        },
+    )
+    log = client.get("/api/onboarding-attempts").json()[0]
+    blob = str(log)
+    assert "/Users/" not in blob
+    assert "noctilucenteasteliq" not in blob
+    assert "/Desktop/Developer/" not in blob
+
+
+def test_ui_has_onboarding_test_workflow():
+    client = TestClient(web_app.app)
+    body = client.get("/agent").text
+    # Entry point near Start Inspection + bilingual label
+    assert 'id="start-onboarding"' in body
+    assert "Onboarding Test" in body
+    assert "入职测试" in body
+    # Modal exists
+    assert 'id="onb-overlay"' in body
+    assert 'id="onb-questions"' in body
+    # Quiz + attempt endpoints wired in the page
+    assert "/api/onboarding-quiz" in body
+    assert "/api/onboarding-attempts" in body
+    # Result / critical-miss copy present (en + zh keys)
+    assert "Failed due to critical miss" in body
+    assert body.count("onboardingCriticalMisses:") >= 2
+    assert body.count("onboardingPassed:") >= 2
+    assert "16/20" in body
+    # Must not use fine / penalty / scary wording (en + zh), like the inspection copy
+    for banned in ("fine", "penalty", "罚款", "扣款"):
+        assert banned not in body
 
 
 def test_static_sop_media_route_available_even_before_index():

@@ -586,6 +586,44 @@
 	  .insp-save-msg.support{color:#9a6700}
 	  .insp-save-msg.err{color:#8a1417}
 	  @media (max-width:620px){ .insp-meta{grid-template-columns:1fr} }
+	  /* ---------- onboarding test ---------- */
+	  .onb-cta{margin-top:9px;border-color:#c7d7f5;background:#eef3fd}
+	  .onb-cta:hover{border-color:#2457b8}
+	  .onb-cta .ic-ico{background:#2457b8}
+	  .onb-cta .ic-arrow{color:#2457b8}
+	  .onb-sub{font-size:12.5px;color:var(--ink-soft);margin:2px 0 12px;line-height:1.5}
+	  .onb-passline{display:flex;gap:6px;align-items:flex-start;font-size:11.5px;font-weight:700;color:#22468f;background:#eef3fd;border:1px solid #c7d7f5;border-radius:9px;padding:8px 10px;margin:0 0 10px}
+	  .onb-passline svg{width:14px;height:14px;flex:0 0 auto;margin-top:1px}
+	  .onb-questions{max-height:none}
+	  .onb-q{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:9px}
+	  .onb-q.answered{border-color:#0a7a37}
+	  .onb-q-prompt{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;font-weight:700;color:var(--ink);margin:0 0 9px;line-height:1.45}
+	  .onb-q-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex:0 0 auto;border-radius:6px;background:var(--bg);border:1px solid var(--line);font-size:11.5px;font-weight:800;color:var(--muted-2)}
+	  .onb-crit-tag{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;color:#8a1417;background:var(--red-soft);border:1px solid var(--red-line);border-radius:5px;padding:1px 6px;vertical-align:middle}
+	  .onb-opts{display:flex;flex-direction:column;gap:6px}
+	  .onb-opt{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--ink-soft);cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+	  .onb-opt:hover{border-color:#2457b8}
+	  .onb-opt input{margin-top:2px;width:15px;height:15px;flex:0 0 auto;accent-color:#2457b8}
+	  .onb-opt.sel{border-color:#2457b8;background:#eef3fd;color:var(--ink)}
+	  .onb-banner{display:flex;gap:11px;align-items:flex-start;border-radius:12px;padding:13px 14px;margin-bottom:12px}
+	  .onb-banner .onb-b-ico{width:34px;height:34px;flex:0 0 auto;border-radius:9px;display:flex;align-items:center;justify-content:center}
+	  .onb-banner .onb-b-ico svg{width:19px;height:19px}
+	  .onb-banner h3{margin:0 0 3px;font-size:16px;font-weight:800}
+	  .onb-banner p{margin:0;font-size:12.5px;line-height:1.5;color:var(--ink-soft)}
+	  .onb-banner.pass{background:#e7f6ec;border:1px solid #a6d9b8}
+	  .onb-banner.pass .onb-b-ico{background:#0a7a37;color:#fff}
+	  .onb-banner.pass h3{color:#0a7a37}
+	  .onb-banner.fail{background:var(--red-soft);border:1px solid var(--red-line)}
+	  .onb-banner.fail .onb-b-ico{background:var(--red);color:#fff}
+	  .onb-banner.fail h3{color:#8a1417}
+	  .onb-score{font-size:26px;font-weight:800;color:var(--ink);margin:0 0 12px}
+	  .onb-score small{font-size:13px;color:var(--muted-2);font-weight:700}
+	  .onb-res-sec{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:9px}
+	  .onb-res-sec.crit{background:var(--red-soft);border-color:var(--red-line)}
+	  .onb-res-title{display:flex;align-items:center;gap:7px;font-weight:800;font-size:12.5px;margin:0 0 6px;color:var(--ink)}
+	  .onb-res-title svg{width:14px;height:14px;flex:0 0 auto;color:var(--red)}
+	  .onb-res-sec ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);line-height:1.55}
+	  .onb-res-sec.crit ul{color:#8a1417}
 	  .tp-draft{margin-top:9px}
   .tp-draft textarea{
     width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:inherit;
@@ -679,6 +717,15 @@
           <span class="ic-tx">
             <span class="ic-name" data-i18n="startInspection">Start Inspection</span>
             <span class="ic-sub" data-i18n="startInspectionSub">Guided weekly site check</span>
+          </span>
+          <span class="ic-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </button>
+
+        <button type="button" class="inspect-cta onb-cta" id="start-onboarding">
+          <span class="ic-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5"/></svg></span>
+          <span class="ic-tx">
+            <span class="ic-name" data-i18n="onboardingCta">Onboarding Test</span>
+            <span class="ic-sub" data-i18n="onboardingCtaSub">Certify before managing a site alone</span>
           </span>
           <span class="ic-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </button>
@@ -813,6 +860,47 @@
   </div>
 </div>
 
+<div class="insp-overlay onb-overlay" id="onb-overlay" hidden aria-hidden="true">
+  <div class="insp-modal" role="dialog" aria-modal="true" aria-labelledby="onb-title">
+    <!-- Step 0: staff details + start -->
+    <div class="onb-intro" id="onb-intro">
+      <div class="insp-flow-head">
+        <h2 id="onb-title" data-i18n="onboardingTitle">Smart Manikin Onboarding Test</h2>
+        <button type="button" class="insp-x" id="onb-close" aria-label="Close">&times;</button>
+      </div>
+      <p class="onb-sub" data-i18n="onboardingSubtitle">Pass this before managing a site alone.</p>
+      <div class="insp-meta">
+        <label><span data-i18n="onboardingStaff">Staff name</span><input id="onb-staff" type="text" autocomplete="off" /></label>
+        <label><span data-i18n="onboardingSite">Site / location (optional)</span><input id="onb-site" type="text" autocomplete="off" /></label>
+      </div>
+      <p class="onb-passline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>
+        <span data-i18n="onboardingPassScore">Pass mark 16/20. Missing any critical safety or documentation rule fails the test automatically.</span>
+      </p>
+      <p class="insp-note-row" data-i18n="onboardingLangNote">Answer in the language shown. You can switch language any time with the toggle above.</p>
+      <div class="insp-foot">
+        <p class="insp-save-msg" id="onb-intro-msg" hidden></p>
+        <button type="button" class="sa-btn primary" id="onb-begin" data-i18n="onboardingStart">Start Test</button>
+      </div>
+    </div>
+    <!-- Step 1: the 20 questions -->
+    <div class="onb-quiz" id="onb-quiz" hidden>
+      <div class="insp-flow-head">
+        <h2 data-i18n="onboardingTitle">Smart Manikin Onboarding Test</h2>
+        <button type="button" class="insp-x" id="onb-close2" aria-label="Close">&times;</button>
+      </div>
+      <div class="insp-progress"><span class="insp-progress-label" id="onb-progress-label"></span><span class="insp-bar"><span class="insp-bar-fill" id="onb-bar-fill"></span></span></div>
+      <div class="onb-questions" id="onb-questions"></div>
+      <div class="insp-foot">
+        <p class="insp-save-msg" id="onb-msg" hidden></p>
+        <button type="button" class="sa-btn primary" id="onb-submit" data-i18n="onboardingSubmit" disabled>Submit Test</button>
+      </div>
+    </div>
+    <!-- Step 2: result (built by JS) -->
+    <div class="onb-result" id="onb-result" hidden></div>
+  </div>
+</div>
+
 <footer>
   <div class="foot-inner">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -828,6 +916,7 @@ let selectedLang = 'en';
 let latestLogId = '';
 let selectedLogId = '';
 let logCache = [];
+let onbState = null;   // onboarding-test in-progress state (questions + answers)
 
 /* Inline icons (no dependencies, consistent 24px / stroke 2). */
 const ICON = {
@@ -1049,6 +1138,36 @@ const COPY = {
     ciReportAllcprItems:['Fix what you can on site.','If it cannot be solved on site, take photos and report to ALLCPR.'],
     ciFrequencyItems:['Each site at least once per week.','Increase frequency if ALLCPR notifies, students complain, or there is a site abnormality.'],
     ciEquipItems:['Smart Manikin, iPad, AED Pads, BVM, Pocket Mask complete and in standard positions.','iPad and Smart Manikin connected to power cables.','Consumables (wipes, gloves, mask adaptors) stocked.'],
+    // ---- onboarding certification test ----
+    onboardingCta:'Onboarding Test', onboardingCtaSub:'Certify before managing a site alone',
+    onboardingTitle:'Smart Manikin Onboarding Test',
+    onboardingSubtitle:'Pass this before managing a site alone.',
+    onboardingStaff:'Staff name', onboardingSite:'Site / location (optional)',
+    onboardingStart:'Start Test', onboardingSubmit:'Submit Test',
+    onboardingLangNote:'Answer in the language shown. You can switch language any time with the toggle above.',
+    onboardingStaffRequired:'Enter the staff name to start.',
+    onboardingProgress:'Answered',
+    onboardingCritical:'Critical',
+    onboardingPassScore:'Pass mark 16/20. Missing any critical safety or documentation rule fails the test automatically.',
+    onboardingResultTitle:'Test result',
+    onboardingScore:'Score',
+    onboardingPassed:'Passed', onboardingFailed:'Failed',
+    onboardingCriticalFailed:'Failed due to critical miss',
+    onboardingMissed:'Missed questions', onboardingCriticalMisses:'Critical misses',
+    onboardingResultPassed:'Passed. This staff member understands the core site inspection workflow. They may continue with supervised site work.',
+    onboardingResultFailedScore:'Failed. Score is below 16/20. Review the SOP and retake before managing a site alone.',
+    onboardingResultFailedCritical:'Failed due to critical miss. Even with a high score, this staff member missed a required safety or documentation rule. Review the SOP and retake before managing a site alone.',
+    onboardingRetake:'Review the SOP and retake before managing a site alone.',
+    onboardingRetakeBtn:'Retake test', onboardingDone:'Close',
+    onboardingSaveError:'Could not submit the test. Please try again.',
+    onboardingLoadError:'Could not load the test. Please try again.',
+    onbConcepts:{
+      'before photos before cleaning':'Take before photos before cleaning or organizing',
+      'no old/fake/staged photos':'No old or staged replacement photos',
+      'safety hazards':'Identify and handle safety hazards',
+      'report unresolved issues':'Photograph and report unresolved issues',
+      'no unauthorized repair':'No unauthorized dismantling or repair'
+    },
     error:'Unable to reach the assistant service'
   },
   zh: {
@@ -1238,6 +1357,36 @@ const COPY = {
     ciReportAllcprItems:['能现场解决的立即处理。','无法现场解决的，拍照并上报 ALLCPR。'],
     ciFrequencyItems:['每个分点至少每周一次。','如 ALLCPR 通知、学员投诉或现场异常则增加频率。'],
     ciEquipItems:['Smart Manikin、iPad、AED Pads、BVM、Pocket Mask 齐全并在标准位置。','iPad 与 Smart Manikin 已连接电源线。','耗材（湿巾、手套、面罩转接头）充足。'],
+    // ---- 入职认证测试 ----
+    onboardingCta:'入职测试', onboardingCtaSub:'独立管理分点前先完成认证',
+    onboardingTitle:'Smart Manikin 分点专员入职测试',
+    onboardingSubtitle:'独立管理分点前必须通过此测试。',
+    onboardingStaff:'员工姓名', onboardingSite:'分点 / 地点（可选）',
+    onboardingStart:'开始测试', onboardingSubmit:'提交测试',
+    onboardingLangNote:'请按显示的语言作答。可用上方按钮随时切换语言。',
+    onboardingStaffRequired:'请填写员工姓名后开始。',
+    onboardingProgress:'已答',
+    onboardingCritical:'关键',
+    onboardingPassScore:'通过线 16/20。漏答任一关键安全或记录规则将自动判为未通过。',
+    onboardingResultTitle:'测试结果',
+    onboardingScore:'分数',
+    onboardingPassed:'通过', onboardingFailed:'未通过',
+    onboardingCriticalFailed:'因关键项错误未通过',
+    onboardingMissed:'答错题目', onboardingCriticalMisses:'关键错误',
+    onboardingResultPassed:'通过。该员工已掌握核心分点巡检流程，可以在有监督的情况下继续现场工作。',
+    onboardingResultFailedScore:'未通过。分数低于 16/20。请复习 SOP 后重新测试，通过前不要独立管理分点。',
+    onboardingResultFailedCritical:'因关键项错误未通过。即使分数较高，该员工仍漏掉了必答的安全或记录规则。请复习 SOP 后重新测试，通过前不要独立管理分点。',
+    onboardingRetake:'请复习 SOP 后重新测试，通过前不要独立管理分点。',
+    onboardingRetakeBtn:'重新测试', onboardingDone:'关闭',
+    onboardingSaveError:'提交测试失败，请重试。',
+    onboardingLoadError:'加载测试失败，请重试。',
+    onbConcepts:{
+      'before photos before cleaning':'先拍巡检前照片，再清洁整理',
+      'no old/fake/staged photos':'不得使用旧照片或摆拍替代照片',
+      'safety hazards':'识别并处理安全隐患',
+      'report unresolved issues':'无法解决的问题必须拍照上报',
+      'no unauthorized repair':'未经授权不得拆卸或维修设备'
+    },
     error:'无法连接到助手服务'
   }
 };
@@ -1253,6 +1402,7 @@ function applyLanguage(lang){
 	  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { if(c[el.dataset.i18nPlaceholder] != null) el.placeholder = c[el.dataset.i18nPlaceholder]; });
 	  buildChips();
 	  renderLogs();
+	  reRenderOnboardingForLang();
 	}
 
 function buildChips(){
@@ -2278,6 +2428,179 @@ async function finishInspection(){
       addThumbs(ip.files, inspState.photos.issue[i], sections.querySelector(`[data-issue-thumbs="${i}"]`));
       ip.value = '';
     }
+  });
+})();
+
+/* ---------- onboarding certification test ----------
+   Fetches 20 questions from /api/onboarding-quiz (the answer key stays on the
+   server) and POSTs answers to /api/onboarding-attempts. The server scores and
+   decides pass/fail; the browser only displays the returned result. No image
+   bytes or local paths are ever sent. */
+function newOnbState(){ return {questions:[], answers:{}, staff:'', site:'', lastResult:null}; }
+function openOnboarding(){
+  onbState = newOnbState();
+  if($('#onb-intro')) $('#onb-intro').hidden = false;
+  if($('#onb-quiz')) $('#onb-quiz').hidden = true;
+  if($('#onb-result')){ $('#onb-result').hidden = true; $('#onb-result').innerHTML = ''; }
+  if($('#onb-intro-msg')) $('#onb-intro-msg').hidden = true;
+  // prefill site from the optional context field, if the inspector already typed one
+  if($('#onb-site') && $('#site') && $('#site').value.trim()) $('#onb-site').value = $('#site').value.trim();
+  const ov = $('#onb-overlay');
+  if(ov){ ov.hidden = false; ov.setAttribute('aria-hidden', 'false'); }
+}
+function closeOnboarding(){
+  const ov = $('#onb-overlay');
+  if(ov){ ov.hidden = true; ov.setAttribute('aria-hidden', 'true'); }
+}
+async function beginOnboarding(){
+  const c = copy();
+  const staff = ($('#onb-staff') && $('#onb-staff').value.trim()) || '';
+  const msg = $('#onb-intro-msg');
+  if(!staff){
+    if(msg){ msg.textContent = c.onboardingStaffRequired; msg.className = 'insp-save-msg err'; msg.hidden = false; }
+    if($('#onb-staff')) $('#onb-staff').focus();
+    return;
+  }
+  onbState.staff = staff;
+  onbState.site = ($('#onb-site') && $('#onb-site').value.trim()) || '';
+  try{
+    const resp = await fetch(API_BASE + '/api/onboarding-quiz');
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    onbState.questions = data.questions || [];
+    onbState.answers = {};
+    onbState.lastResult = null;
+    if($('#onb-intro')) $('#onb-intro').hidden = true;
+    if($('#onb-result')) $('#onb-result').hidden = true;
+    if($('#onb-quiz')) $('#onb-quiz').hidden = false;
+    if($('#onb-msg')) $('#onb-msg').hidden = true;
+    const sub = $('#onb-submit'); if(sub){ sub.disabled = true; sub.textContent = c.onboardingSubmit; }
+    renderOnbQuestions();
+  }catch(e){
+    if(msg){ msg.textContent = c.onboardingLoadError; msg.className = 'insp-save-msg err'; msg.hidden = false; }
+  }
+}
+function optLetter(opt){ return String(opt || '').trim().charAt(0).toUpperCase(); }
+function renderOnbQuestions(){
+  const c = copy();
+  const wrap = $('#onb-questions');
+  if(!wrap || !onbState) return;
+  const zh = selectedLang === 'zh';
+  wrap.innerHTML = (onbState.questions || []).map((q, idx) => {
+    const prompt = zh ? q.prompt_zh : q.prompt_en;
+    const opts = (zh ? q.options_zh : q.options_en) || [];
+    const chosen = onbState.answers[q.id] || '';
+    const crit = q.critical ? `<span class="onb-crit-tag">${esc(c.onboardingCritical)}</span>` : '';
+    const optsHtml = opts.map(opt => {
+      const val = optLetter(opt);
+      const sel = chosen === val ? ' sel' : '';
+      const ck = chosen === val ? ' checked' : '';
+      return `<label class="onb-opt${sel}"><input type="radio" name="onb-${esc(q.id)}" value="${esc(val)}"${ck} data-onb-q="${esc(q.id)}" /><span>${esc(opt)}</span></label>`;
+    }).join('');
+    return `<div class="onb-q${chosen ? ' answered' : ''}" data-qid="${esc(q.id)}">
+      <p class="onb-q-prompt"><span class="onb-q-num">${idx + 1}</span><span>${esc(prompt)}${crit}</span></p>
+      <div class="onb-opts">${optsHtml}</div>
+    </div>`;
+  }).join('');
+  updateOnbProgress();
+}
+function updateOnbProgress(){
+  const c = copy();
+  const total = (onbState.questions || []).length || 20;
+  const answered = Object.keys(onbState.answers || {}).length;
+  const pct = total ? Math.round(answered / total * 100) : 0;
+  if($('#onb-bar-fill')) $('#onb-bar-fill').style.width = pct + '%';
+  if($('#onb-progress-label')) $('#onb-progress-label').textContent = `${c.onboardingProgress}: ${answered}/${total}`;
+  const sub = $('#onb-submit');
+  if(sub) sub.disabled = answered < total;
+}
+function onbQNumber(qid){ const i = (onbState.questions || []).findIndex(x => x.id === qid); return i >= 0 ? (i + 1) : qid; }
+function onbQPrompt(qid){
+  const q = (onbState.questions || []).find(x => x.id === qid);
+  if(!q) return qid;
+  return selectedLang === 'zh' ? q.prompt_zh : q.prompt_en;
+}
+function onbConceptLabel(concept){ const c = copy(); return (c.onbConcepts && c.onbConcepts[concept]) || concept; }
+async function submitOnboarding(){
+  const c = copy();
+  const sub = $('#onb-submit');
+  const msg = $('#onb-msg');
+  if(sub) sub.disabled = true;
+  try{
+    const resp = await fetch(API_BASE + '/api/onboarding-attempts', {
+      method:'POST', headers:{'content-type':'application/json'},
+      body:JSON.stringify({staff:onbState.staff, site:onbState.site, language:selectedLang, answers:onbState.answers})
+    });
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const result = await resp.json();
+    onbState.lastResult = result;
+    renderOnbResult(result);
+  }catch(e){
+    if(sub) sub.disabled = false;
+    if(msg){ msg.textContent = c.onboardingSaveError; msg.className = 'insp-save-msg err'; msg.hidden = false; }
+  }
+}
+function renderOnbResult(result){
+  const c = copy();
+  const box = $('#onb-result');
+  if(!box || !result) return;
+  const passed = result.status === 'passed';
+  const critical = result.status === 'failed_critical';
+  const bannerCls = passed ? 'pass' : 'fail';
+  const heading = passed ? c.onboardingPassed : (critical ? c.onboardingCriticalFailed : c.onboardingFailed);
+  const summary = passed ? c.onboardingResultPassed : (critical ? c.onboardingResultFailedCritical : c.onboardingResultFailedScore);
+  const ico = passed
+    ? '<path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>'
+    : '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/>';
+  let html = `<div class="insp-flow-head"><h2>${esc(c.onboardingResultTitle)}</h2><button type="button" class="insp-x" id="onb-close3" aria-label="Close">&times;</button></div>`;
+  html += `<div class="onb-banner ${bannerCls}"><span class="onb-b-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ico}</svg></span><div><h3>${esc(heading)}</h3><p>${esc(summary)}</p></div></div>`;
+  html += `<p class="onb-score">${esc(result.score)}<small> / ${esc(result.total)} · ${esc(c.onboardingScore)}</small></p>`;
+  if(result.critical_misses && result.critical_misses.length){
+    html += `<div class="onb-res-sec crit"><p class="onb-res-title">${svg('alert')} ${esc(c.onboardingCriticalMisses)}</p><ul>` +
+      result.critical_misses.map(m => `<li>Q${esc(onbQNumber(m.id))} — ${esc(onbConceptLabel(m.concept))}</li>`).join('') +
+      `</ul></div>`;
+  }
+  if(result.missed_questions && result.missed_questions.length){
+    html += `<div class="onb-res-sec"><p class="onb-res-title">${svg('clip')} ${esc(c.onboardingMissed)}</p><ul>` +
+      result.missed_questions.map(qid => `<li>Q${esc(onbQNumber(qid))}. ${esc(onbQPrompt(qid))}</li>`).join('') +
+      `</ul></div>`;
+  }
+  if(!passed) html += `<p class="insp-note-row">${esc(c.onboardingRetake)}</p>`;
+  html += `<div class="insp-foot">${passed ? '' : `<button type="button" class="sa-btn" id="onb-retake">${esc(c.onboardingRetakeBtn)}</button>`}<button type="button" class="sa-btn primary" id="onb-done">${esc(c.onboardingDone)}</button></div>`;
+  box.innerHTML = html;
+  if($('#onb-quiz')) $('#onb-quiz').hidden = true;
+  if($('#onb-intro')) $('#onb-intro').hidden = true;
+  box.hidden = false;
+  if($('#onb-close3')) $('#onb-close3').onclick = closeOnboarding;
+  if($('#onb-done')) $('#onb-done').onclick = closeOnboarding;
+  if($('#onb-retake')) $('#onb-retake').onclick = openOnboarding;
+}
+function reRenderOnboardingForLang(){
+  if(!onbState) return;
+  if($('#onb-quiz') && !$('#onb-quiz').hidden){ renderOnbQuestions(); return; }
+  if($('#onb-result') && !$('#onb-result').hidden && onbState.lastResult){ renderOnbResult(onbState.lastResult); }
+}
+(function wireOnboarding(){
+  const cta = $('#start-onboarding');
+  if(cta) cta.onclick = openOnboarding;
+  ['#onb-close', '#onb-close2'].forEach(sel => { const el = $(sel); if(el) el.onclick = closeOnboarding; });
+  const begin = $('#onb-begin'); if(begin) begin.onclick = beginOnboarding;
+  const submit = $('#onb-submit'); if(submit) submit.onclick = submitOnboarding;
+  const overlay = $('#onb-overlay');
+  if(overlay) overlay.addEventListener('click', e => { if(e.target === overlay) closeOnboarding(); });
+  const staffIn = $('#onb-staff');
+  if(staffIn) staffIn.addEventListener('keydown', e => { if(e.key === 'Enter') beginOnboarding(); });
+  const qwrap = $('#onb-questions');
+  if(qwrap) qwrap.addEventListener('change', e => {
+    const r = e.target.closest('[data-onb-q]');
+    if(!r || !r.checked || !onbState) return;
+    onbState.answers[r.dataset.onbQ] = r.value;
+    const qEl = r.closest('.onb-q');
+    if(qEl){
+      qEl.classList.add('answered');
+      qEl.querySelectorAll('.onb-opt').forEach(l => { const inp = l.querySelector('input'); l.classList.toggle('sel', !!(inp && inp.checked)); });
+    }
+    updateOnbProgress();
   });
 })();
 

@@ -184,3 +184,18 @@ class InspectionLogPatch(BaseModel):
     status: Optional[str] = None
     note: Optional[str] = None
     created_by: Optional[str] = None
+
+
+class OnboardingAttemptRequest(BaseModel):
+    """A submitted Smart Manikin onboarding-test attempt.
+
+    ``answers`` maps question id -> chosen option letter (e.g. ``{"q1": "B"}``).
+    The server recomputes the score/pass-fail from the answers — any score-like
+    field a client might send is ignored. Stores the result only; never raw image
+    bytes, local file paths, passcodes, or staff PINs.
+    """
+
+    staff: Optional[str] = None
+    site: Optional[str] = None
+    language: str = "en"
+    answers: Dict[str, Any] = {}
