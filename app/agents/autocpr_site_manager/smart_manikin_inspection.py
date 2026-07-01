@@ -72,6 +72,15 @@ _RULES = [
     (PRE_CHECK_PHOTOS, (
         "巡检前", "前照片", "before photo", "before-photo", "pre-check",
         "pre check", "precheck", "before cleaning",
+        # Arrival / procedure / what-to-do phrasing defaults to the pre-check step.
+        "when i arrive", "arrived at the site", "i arrived at", "arrival procedure",
+        "opening procedure", "site procedure", "site rep procedure",
+        "site representative procedure", "weekly check procedure",
+        "smart manikin site procedure", "what do i check first",
+        "what should i check first", "check first", "before i start",
+        "start of inspection", "first thing to do", "first thing",
+        "到场后", "到场流程", "专员到场", "到分点", "到店后", "到现场后",
+        "开始前", "第一件事", "分点流程",
     )),
     (POST_CHECK_PHOTOS, (
         "巡检后", "后照片", "after photo", "after-photo", "post-check",
@@ -131,12 +140,51 @@ def focused_guidance(subtype: str, lang: str) -> Optional[Dict[str, Any]]:
             "next_actions": _sec("frequency", lang),
         }
     if subtype == PRE_CHECK_PHOTOS:
+        # Arrival / pre-check order: check the site and photograph it BEFORE any
+        # cleaning, then continue the checklist, fix on-site only, escalate the
+        # rest, and finish with after photos + report + upload.
+        dont_first = lead(
+            "Do not clean, move, organize, or fix anything first — first check the overall site condition.",
+            "先不要清洁、搬动、整理或修理任何东西——先检查整体现场情况。",
+        )
+        checklist_line = lead(
+            "Then continue the site checklist: hygiene, trash, disinfection supplies, "
+            "equipment, access/Lockbox/Access Code, camera, Wi-Fi, signage, and safety hazards.",
+            "然后继续现场检查清单：卫生、垃圾、消毒用品、设备、门禁/Lockbox/Access Code、"
+            "摄像头、Wi-Fi、路牌、安全隐患。",
+        )
+        after_line = lead(
+            "After work is complete, take after photos from similar angles, then complete the "
+            "Weekly Site Check Report and upload materials to the corresponding site Google Drive folder.",
+            "完成后，从相近角度拍巡检后照片，再填写每周分点巡检表并上传资料到对应分点 Google Drive 文件夹。",
+        )
+        steps = [dont_first] + _sec("pre_check_photos", lang) + [checklist_line]
+        steps += _sec("on_site_handling", lang) + [after_line]
         return {
             "lead": lead(
-                "Before any cleaning or organizing, take the before photos.",
-                "在开始清洁或整理前，先拍巡检前照片。",
+                "On arrival, do not clean or organize first — check the overall site, then take "
+                "before photos before any cleaning.",
+                "到场后先不要清洁或整理——先检查整体现场，再在任何清洁前拍巡检前照片。",
             ),
-            "steps": _sec("pre_check_photos", lang),
+            "steps": steps,
+            "contacts": [lead("ALLCPR (report unresolved issues).", "ALLCPR（上报无法解决的问题）。")],
+            "do_not_decide_without_approval": [
+                lead(
+                    "Do not dismantle or repair Smart Manikin, iPad, camera, access control, or similar equipment without authorization.",
+                    "未经授权不得拆卸或维修 Smart Manikin、iPad、摄像头、门禁或类似设备。",
+                ),
+                lead(
+                    "Inspection records and photos must be real and complete.",
+                    "巡检记录和照片必须真实、完整。",
+                ),
+            ],
+            "next_actions": [
+                lead("Take before photos before any cleaning.", "在任何清洁前先拍巡检前照片。"),
+                lead(
+                    "Continue the site checklist, then after photos, report, and upload.",
+                    "继续现场检查清单，再拍巡检后照片、填表并上传。",
+                ),
+            ],
         }
     if subtype == SITE_CHECKLIST:
         return {

@@ -109,6 +109,68 @@ def test_inspection_returns_source_backed_operational_refs():
         assert token in joined
 
 
+def test_equipment_placement_answer_includes_diagram_labels():
+    ans = answer_question("器材摆放位置", {"lang": "en"})
+    steps = " ".join(ans.steps)
+    assert "plugged in throughout the course" in steps
+    assert "AED Training Pads" in steps
+    assert "Pocket Mask" in steps
+
+
+@pytest.mark.parametrize(
+    "question, lang",
+    [
+        ("what should I do when I arrive", "en"),
+        ("I arrived at the site, what now", "en"),
+        ("arrival procedure", "en"),
+        ("opening procedure", "en"),
+        ("what do I check first", "en"),
+        ("before I start", "en"),
+        ("first thing to do", "en"),
+        ("到场后要做什么", "zh"),
+        ("我到分点了要干嘛", "zh"),
+        ("开始前要做什么", "zh"),
+        ("到店后流程", "zh"),
+        ("专员到场流程", "zh"),
+    ],
+)
+def test_arrival_procedure_routes_to_precheck(question, lang):
+    ans = answer_question(question, {"lang": lang})
+    assert ans.scenario == SCENARIO
+    assert ans.issue_subtype == smi.PRE_CHECK_PHOTOS
+
+
+def test_arrival_procedure_does_not_break_arrival_adjacent_scenarios():
+    # Casual arrival phrasing must not steal these existing scenarios.
+    assert classify("teacher did not arrive") == "instructor_no_show"
+    assert classify("students arrived and class cannot start") == "class_cannot_start"
+
+
+def test_arrival_answer_content_emphasizes_precheck_order():
+    ans = answer_question("what should I do when I arrive", {"lang": "en"})
+    blob = " ".join(ans.steps + ans.do_not_decide_without_approval + ans.contacts).lower()
+    # before photos before any cleaning + the five required before photos
+    assert "before any cleaning" in blob
+    for token in ("whole room", "smart manikin area", "supplies / consumables area", "door or signage", "abnormal"):
+        assert token in blob
+    # continue the checklist after photos
+    assert "continue the site checklist" in blob
+    # do-not-repair and escalation
+    assert "dismantle or repair" in blob
+    assert "report to allcpr" in blob
+
+
+def test_arrival_answer_content_chinese():
+    ans = answer_question("到场后要做什么", {"lang": "zh"})
+    blob = " ".join(ans.steps + ans.do_not_decide_without_approval + ans.contacts)
+    assert "清洁" in blob  # before any cleaning
+    for token in ("整个房间", "Smart Manikin 区域", "耗材", "门或路牌", "异常"):
+        assert token in blob
+    assert "现场检查清单" in blob
+    assert "拆卸或维修" in blob
+    assert "ALLCPR" in blob
+
+
 def test_inspection_equipment_placement_returns_source_diagram():
     from app.agents.autocpr_site_manager.sop_media_index import build_media_index
 

@@ -144,18 +144,20 @@
     "source_note_en": "Equipment placement diagram on page 3. Use only source-backed visual labels; no image analysis or guessing beyond visible labels.",
     "source_note_zh": "第 3 页器材摆放图。仅使用来源支持的可见标签，不对图片内容进行分析或超出可见标签的猜测。",
     "en": [
-      "Training equipment: iPad, Manikins, AED Training Pads.",
+      "Training equipment: iPad, Manikins, AED Training Pads (1 set for both Adult & Infant).",
+      "Keep the manikins plugged in throughout the course (per the diagram label).",
       "Consumables: tissues, disinfecting wipes, disposable gloves, mask adaptors, optional face shield.",
-      "Rescue breathing equipment: Pocket Mask and BVM.",
+      "Rescue breathing equipment: Pocket Mask; BVM optional (use if mask adaptors are unavailable).",
       "Keep the Smart Manikin / iPad setup in the standard position.",
-      "Check the Smart Manikin / iPad power cable (per the text)."
+      "Check the Smart Manikin / iPad power cable."
     ],
     "zh": [
-      "训练设备：iPad、Manikins、AED Training Pads。",
+      "训练设备：iPad、Manikins、AED Training Pads（成人与婴儿共用一套）。",
+      "全程保持 Manikins 插电（依据图示标签）。",
       "耗材：纸巾、消毒湿巾、一次性手套、面罩转接头、可选面屏。",
-      "急救通气设备：Pocket Mask 与 BVM。",
+      "急救通气设备：Pocket Mask；BVM 可选（无面罩转接头时使用）。",
       "保持 Smart Manikin / iPad 摆放在标准位置。",
-      "检查 Smart Manikin / iPad 电源线（依据正文）。"
+      "检查 Smart Manikin / iPad 电源线。"
     ]
   },
   "acknowledgement": {

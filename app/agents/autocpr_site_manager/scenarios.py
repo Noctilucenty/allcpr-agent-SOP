@@ -117,6 +117,18 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "disinfect equipment", "consumables check", "inspection frequency",
         "现场检查", "现场要检查", "检查清单", "巡检检查", "site checklist",
         "site check items", "check items", "inspection", "inspect", "巡视",
+        # Arrival / procedure / what-to-do phrasing routes here too (no need for
+        # the word "inspection"/"巡检"). Phrases are specific enough not to steal
+        # from instructor-no-show ("did not arrive") or class-cannot-start
+        # ("students arrived").
+        "when i arrive", "arrived at the site", "i arrived at", "arrival procedure",
+        "opening procedure", "site procedure", "site rep procedure",
+        "site representative procedure", "weekly check procedure",
+        "smart manikin site procedure", "what do i check first",
+        "what should i check first", "check first", "before i start",
+        "start of inspection", "first thing to do", "first thing",
+        "到场后", "到场流程", "专员到场", "到分点", "到店后", "到现场后",
+        "开始前", "第一件事", "分点流程",
     )),
     ("smart_manikin_troubleshooting", (
         "smart manikin", "manikin", "假人", "黑屏", "black screen", "blank screen",
