@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -207,8 +207,24 @@ def api_create_onboarding_attempt(req: OnboardingAttemptRequest) -> dict:
 
 
 @app.get("/api/onboarding-attempts")
-def api_list_onboarding_attempts(limit: int = Query(default=50, ge=1, le=200)) -> list[dict]:
-    return list_onboarding_attempts(limit)
+def api_list_onboarding_attempts(
+    limit: int = Query(default=50, ge=1, le=200),
+    x_staff_access_token: str | None = Header(default=None),
+) -> list[dict]:
+    """Management review of onboarding results — gated behind staff access.
+
+    Requires a valid staff token (from POST /api/staff-access/unlock) in the
+    ``X-Staff-Access-Token`` header. Without it (or if staff access is not
+    configured) nothing is returned. The response is a read-only summary: it
+    omits the candidate's raw answer letters and never contained the answer key,
+    passcodes, or the staff PIN.
+    """
+    if not staff_access.verify_token(x_staff_access_token):
+        raise HTTPException(status_code=401, detail="staff access required")
+    return [
+        {k: v for k, v in attempt.items() if k != "answers"}
+        for attempt in list_onboarding_attempts(limit)
+    ]
 
 
 @app.get("/", response_class=HTMLResponse)

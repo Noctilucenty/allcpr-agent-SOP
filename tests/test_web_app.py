@@ -467,8 +467,14 @@ def test_onboarding_quiz_endpoint_returns_20_questions_without_answer_key():
         assert q["options_en"] and q["options_zh"]
 
 
-def test_onboarding_attempt_create_and_list():
+def _staff_token(client, pin="1234"):
+    return client.post("/api/staff-access/unlock", json={"pin": pin}).json()["token"]
+
+
+def test_onboarding_attempt_create_and_list(monkeypatch):
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "1234")
     client = TestClient(web_app.app)
+    # submission stays open (no staff token needed to take the test)
     resp = client.post(
         "/api/onboarding-attempts",
         json={"staff": "Alex", "site": "Santa Clara", "language": "en", "answers": _passing_answers()},
@@ -486,9 +492,14 @@ def test_onboarding_attempt_create_and_list():
     assert entry["site"] == "Santa Clara"
     assert entry["created_at"]
 
-    listed = client.get("/api/onboarding-attempts?limit=10").json()
+    # listing (management review) requires a valid staff token
+    token = _staff_token(client)
+    listed = client.get(
+        "/api/onboarding-attempts?limit=10", headers={"X-Staff-Access-Token": token}
+    ).json()
     assert listed[0]["id"] == entry["id"]
     assert listed[0]["staff"] == "Alex"
+    assert "answers" not in listed[0]  # review is a summary, candidate answers omitted
 
 
 def test_onboarding_attempt_below_threshold_fails_by_score():
@@ -532,7 +543,8 @@ def test_onboarding_attempt_server_ignores_client_supplied_score():
     assert entry["passed"] is False
 
 
-def test_onboarding_attempt_does_not_store_local_paths_or_private_usernames():
+def test_onboarding_attempt_does_not_store_local_paths_or_private_usernames(monkeypatch):
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "1234")
     client = TestClient(web_app.app)
     client.post(
         "/api/onboarding-attempts",
@@ -543,11 +555,58 @@ def test_onboarding_attempt_does_not_store_local_paths_or_private_usernames():
             "answers": _passing_answers(),
         },
     )
-    log = client.get("/api/onboarding-attempts").json()[0]
+    token = _staff_token(client)
+    log = client.get(
+        "/api/onboarding-attempts", headers={"X-Staff-Access-Token": token}
+    ).json()[0]
     blob = str(log)
     assert "/Users/" not in blob
     assert "noctilucenteasteliq" not in blob
     assert "/Desktop/Developer/" not in blob
+
+
+def test_onboarding_attempts_list_is_staff_gated(monkeypatch):
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "1234")
+    client = TestClient(web_app.app)
+    client.post(
+        "/api/onboarding-attempts",
+        json={"staff": "Alex", "site": "Santa Clara", "language": "en", "answers": _passing_answers()},
+    )
+    # locked: no token -> 401 and no attempts returned
+    denied = client.get("/api/onboarding-attempts")
+    assert denied.status_code == 401
+    # invalid token -> 401
+    assert client.get(
+        "/api/onboarding-attempts", headers={"X-Staff-Access-Token": "1700000000.deadbeef"}
+    ).status_code == 401
+    # valid unlock -> 200 with the attempt
+    token = _staff_token(client)
+    ok = client.get("/api/onboarding-attempts", headers={"X-Staff-Access-Token": token})
+    assert ok.status_code == 200
+    assert ok.json()[0]["staff"] == "Alex"
+
+
+def test_onboarding_attempts_gated_when_staff_not_configured():
+    # No staff PIN configured on the server -> no token can be valid -> stays locked.
+    client = TestClient(web_app.app)
+    assert client.get("/api/onboarding-attempts").status_code == 401
+
+
+def test_onboarding_review_does_not_leak_answer_key_pin_or_passcodes(monkeypatch):
+    monkeypatch.setenv("ALLCPR_STAFF_ACCESS_PIN", "1234")
+    client = TestClient(web_app.app)
+    client.post(
+        "/api/onboarding-attempts",
+        json={"staff": "Alex", "site": "Santa Clara", "language": "en", "answers": _passing_answers()},
+    )
+    token = _staff_token(client)
+    blob = str(client.get("/api/onboarding-attempts", headers={"X-Staff-Access-Token": token}).json())
+    assert "correct_answer" not in blob   # answer key never stored/returned
+    assert "explanation" not in blob
+    assert "answers" not in blob          # candidate answer letters omitted from review
+    assert "1234" not in blob             # staff PIN never in the payload
+    for secret in ("2745", "224466", "6285", "DoBeUSA"):
+        assert secret not in blob
 
 
 def test_ui_has_onboarding_test_workflow():
@@ -571,6 +630,23 @@ def test_ui_has_onboarding_test_workflow():
     # Must not use fine / penalty / scary wording (en + zh), like the inspection copy
     for banned in ("fine", "penalty", "罚款", "扣款"):
         assert banned not in body
+
+
+def test_ui_has_staff_gated_manager_review_panel():
+    client = TestClient(web_app.app)
+    body = client.get("/agent").text
+    # Panel present + bilingual title
+    assert 'id="mgr-review"' in body
+    assert "Manager Review" in body
+    assert "管理查看" in body
+    # Locked by default: locked notice shown, list hidden until unlocked (en + zh copy)
+    assert 'id="mgr-locked"' in body
+    assert 'id="mgr-list"' in body
+    assert body.count("mgrLocked:") >= 2
+    # Review is gated by the staff token (sent as a header) and hits the attempts endpoint
+    assert "X-Staff-Access-Token" in body
+    assert "staffToken" in body
+    assert "/api/onboarding-attempts" in body
 
 
 def test_static_sop_media_route_available_even_before_index():

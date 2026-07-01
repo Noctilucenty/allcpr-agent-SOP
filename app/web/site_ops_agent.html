@@ -221,6 +221,17 @@
 	  .log-status.escalated{background:var(--red-soft);border-color:var(--red-line);color:#8a1417}
 	  .log-status.resolved{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
 	  .log-status.watching{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber)}
+	  .mgr-review{margin-top:2px}
+	  .mgr-row{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 9px;box-shadow:var(--shadow-sm)}
+	  .mgr-row + .mgr-row{margin-top:7px}
+	  .mgr-row-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+	  .mgr-name{font-size:12.5px;font-weight:800;color:var(--ink);word-break:break-word}
+	  .mgr-badge{flex:0 0 auto;border-radius:999px;padding:1px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+	  .mgr-badge.pass{background:var(--green-soft);border:1px solid var(--green-line);color:var(--green)}
+	  .mgr-badge.fail{background:var(--red-soft);border:1px solid var(--red-line);color:#8a1417}
+	  .mgr-meta{display:flex;flex-wrap:wrap;gap:4px 9px;align-items:center;font-size:10.5px;color:var(--muted);font-weight:700;margin-top:5px}
+	  .mgr-score{font-weight:800;color:var(--ink-soft)}
+	  .mgr-crit{color:#8a1417;font-weight:800}
 	  .log-detail{display:none;margin-top:9px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px}
 	  .log-detail.open{display:block}
 	  .ld-title{margin:0 0 7px;font-weight:800;font-size:13px}
@@ -818,6 +829,14 @@
 	          <div id="log-list" class="log-list"></div>
 	          <div id="log-detail" class="log-detail"></div>
 	        </div>
+	        <div class="live-log mgr-review" id="mgr-review" aria-live="polite">
+	          <div class="log-head">
+	            <p class="log-title" data-i18n="mgrReviewTitle">Manager Review</p>
+	            <button type="button" class="log-refresh" id="mgr-refresh" data-i18n="refreshLog">Refresh</button>
+	          </div>
+	          <div class="log-empty" id="mgr-locked" data-i18n="mgrLocked">Unlock staff access to view onboarding results.</div>
+	          <div id="mgr-list" class="log-list" hidden></div>
+	        </div>
 	      </div>
 	    </aside>
   </div>
@@ -979,6 +998,10 @@ const COPY = {
 	    location:'Location',
 	    guidanceGenerated:'Guidance generated',
 	    noLogs:'No logs yet',
+	    mgrReviewTitle:'Manager Review',
+	    mgrLocked:'Unlock staff access to view onboarding results.',
+	    mgrEmpty:'No onboarding attempts yet.',
+	    mgrLoadError:'Could not load onboarding results.',
 	    unknownSite:'Unknown site',
 	    imagesCount:'SOP images',
 	    refsCount:'References',
@@ -1208,6 +1231,10 @@ const COPY = {
 	    location:'地点',
 	    guidanceGenerated:'已生成指引',
 	    noLogs:'暂无记录',
+	    mgrReviewTitle:'管理查看',
+	    mgrLocked:'解锁员工权限后查看入职测试结果。',
+	    mgrEmpty:'暂无入职测试记录。',
+	    mgrLoadError:'加载入职测试结果失败。',
 	    unknownSite:'未知站点',
 	    imagesCount:'SOP 图片',
 	    refsCount:'参考',
@@ -1403,6 +1430,7 @@ function applyLanguage(lang){
 	  buildChips();
 	  renderLogs();
 	  reRenderOnboardingForLang();
+	  renderManagerReview();   // initial load + refresh localized labels when language changes
 	}
 
 function buildChips(){
@@ -2604,6 +2632,70 @@ function reRenderOnboardingForLang(){
   });
 })();
 
+/* ---------- manager review (staff-gated onboarding results) ----------
+   Read-only. Nothing is shown until staff access is unlocked; the attempts list
+   is fetched with the staff token in the X-Staff-Access-Token header and the
+   backend refuses it without a valid token. Shows a summary only — no answer
+   key, no candidate answer letters, no passcodes, no PIN. */
+function onbFmtTime(iso){
+  if(!iso) return '';
+  try{ const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString(); }catch(e){ return ''; }
+}
+async function renderManagerReview(){
+  const c = copy();
+  const locked = $('#mgr-locked'), list = $('#mgr-list');
+  if(!locked || !list) return;
+  const tok = (typeof staffToken === 'function') ? staffToken() : '';
+  if(!tok){
+    locked.textContent = c.mgrLocked; locked.hidden = false;
+    list.hidden = true; list.innerHTML = '';
+    return;
+  }
+  try{
+    const resp = await fetch(API_BASE + '/api/onboarding-attempts?limit=50', {
+      headers: {'X-Staff-Access-Token': tok}
+    });
+    if(resp.status === 401){
+      locked.textContent = c.mgrLocked; locked.hidden = false; list.hidden = true; list.innerHTML = '';
+      return;
+    }
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const attempts = await resp.json();
+    locked.hidden = true;
+    if(!attempts.length){
+      list.hidden = false; list.innerHTML = `<div class="log-empty">${esc(c.mgrEmpty)}</div>`;
+      return;
+    }
+    list.hidden = false;
+    list.innerHTML = attempts.map(a => {
+      const passed = a.status === 'passed';
+      const statusLabel = passed ? c.onboardingPassed
+        : (a.status === 'failed_critical' ? c.onboardingCriticalFailed : c.onboardingFailed);
+      const critN = (a.critical_misses || []).length;
+      const when = onbFmtTime(a.created_at);
+      return `<div class="mgr-row">
+        <div class="mgr-row-top">
+          <span class="mgr-name">${esc(a.staff || '—')}</span>
+          <span class="mgr-badge ${passed ? 'pass' : 'fail'}">${esc(passed ? c.onboardingPassed : c.onboardingFailed)}</span>
+        </div>
+        <div class="mgr-meta">
+          ${a.site ? `<span>${esc(a.site)}</span>` : ''}
+          <span class="mgr-score">${esc(a.score)}/${esc(a.total)}</span>
+          <span>${esc(statusLabel)}</span>
+          ${critN ? `<span class="mgr-crit">${esc(c.onboardingCriticalMisses)}: ${critN}</span>` : ''}
+          ${when ? `<span>${esc(when)}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    locked.textContent = c.mgrLoadError; locked.hidden = false; list.hidden = true; list.innerHTML = '';
+  }
+}
+(function wireManagerReview(){
+  const refresh = $('#mgr-refresh');
+  if(refresh) refresh.onclick = renderManagerReview;
+})();
+
 /* ---------- staff access (passcode unlock) ----------
    Token is kept in sessionStorage only (cleared when the tab closes); it is not
    persisted across sessions, and the raw PIN is never stored. */
@@ -2612,6 +2704,7 @@ function staffToken(){ try{ return sessionStorage.getItem(STAFF_TOKEN_KEY) || ''
 function setStaffToken(tok){
   try{ if(tok) sessionStorage.setItem(STAFF_TOKEN_KEY, tok); else sessionStorage.removeItem(STAFF_TOKEN_KEY); }catch(e){}
   updateStaffUI();
+  renderManagerReview();   // reveal/hide the gated manager panel on unlock/lock
 }
 function updateStaffUI(){
   const unlocked = !!staffToken();
