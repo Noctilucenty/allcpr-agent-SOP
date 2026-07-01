@@ -677,6 +677,89 @@
   @media (max-width:760px){
     .dual{grid-template-columns:1fr}
   }
+
+  /* ================= first-time redesign: calm, single-column, activity drawer ================= */
+  .activity-btn{margin-left:8px;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);
+    background:#fff;border-radius:10px;padding:7px 12px;font:inherit;font-size:13px;font-weight:750;
+    color:var(--ink-soft);cursor:pointer;flex:0 0 auto;transition:border-color .12s}
+  .activity-btn:hover{border-color:var(--muted-2)}
+  .activity-btn .act-lock{display:inline-flex;color:var(--muted-2)}
+  .activity-btn .act-lock svg{width:15px;height:15px}
+  .activity-btn .act-lock.unlocked{color:var(--green)}
+  /* single-column main; the support panel becomes an off-canvas drawer */
+  .layout{display:block}
+  .col-main{max-width:720px;margin:0 auto}
+  .hero{max-width:720px;margin-left:auto;margin-right:auto}
+  #out{max-width:720px;margin-left:auto;margin-right:auto}
+  .intake-hint{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5}
+  /* Site Tools row */
+  .site-tools{border-top:1px solid var(--line-2);margin-top:16px;padding-top:15px}
+  .site-tools .tools-label{margin-bottom:11px}
+  .tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tools-grid .inspect-cta{margin-top:0;border-color:var(--line);background:var(--card)}
+  .tools-grid .inspect-cta:hover{border-color:var(--muted-2);box-shadow:var(--shadow)}
+  .tools-grid .inspect-cta .ic-ico{background:var(--navy)}
+  .tools-grid .onb-cta .ic-ico{background:#2457b8}
+  .tools-grid .inspect-cta .ic-arrow{color:var(--muted-2)}
+  /* drawer */
+  .drawer-backdrop{position:fixed;inset:0;background:rgba(20,18,18,.42);z-index:55}
+  .drawer-backdrop[hidden]{display:none}
+  .drawer{position:fixed;top:0;right:0;height:100vh;width:344px;max-width:88vw;background:#fff;
+    border-left:1px solid var(--line);box-shadow:-10px 0 34px rgba(16,24,40,.16);z-index:60;overflow-y:auto;padding:0}
+  .drawer[hidden]{display:none}
+  .drawer .side-panel{border:0;box-shadow:none;border-radius:0;padding:6px 16px 26px}
+  .drawer-head{position:sticky;top:0;background:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:14px 16px;border-bottom:1px solid var(--line);z-index:1}
+  .drawer-title{font-size:15px;font-weight:800}
+  .drawer-x{border:none;background:none;font-size:24px;line-height:1;cursor:pointer;color:var(--muted-2)}
+  /* ---- redesigned answer card: primary action first, everything else in tabs ---- */
+  .ans-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+  .ac-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .ac-scenario{font-size:13px;font-weight:800;color:var(--ink)}
+  .ac-sev{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;border-radius:999px;
+    padding:2px 9px;border:1px solid var(--line);background:var(--bg);color:var(--muted)}
+  .ac-sev.sev-high,.ac-sev.sev-critical{background:var(--red);border-color:transparent;color:#fff}
+  .ac-review{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;border-radius:999px;
+    padding:2px 9px;background:var(--amber-soft);border:1px solid var(--amber-line);color:var(--amber)}
+  .ac-review svg{width:12px;height:12px}
+  .ac-safety{display:flex;gap:9px;align-items:flex-start;background:var(--red-soft);border:1px solid var(--red-line);
+    border-radius:11px;padding:11px 12px;margin-bottom:12px;color:#8a1417}
+  .ac-safety svg{width:17px;height:17px;flex:0 0 auto;margin-top:1px}
+  .ac-safety strong{font-size:12.5px;font-weight:800;display:block}
+  .ac-safety ul{margin:5px 0 0;padding-left:17px;font-size:12.5px}
+  .ac-lead{font-size:14px;color:var(--ink-soft);line-height:1.55;margin:0 0 12px}
+  .ac-now{margin-bottom:12px}
+  .ac-now-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--ink);margin:0 0 10px}
+  .ac-now-title svg{width:15px;height:15px;color:var(--red)}
+  .ac-now ol{counter-reset:step;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+  .ac-now ol li{position:relative;padding-left:31px;font-size:14px;color:var(--ink-soft);line-height:1.5}
+  .ac-now ol li:before{counter-increment:step;content:counter(step);position:absolute;left:0;top:1px;width:22px;height:22px;
+    border-radius:7px;background:var(--ink);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .ac-primesc{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;color:var(--ink-soft);background:var(--bg);
+    border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin:0 0 12px}
+  .ac-primesc svg{width:14px;height:14px;flex:0 0 auto;margin-top:2px;color:var(--muted)}
+  .ac-tabs{display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line-2);padding-top:12px}
+  .ac-tab{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;font:inherit;font-size:12.5px;
+    font-weight:750;color:var(--ink-soft);cursor:pointer;transition:border-color .12s,background .12s,color .12s}
+  .ac-tab:hover{border-color:var(--muted-2)}
+  .ac-tab.open{border-color:var(--ink);background:var(--ink);color:#fff}
+  .ac-panels{margin-top:10px}
+  .ac-panel{border:1px solid var(--line);border-radius:11px;padding:12px 13px;background:var(--bg)}
+  .ac-panel[hidden]{display:none}
+  .ac-panel .ac-sub{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted-2);margin:11px 0 4px}
+  .ac-panel>ul,.ac-panel>ol{margin:0;padding-left:18px;font-size:13px;color:var(--ink-soft);line-height:1.55}
+  .ac-panel .dont-list{list-style:none;padding-left:0;margin:0}
+  .ac-panel .dont-list li{color:#8a1417;font-size:13px;padding-left:16px;position:relative;line-height:1.5}
+  .ac-panel .dont-list li:before{content:"×";position:absolute;left:0;color:var(--red);font-weight:800}
+  .ac-raw{margin-top:10px}
+  .ac-raw summary{cursor:pointer;font-size:12px;font-weight:750;color:var(--muted)}
+  .ac-raw pre{white-space:pre-wrap;font-size:11.5px;color:var(--ink-soft);background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px;margin:7px 0 0}
+  @media (max-width:620px){
+    .tools-grid{grid-template-columns:1fr}
+    .drawer{width:100vw;max-width:100vw}
+    .activity-btn .act-label{display:none}
+    .activity-btn{padding:7px 10px}
+  }
 </style>
 </head>
 <body>
@@ -692,14 +775,17 @@
       <button type="button" class="active" data-lang="en">English</button>
       <button type="button" data-lang="zh">中文</button>
     </div>
+    <button type="button" class="activity-btn" id="activity-btn" aria-label="Activity">
+      <span class="act-lock" id="act-lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span>
+      <span class="act-label" data-i18n="activityTitle">Activity</span>
+    </button>
   </div>
 </header>
 
 <main>
   <div class="hero">
-    <span class="eyebrow"><span class="dot"></span><span data-i18n="eyebrow">On-site incident support</span></span>
     <h1 data-i18n="title">Site Operations Assistant</h1>
-    <p data-i18n="intro">Get first action, evidence checklist, escalation guidance, and SOP references for on-site class issues.</p>
+    <p data-i18n="intro">Get the next action for site problems, inspections, and staff readiness.</p>
   </div>
 
   <div class="layout">
@@ -709,6 +795,7 @@
           <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
           <h2 data-i18n="describe">Describe the situation</h2>
         </div>
+        <p class="intake-hint" data-i18n="firstTimeHint">Type what happened, or choose a common incident. The assistant will give the next action, evidence checklist, and escalation path.</p>
         <textarea id="q" data-i18n-placeholder="placeholder" placeholder="Example: The Smart Manikin tablet is black-screening during a Santa Clara class. What should staff do first?"></textarea>
         <div class="composer-foot">
           <span class="status" id="status"><span class="spin" aria-hidden="true"></span><span id="status-text"></span></span>
@@ -723,6 +810,9 @@
           <div class="qa-grid" id="chips" aria-label="Incident shortcuts"></div>
         </div>
 
+        <div class="site-tools">
+          <p class="qa-label tools-label" data-i18n="siteToolsLabel">Site Tools</p>
+          <div class="tools-grid">
         <button type="button" class="inspect-cta" id="start-inspection">
           <span class="ic-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg></span>
           <span class="ic-tx">
@@ -740,6 +830,8 @@
           </span>
           <span class="ic-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </button>
+          </div>
+        </div>
 
         <details class="advanced">
           <summary>
@@ -774,7 +866,12 @@
       </section>
     </div>
 
-    <aside class="col-side">
+    <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+    <aside class="col-side drawer" id="activity-drawer" hidden aria-hidden="true">
+      <div class="drawer-head">
+        <span class="drawer-title" data-i18n="activityTitle">Activity</span>
+        <button type="button" class="drawer-x" id="drawer-close" aria-label="Close">&times;</button>
+      </div>
       <div class="panel side-panel">
         <div class="staff-access" id="staff-access">
           <div class="sa-row">
@@ -964,7 +1061,7 @@ const COPY = {
     tagline:'Internal SOP Assistant',
     eyebrow:'On-site incident support',
     title:'Site Operations Assistant',
-    intro:'Get first action, evidence checklist, escalation guidance, and SOP references for on-site class issues.',
+    intro:'Get the next action for site problems, inspections, and staff readiness.',
     describe:'Describe the situation',
     placeholder:'Example: The Smart Manikin tablet is black-screening during a Santa Clara class. What should staff do first?',
     ask:'Get SOP Guidance',
@@ -1010,17 +1107,21 @@ const COPY = {
 	    yes:'yes',
 	    no:'no',
 	    footer:'Internal decision-support assistant. Safety comes first. Official policy, refunds, reschedules, certificates, and customer notices require human approval.',
-    examples:['Power outage','Internet down','Door locked','Smart Manikin issue','Instructor no-show','Incident report'],
-    exampleSubs:['Class can’t run','No connectivity','Can’t access room','Tablet / pad fault','Class can’t start','Draft a report'],
-    exampleIcons:['power','wifi','lock','tablet','user','report'],
+    examples:['Door locked','Power outage','Internet down','Smart Manikin issue','Student/check-in issue','Incident report'],
+    exampleSubs:['Can’t access room','Class can’t run','No connectivity','Tablet / pad fault','Class / check-in','Draft a report'],
+    exampleIcons:['lock','power','wifi','tablet','user','report'],
     exampleQuestions:[
+      'The door is locked and I cannot access the room.',
       'What should I do if the power goes out?',
       'The classroom internet is down. What should I do?',
-      'The door is locked and I cannot access the room.',
       'The Smart Manikin screen is black. What should I do?',
-      'The instructor did not show up and class cannot start.',
+      'A student cannot check in or is in the wrong class. What should staff do?',
       'Generate an incident report template.'
     ],
+    firstTimeHint:'Type what happened, or choose a common incident. The assistant will give the next action, evidence checklist, and escalation path.',
+    siteToolsLabel:'Site Tools',
+    activityTitle:'Activity', activityClose:'Close',
+    tabEvidence:'Evidence', tabEscalate:'Escalate', tabDoNot:'Do not', tabFullSop:'Full SOP', tabSources:'Source refs',
     resultLabel:'SOP guidance',
     safety:'Safety check',
     steps:'Steps',
@@ -1197,7 +1298,7 @@ const COPY = {
     tagline:'内部 SOP 助手',
     eyebrow:'现场事件支持',
     title:'现场运营助手',
-    intro:'针对现场上课问题，给出第一步处理、取证清单、升级路径以及 SOP 来源参考。',
+    intro:'针对现场问题、巡检和员工准备，给出下一步操作。',
     describe:'描述现场情况',
     placeholder:'示例：Santa Clara 上课时 Smart Manikin 平板黑屏，现场应先怎么处理？',
     ask:'获取 SOP 指引',
@@ -1243,10 +1344,14 @@ const COPY = {
 	    yes:'是',
 	    no:'否',
 	    footer:'内部决策支持助手。安全优先。正式政策、退款、改期、证书及客户通知均需人工批准。',
-    examples:['停电','断网','门锁问题','Smart Manikin 故障','老师未到','事故报告'],
-    exampleSubs:['无法上课','现场没有网络','进不去教室','平板 / 设备故障','无法开课','起草报告'],
-    exampleIcons:['power','wifi','lock','tablet','user','report'],
-    exampleQuestions:['停电了怎么办？','教室没网怎么办？','门打不开怎么办？','Smart Manikin 黑屏怎么办？','老师没到怎么办？','生成现场事故报告模板'],
+    examples:['门锁问题','停电','断网','Smart Manikin 故障','学生/签到问题','事故报告'],
+    exampleSubs:['进不去教室','无法上课','现场没有网络','平板 / 设备故障','班级 / 签到','起草报告'],
+    exampleIcons:['lock','power','wifi','tablet','user','report'],
+    exampleQuestions:['门打不开怎么办？','停电了怎么办？','教室没网怎么办？','Smart Manikin 黑屏怎么办？','学生无法签到或走错班级怎么办？','生成现场事故报告模板'],
+    firstTimeHint:'输入现场情况，或选择常见问题。系统会给出下一步、证据清单和上报方式。',
+    siteToolsLabel:'现场工具',
+    activityTitle:'管理记录', activityClose:'关闭',
+    tabEvidence:'证据', tabEscalate:'上报', tabDoNot:'禁止事项', tabFullSop:'完整 SOP', tabSources:'来源参考',
     resultLabel:'SOP 指引',
     safety:'安全检查',
     steps:'处理步骤',
@@ -1905,95 +2010,83 @@ function treeHTML(data, c){
   return section(c.treeTitle, 'steps', menu + `<div class="tree-panels">${panels}</div>`);
 }
 
+/* Redesigned answer: one primary action card first (scenario, severity, review,
+   safety warning, top 3 steps, primary escalation), then everything else behind
+   collapsed tabs (Evidence / Escalate / Do not / Full SOP / Source refs). The
+   decision tree + operational references live inside the Escalate tab, so that
+   source-backed routing is preserved but hidden until asked for. */
 function render(data){
   const c = COPY[data.language] || copy();
   const sev = (data.severity || 'info').toLowerCase();
   const review = !!data.needs_human_review;
+  const isDanger = sev === 'high' || sev === 'critical';
   const hasSteps = Array.isArray(data.steps) && data.steps.length > 0;
 
-  /* --- compact incident header: review state shown ONCE, here --- */
-  const badges = [
-    `<span class="badge severity ${sev}">${esc(data.severity || 'info')}</span>`,
-    (data.issue_type || data.scenario)
-      ? `<span class="badge">${esc(shortLabel(data.issue_type || data.scenario))}</span>` : '',
-    data.confidence
-      ? `<span class="badge"><span class="k">${esc(c.confidence)}</span> ${esc(data.confidence)}</span>` : '',
-    `<span class="badge ${review ? 'review-on' : 'review-off'}">${svg(review ? 'alert' : 'shield')}${esc(c.needsReview)}: ${review ? esc(c.required) : esc(c.notRequired)}</span>`
+  const scenarioLabel = shortLabel(data.issue_type || data.scenario || '');
+  const head = [
+    scenarioLabel ? `<span class="ac-scenario">${esc(scenarioLabel)}</span>` : '',
+    `<span class="ac-sev ${isDanger ? 'sev-' + sev : ''}">${esc(data.severity || 'info')}</span>`,
+    review ? `<span class="ac-review">${svg('alert')}${esc(c.needsReview)}</span>` : ''
   ].filter(Boolean).join('');
 
-  /* --- What to do now: 3–5 concise steps --- */
+  /* Safety warning shown by default only when it is a real danger. */
+  const safety = (data.immediate_safety_check || []).slice(0, 3);
+  const safetyBanner = (isDanger || safety.length)
+    ? `<div class="ac-safety">${svg('alert')}<div><strong>${esc(c.safety)}</strong>${safety.length ? `<ul>${safety.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : ''}</div></div>`
+    : '';
+
+  /* Top 3 steps only. */
   let now = hasSteps ? data.steps
     : (Array.isArray(data.next_actions) && data.next_actions.length ? data.next_actions
     : (data.immediate_safety_check || []));
-  now = now.slice(0, 5);
+  now = now.slice(0, 3);
   const nowHTML = now.length
-    ? `<div class="action-now">
-        <span class="now-label">${svg('bolt')}${esc(c.whatToDoNow)}</span>
-        <ol>${now.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
-      </div>` : '';
+    ? `<div class="ac-now"><p class="ac-now-title">${svg('bolt')}${esc(c.whatToDoNow)}</p><ol>${now.map(s => `<li>${esc(s)}</li>`).join('')}</ol></div>`
+    : (data.answer_summary ? `<p class="ac-lead">${esc(data.answer_summary)}</p>` : '');
 
-  /* --- Required evidence (drop the generic safe-photo note; max 4) --- */
-  const evid = dropMatch(data.evidence_requested, SAFE_PHOTO_RE).slice(0, 4);
-  const evSec = evid.length ? section(c.requiredEvidence, 'clip', checklist(evid, 4)) : '';
-  /* --- Escalate to --- */
-  const escal = escalateChips(data.contacts);
-  const esSec = escal ? section(c.escalateTo, 'flag', escal) : '';
-  const primaryPair = (evSec && esSec) ? `<div class="dual">${evSec}${esSec}</div>` : (evSec + esSec);
-
-  /* --- Decision tree: "What do you need next?" (source-backed paths) --- */
-  const treeSec = treeHTML(data, c);
-
-  /* --- Do not: short warnings only (the tree carries the next steps) --- */
-  const dontItems = (data.do_not_decide_without_approval || []).slice(0, 3)
-    .map(x => String(x).replace(/^[-•]\s*/, ''));
-  const dontSec = dontItems.length
-    ? section(c.doNot, 'alert', `<ul class="dont-list">${dontItems.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`, 'dont')
+  /* Primary escalation stays visible only when human review is needed. */
+  const contacts = data.contacts || [];
+  const primEsc = (review && contacts.length)
+    ? `<p class="ac-primesc">${svg('flag')}<span><strong>${esc(c.escalateTo)}:</strong> ${esc(shortLabel(String(contacts[0]).replace(/[（(].*$/, '').trim()))}</span></p>`
     : '';
 
-  /* --- SOP image reference: prominent when present, slim empty otherwise --- */
+  /* Collapsed tabs. */
+  const evid = dropMatch(data.evidence_requested, SAFE_PHOTO_RE);
+  const escal = escalateChips(contacts);
+  const tree = treeHTML(data, c);
+  const dont = (data.do_not_decide_without_approval || []).map(x => String(x).replace(/^[-•]\s*/, ''));
   const imgs = data.sop_images || [];
-  const hasImgs = imgs.length > 0;
-  const isIncident = hasSteps || evid.length || !!escal;
-  const mediaHigh = hasImgs
-    ? `<div id="sop-images">${section(c.sopImageRef, 'image', mediaGridHTML(imgs, c))}</div>` : '';
-  const mediaLow = (!hasImgs && isIncident) ? mediaEmptySlim(c) : '';
 
-  /* --- collapsed secondary detail --- */
-  const accSteps = accordion(c.accSteps,
-    accSub(c.steps, list(data.steps, true, 99))
-    + accSub(c.safety, list(data.immediate_safety_check, false, 99))
-    + accSub(c.nextActions, list(data.next_actions, false, 99)));
-  const accInfo = accordion(c.accInfo,
-    accSub(c.information, list(data.information_to_collect, false, 99))
-    + accSub(c.requiredEvidence, checklist(data.evidence_requested, 99)));
-  const accSources = accordion(c.accSources,
-    `<p class="src-list">${esc((data.sources||[]).length ? data.sources.join(', ') : '—')}</p>
-     <div class="src-tags">${sourceTagsHTML(data.source_status || [], data.language) || ''}</div>
-     <p class="media-note">${svg('alert')}<span>${esc(c.provenanceShort)}</span></p>`);
-  const accFull = `<details class="full">
-      <summary>${svg('report')}<span>${esc(c.accFull)}</span>${chev()}</summary>
-      <pre class="raw">${esc(data.answer || '')}</pre>
-    </details>`;
+  const tabs = [];
+  const panels = [];
+  const addTab = (key, label, inner) => {
+    if(!inner) return;
+    tabs.push(`<button type="button" class="ac-tab" data-actab="${key}">${esc(label)}</button>`);
+    panels.push(`<div class="ac-panel" data-acpanel="${key}" hidden>${inner}</div>`);
+  };
 
-  const html = `
-    <div class="result-head">
-      <p class="res-eyebrow">${svg('pulse')}${esc(c.resultLabel)}</p>
-      <div class="badges">${badges}</div>
-      ${(!hasSteps && data.answer_summary) ? `<p class="lead">${esc(data.answer_summary)}</p>` : ''}
-    </div>
+  addTab('evidence', c.tabEvidence, checklist(evid, 8));
+  addTab('escalate', c.tabEscalate, (escal || '') + (tree || ''));
+  addTab('donot', c.tabDoNot, dont.length ? `<ul class="dont-list">${dont.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : '');
+  const fullInner =
+    (list(data.steps, true, 99) || '')
+    + (data.information_to_collect && data.information_to_collect.length ? `<p class="ac-sub">${esc(c.information)}</p>${list(data.information_to_collect, false, 99)}` : '')
+    + (imgs.length ? `<div id="sop-images">${mediaGridHTML(imgs, c)}</div>` : '')
+    + `<details class="ac-raw"><summary>${esc(c.accFull)}</summary><pre>${esc(data.answer || '')}</pre></details>`;
+  addTab('sop', c.tabFullSop, fullInner);
+  const srcInner = `<p class="src-list">${esc((data.sources || []).length ? data.sources.join(', ') : '—')}</p>`
+    + `<div class="src-tags">${sourceTagsHTML(data.source_status || [], data.language) || ''}</div>`
+    + `<p class="media-note">${svg('alert')}<span>${esc(c.provenanceShort)}</span></p>`;
+  addTab('sources', c.tabSources, srcInner);
 
-    ${nowHTML}
-    ${treeSec}
-    ${primaryPair}
-    ${mediaHigh}
-    ${dontSec}
-    ${mediaLow}
+  const tabsHTML = tabs.length
+    ? `<div class="ac-tabs" role="tablist">${tabs.join('')}</div><div class="ac-panels">${panels.join('')}</div>`
+    : '';
 
-    <div class="accordions">
-      ${accSteps}${accInfo}${accSources}${accFull}
-    </div>`;
-
-  $('#out').innerHTML = html;
+  $('#out').innerHTML = `<div class="ans-card">
+    <div class="ac-head">${head}</div>
+    ${safetyBanner}${nowHTML}${primEsc}${tabsHTML}
+  </div>`;
   $('#out').style.display = 'block';
   $('#out').scrollIntoView({behavior:'smooth', block:'start'});
 }
@@ -2010,6 +2103,22 @@ $('#out').addEventListener('click', event => {
       else { box.removeAttribute('readonly'); box.select(); document.execCommand('copy'); box.setAttribute('readonly', ''); }
       const lbl = copyBtn.querySelector('span');
       if(lbl){ lbl.textContent = (copy().copied || 'Copied'); }
+    }
+    return;
+  }
+  const acTab = event.target.closest('.ac-tab[data-actab]');
+  if(acTab){
+    const card = acTab.closest('.ans-card');
+    if(card){
+      const key = acTab.dataset.actab;
+      const wasOpen = acTab.classList.contains('open');
+      card.querySelectorAll('.ac-tab.open').forEach(t => t.classList.remove('open'));
+      card.querySelectorAll('.ac-panel').forEach(p => { p.hidden = true; });
+      if(!wasOpen){
+        acTab.classList.add('open');
+        const panel = card.querySelector(`.ac-panel[data-acpanel="${key}"]`);
+        if(panel) panel.hidden = false;
+      }
     }
     return;
   }
@@ -2715,6 +2824,8 @@ function updateStaffUI(){
   if($('#sa-toggle')) $('#sa-toggle').hidden = unlocked || editing;
   if($('#sa-lock')) $('#sa-lock').hidden = !unlocked;
   if(form) form.hidden = !editing;
+  // reflect staff state on the header Activity button's small lock badge
+  if($('#act-lock')) $('#act-lock').classList.toggle('unlocked', unlocked);
 }
 async function unlockStaff(){
   const c = copy();
@@ -2744,9 +2855,31 @@ async function unlockStaff(){
   updateStaffUI();
 })();
 
+/* ---------- activity drawer: staff access + live log + manager review ----------
+   Closed by default so the first-time view stays focused on the three modes.
+   Opening it (re)loads the live log and the staff-gated manager review. */
+function openDrawer(){
+  const d = $('#activity-drawer'), b = $('#drawer-backdrop');
+  if(d){ d.hidden = false; d.setAttribute('aria-hidden', 'false'); }
+  if(b) b.hidden = false;
+  loadLogs();
+  renderManagerReview();
+}
+function closeDrawer(){
+  const d = $('#activity-drawer'), b = $('#drawer-backdrop');
+  if(d){ d.hidden = true; d.setAttribute('aria-hidden', 'true'); }
+  if(b) b.hidden = true;
+}
+(function wireDrawer(){
+  const btn = $('#activity-btn'), closeBtn = $('#drawer-close'), back = $('#drawer-backdrop');
+  if(btn) btn.onclick = openDrawer;
+  if(closeBtn) closeBtn.onclick = closeDrawer;
+  if(back) back.onclick = closeDrawer;
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeDrawer(); });
+})();
+
 document.querySelectorAll('[data-lang]').forEach(btn => btn.addEventListener('click', () => applyLanguage(btn.dataset.lang)));
 applyLanguage(selectedLang);
-loadLogs();
 </script>
 </body>
 </html>

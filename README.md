@@ -49,16 +49,25 @@ The project is intentionally separate from `maps-scraper-intel`: opening
 
 ## Assistant UI
 
-The `/` and `/agent` pages are intentionally simple:
+The `/` and `/agent` pages use a simplified, first-time-staff layout so the
+default screen answers "what am I doing right now?":
 
-1. Type a site-operations question.
+1. Type a site-operations question, or pick one of the six **Common Incidents**
+   (door locked, power outage, internet down, Smart Manikin issue,
+   student/check-in issue, incident report).
 2. Pick English or Chinese.
-3. Optionally expand **Advanced details** for site, class time, or attachment
+3. Use the **Site Tools** row to *Start Inspection* or take the *Onboarding
+   Test*.
+4. Read one concise answer card: scenario, severity, and the top 3 next steps
+   first. Evidence, escalation, "do not", full SOP, and source references are
+   collapsed behind tabs and expand on click (one at a time).
+5. Optionally expand **Advanced details** for site, class time, or attachment
    description metadata.
-4. Read a compact answer first: summary, first action, steps, evidence,
-   escalation/human review, SOP image evidence, and sources.
-5. Expand **Show full structured details** only when the complete answer payload
-   is needed.
+
+Staff-only tooling — staff access unlock, the live site log, and the
+staff-gated **Manager Review** panel — lives in the **Activity** drawer
+(closed by default; opens from the header, lazy-loads on open). Manager Review
+stays locked until staff access is unlocked.
 
 The UI does not claim to analyze uploaded or SOP images. SOP image labels come
 from source filenames, folders, and document names only.

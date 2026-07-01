@@ -649,6 +649,68 @@ def test_ui_has_staff_gated_manager_review_panel():
     assert "/api/onboarding-attempts" in body
 
 
+def test_ui_redesign_hero_and_first_time_hint():
+    body = TestClient(web_app.app).get("/agent").text
+    assert "Site Operations Assistant" in body
+    assert "Get the next action for site problems, inspections, and staff readiness." in body
+    # first-time hint, en + zh
+    assert "Type what happened, or choose a common incident" in body
+    assert "输入现场情况，或选择常见问题" in body
+
+
+def test_ui_shows_six_common_incident_tiles():
+    body = TestClient(web_app.app).get("/agent").text
+    for tile in ("Door locked", "Power outage", "Internet down", "Smart Manikin issue",
+                 "Student/check-in issue", "Incident report"):
+        assert tile in body
+    for tile in ("门锁问题", "停电", "断网", "学生/签到问题", "事故报告"):
+        assert tile in body
+
+
+def test_ui_site_tools_row_holds_inspection_and_onboarding():
+    body = TestClient(web_app.app).get("/agent").text
+    assert 'class="site-tools"' in body
+    assert 'class="tools-grid"' in body
+    assert "Site Tools" in body and "现场工具" in body
+    assert 'id="start-inspection"' in body
+    assert 'id="start-onboarding"' in body
+
+
+def test_ui_activity_drawer_closed_by_default():
+    body = TestClient(web_app.app).get("/agent").text
+    # entry point + drawer, closed by default
+    assert 'id="activity-btn"' in body
+    assert 'id="activity-drawer" hidden' in body
+    assert 'id="drawer-backdrop" hidden' in body
+    assert "Activity" in body and "管理记录" in body
+    # staff access, live log and manager review live inside the hidden drawer
+    assert 'id="staff-access"' in body
+    assert 'id="mgr-list" class="log-list" hidden' in body
+    assert 'id="log-list"' in body
+
+
+def test_ui_answer_card_is_collapsed_tabs_by_default():
+    body = TestClient(web_app.app).get("/agent").text
+    # redesigned primary card + the five tabs, with panels hidden in the template
+    assert 'class="ans-card"' in body
+    assert 'class="ac-tab"' in body
+    assert 'data-acpanel="${key}" hidden' in body  # panels start collapsed
+    for key in ("addTab('evidence'", "addTab('escalate'", "addTab('donot'",
+                "addTab('sop'", "addTab('sources'"):
+        assert key in body
+    # tab labels defined in both languages
+    assert body.count("tabEvidence:") >= 2
+    assert body.count("tabFullSop:") >= 2
+    assert body.count("tabSources:") >= 2
+
+
+def test_ui_initial_html_has_no_passcodes_or_answer_key():
+    body = TestClient(web_app.app).get("/agent").text
+    for secret in ("2745", "224466", "6285", "DoBeUSA", "DoBesince2016"):
+        assert secret not in body
+    assert "correct_answer" not in body
+
+
 def test_static_sop_media_route_available_even_before_index():
     client = TestClient(web_app.app)
     resp = client.get("/static/sop_media/not-found.png")
