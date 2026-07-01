@@ -3,7 +3,8 @@
 # and point it at this repo. Render reads this file automatically.
 #
 # The app is a single FastAPI service (web_app:app) served by uvicorn. It is
-# fully local/deterministic: no external API keys, no database, no secrets.
+# fully local/deterministic: no external API keys and no database. The only
+# secret is the staff-access unlock PIN (ALLCPR_STAFF_ACCESS_PIN) below.
 # SOP images are extracted on first request from the committed SOP/ folder into
 # app/web/static/sop_media (ephemeral disk is fine — they rebuild on boot).
 services:
@@ -19,3 +20,9 @@ services:
       # Match the locally tested interpreter.
       - key: PYTHON_VERSION
         value: "3.12.6"
+      # Staff-access unlock PIN for revealing redacted internal passcodes.
+      # NOTE: committed in plaintext by request (internal tool, accepted low risk
+      # for now). Planned to move to phone/SMS verification later; when that lands,
+      # rotate this value and move it to a Render dashboard secret (sync:false).
+      - key: ALLCPR_STAFF_ACCESS_PIN
+        value: "2745"
