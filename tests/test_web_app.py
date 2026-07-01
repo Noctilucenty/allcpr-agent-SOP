@@ -189,6 +189,28 @@ def test_ui_has_guided_inspection_workflow():
     assert "inspection_warning_acknowledged" in body
 
 
+def test_inspection_reference_endpoint_returns_placement_diagram():
+    client = TestClient(web_app.app)
+    resp = client.get("/api/inspection-reference")
+    assert resp.status_code == 200
+    items = resp.json()
+    # Only asserts when the media index/diagram is present in this checkout.
+    if items:
+        assert any("equipment placement diagram" in (i.get("title") or "") for i in items)
+        for i in items:
+            assert i["url"].startswith("/static/sop_media/")
+            assert "/Users/" not in i.get("source_file", "")
+
+
+def test_ui_guided_inspection_shows_reference_image():
+    client = TestClient(web_app.app)
+    body = client.get("/agent").text
+    assert 'id="insp-reference"' in body
+    assert "/api/inspection-reference" in body
+    assert "loadInspectionReference" in body
+    assert body.count("inspReference:") >= 2  # en + zh
+
+
 def test_ui_decision_tree_default_routing_keys_are_defined():
     """The sub-issue default-open map must reference real pill keys and labels,
     so a routed narrow query opens an existing panel (no undefined keys)."""

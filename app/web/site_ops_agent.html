@@ -541,6 +541,13 @@
 	  .insp-progress-label{font-size:11px;font-weight:800;color:var(--muted-2);white-space:nowrap}
 	  .insp-bar{flex:1;height:7px;background:var(--bg);border:1px solid var(--line);border-radius:99px;overflow:hidden}
 	  .insp-bar-fill{display:block;height:100%;width:0;background:var(--red);transition:width .2s ease}
+	  .insp-reference{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px;background:var(--bg)}
+	  .insp-reference[hidden]{display:none}
+	  .insp-ref-title{display:flex;align-items:center;gap:7px;font-weight:800;font-size:13.5px;margin:0 0 8px}
+	  .insp-ref-title svg{width:15px;height:15px;flex:0 0 auto;color:var(--red)}
+	  .insp-ref-img{display:block;width:100%;max-height:280px;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:#fff}
+	  .insp-ref-note{display:flex;align-items:flex-start;gap:5px;font-size:11px;color:var(--muted-2);margin:6px 0 0}
+	  .insp-ref-note svg{width:12px;height:12px;flex:0 0 auto;margin-top:1px}
 	  .insp-sec{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px}
 	  .insp-sec-title{display:flex;align-items:center;gap:7px;font-weight:800;font-size:13.5px;margin:0 0 4px}
 	  .insp-sec-title svg{width:15px;height:15px;flex:0 0 auto;color:var(--red)}
@@ -796,6 +803,7 @@
         <label><span data-i18n="inspStaff">Inspector</span><input id="insp-staff" type="text" /></label>
       </div>
       <div class="insp-progress"><span class="insp-progress-label" id="insp-progress-label"></span><span class="insp-bar"><span class="insp-bar-fill" id="insp-bar-fill"></span></span></div>
+      <div class="insp-reference" id="insp-reference" hidden></div>
       <div class="insp-sections" id="insp-sections"></div>
       <div class="insp-foot">
         <p class="insp-save-msg" id="insp-save-msg" hidden></p>
@@ -1011,6 +1019,7 @@ const COPY = {
     inspSite:'Site', inspStaff:'Inspector',
     inspBeforeTitle:'Before photos', inspBeforeWarn:'Take before photos before cleaning or moving anything.',
     inspAddPhoto:'Add photo',
+    inspReference:'Equipment placement reference',
     inspBeforeItems:['Whole room','Smart Manikin area','Supplies / consumables area','Door or signage','Abnormal / problem area, if any'],
     inspChecklistTitle:'Site checklist',
     inspChecklistItems:['Hygiene / site cleanliness','Trash and trash bag','Disinfection supplies enough for one week','Disinfect teaching equipment','Smart Manikin, iPad, AED Pads, BVM, Pocket Mask complete and normal','Equipment placed in standard position','iPad and Smart Manikin connected to power cables','Door / access / Lockbox / Access Code normal','Camera online','Wi-Fi normal','Signage complete and clear','Visible water/electric/equipment safety hazards'],
@@ -1199,6 +1208,7 @@ const COPY = {
     inspSite:'分点', inspStaff:'巡检人',
     inspBeforeTitle:'巡检前拍照', inspBeforeWarn:'开始清洁或整理前必须先拍巡检前照片。',
     inspAddPhoto:'添加照片',
+    inspReference:'器材摆放参考',
     inspBeforeItems:['整个房间','Smart Manikin 区域','耗材 / 用品区域','门或路牌','异常 / 问题区域（如有）'],
     inspChecklistTitle:'现场检查',
     inspChecklistItems:['卫生 / 现场清洁','垃圾与垃圾袋','消毒用品够用一周','对教学设备进行消毒','Smart Manikin、iPad、AED Pads、BVM、Pocket Mask 齐全且正常','设备摆放在标准位置','iPad 与 Smart Manikin 已连接电源线','门禁 / Lockbox / Access Code 正常','摄像头在线','Wi-Fi 正常','路牌完整清晰','可见的水/电/设备安全隐患'],
@@ -2055,6 +2065,24 @@ function acknowledgeInspection(){
   // prefill site/staff from the context fields if present
   if($('#insp-site') && $('#site') && $('#site').value.trim()) $('#insp-site').value = $('#site').value.trim();
   renderInspectionSections();
+  loadInspectionReference();
+}
+async function loadInspectionReference(){
+  const box = $('#insp-reference');
+  if(!box) return;
+  const c = copy();
+  try{
+    const resp = await fetch(API_BASE + '/api/inspection-reference');
+    if(!resp.ok) return;
+    const items = await resp.json();
+    if(!items || !items.length){ box.hidden = true; return; }
+    box.innerHTML = `<p class="insp-ref-title">${svg('image')}${esc(c.inspReference)}</p>` +
+      items.slice(0, 2).map(it =>
+        `<a href="${esc(it.url)}" target="_blank" rel="noopener"><img class="insp-ref-img" src="${esc(it.url)}" alt="${esc(it.title || '')}" loading="lazy" /></a>`
+      ).join('') +
+      `<p class="insp-ref-note">${svg('alert')} ${esc(c.noAnalysis)}</p>`;
+    box.hidden = false;
+  }catch(e){ box.hidden = true; }
 }
 function inspSec(title, icon, inner, cls){
   return `<div class="insp-sec ${cls||''}"><p class="insp-sec-title">${svg(icon)}${esc(title)}</p>${inner}</div>`;

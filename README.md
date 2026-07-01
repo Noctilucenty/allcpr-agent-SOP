@@ -44,6 +44,7 @@ The project is intentionally separate from `maps-scraper-intel`: opening
 | Staff passcode unlock | `POST /api/staff-access/unlock` |
 | Incident logs | `GET/POST /api/incident-logs`, `GET/PATCH /api/incident-logs/{id}` |
 | Inspection logs | `GET/POST /api/inspection-logs`, `GET/PATCH /api/inspection-logs/{id}` |
+| Inspection reference image | `GET /api/inspection-reference` |
 | Health check | `/health` |
 
 ## Assistant UI

@@ -138,6 +138,18 @@ def api_list_inspection_logs(limit: int = Query(default=50, ge=1, le=200)) -> li
     return list_inspection_logs(limit)
 
 
+@app.get("/api/inspection-reference")
+def api_inspection_reference() -> list[dict]:
+    """Source-backed SOP media for the guided inspection flow (equipment placement
+    diagram). Metadata only — no image analysis."""
+    from app.agents.autocpr_site_manager.sop_media_index import find_relevant_sop_media
+
+    items = find_relevant_sop_media(
+        "器材摆放 equipment placement supplies", "smart_manikin_site_inspection", top_k=3
+    )
+    return [i.model_dump() if hasattr(i, "model_dump") else i.dict() for i in items]
+
+
 @app.get("/api/inspection-logs/{log_id}")
 def api_get_inspection_log(log_id: str) -> dict:
     entry = get_inspection_log(log_id)
