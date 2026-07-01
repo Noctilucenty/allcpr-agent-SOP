@@ -26,6 +26,7 @@ from app.agents.autocpr_site_manager.incident_logs import (
     patch_ai_metadata,
     patch_log,
 )
+from app.agents.autocpr_site_manager.sop_answer_engine import sop_assist_recommended
 from app.agents.autocpr_site_manager.inspection_logs import (
     append_inspection_entry,
     get_inspection_log,
@@ -120,6 +121,9 @@ def api_agent_site_manager_ask(req: AgentAskRequest) -> AgentAnswer:
         req.question, req.context, staff_access_token=req.staff_access_token
     )
     answer.ai_pending = ai_enabled()
+    # Even with AI off, a weak deterministic answer (messy wording the classifier
+    # could not route) should trigger the deterministic SOP knowledge-base match.
+    answer.sop_assist_pending = (not ai_enabled()) and sop_assist_recommended(answer)
     entry = append_answer_log(req.question, req.context, answer)
     answer.incident_log_id = str(entry.get("id", ""))
     return answer

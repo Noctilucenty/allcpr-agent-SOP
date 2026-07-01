@@ -332,48 +332,74 @@ AI_FIELDS = (
 )
 
 
+def _empty_ai_fields() -> Dict[str, Any]:
+    return {k: ([] if k == "ai_top_steps" else ("" if k != "ai_used" else False)) for k in AI_FIELDS}
+
+
+def _audience(context: Optional[Dict[str, Any]]) -> str:
+    ctx = context or {}
+    aud = str(ctx.get("audience") or ctx.get("role") or "").strip().lower()
+    return aud if aud in {"staff", "student", "both"} else "both"
+
+
 def ai_summary_payload(
     question: str,
     context: Optional[Dict[str, Any]] = None,
     *,
     staff_access_token: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Just the AI fields, for the async "pop in on top" summary request.
+    """Enrichment for a question already answered by ``/ask`` — the async
+    "pop in on top" request.
 
-    Routes on the RAW question — the same deterministic answer the fast ``/ask``
-    path returned — so the summary banner always matches the displayed card.
-    Returns ``ai_used: False`` when AI is off or the model call fails; the client
-    then simply keeps the deterministic instructions it already rendered.
+    Always includes ``sop_match``: a deterministic, source-backed knowledge-base
+    match (works with no API, so a messy question still gets SOP-backed steps).
+    When the optional AI layer is on it ADDS the summarized ``ai_*`` fields and
+    uses the AI's validated intent hints to sharpen the match. Routes on the RAW
+    question — the same deterministic answer the fast ``/ask`` path returned — so
+    the enrichment always matches the displayed card. ``ai_used`` stays ``False``
+    when AI is off or the model call fails.
     """
-    empty = {k: ([] if k == "ai_top_steps" else ("" if k != "ai_used" else False)) for k in AI_FIELDS}
-    if not ai_enabled():
-        return empty
-
     from .agent import answer_question
+    from .sop_answer_engine import compose_sop_match
 
     answer = answer_question(question, context, staff_access_token=staff_access_token)
-    intent = refine_intent(question, context)
-    summary = summarize_answer(answer)
-    if intent is None and summary is None:
-        return empty
+    audience = _audience(context)
 
-    intent = intent or {}
-    summary = summary or {}
-    out = {
-        "ai_used": True,
-        "ai_stage": _stage(bool(intent), bool(summary)),
-        "ai_confidence": intent.get("confidence", ""),
-        "ai_scenario_hint": intent.get("scenario_hint", ""),
-        "ai_subtype_hint": intent.get("subtype_hint", ""),
-        "ai_short_title": summary.get("short_title", ""),
-        "ai_summary": summary.get("plain_summary", ""),
-        "ai_top_steps": summary.get("top_3_steps", []),
-        "ai_clarifying_question": summary.get("clarifying_question", "")
-        or intent.get("suggested_clarifying_question", ""),
-    }
-    # Defense-in-depth: scrub every AI-authored field against real secrets.
-    out["ai_short_title"] = redact_text(out["ai_short_title"])
-    out["ai_summary"] = redact_text(out["ai_summary"])
-    out["ai_top_steps"] = [redact_text(s) for s in out["ai_top_steps"]]
-    out["ai_clarifying_question"] = redact_text(out["ai_clarifying_question"])
+    out: Dict[str, Any] = _empty_ai_fields()
+
+    intent: Dict[str, Any] = {}
+    if ai_enabled():
+        refined = refine_intent(question, context)
+        summary = summarize_answer(answer)
+        if refined is not None or summary is not None:
+            intent = refined or {}
+            summary = summary or {}
+            out.update({
+                "ai_used": True,
+                "ai_stage": _stage(bool(intent), bool(summary)),
+                "ai_confidence": intent.get("confidence", ""),
+                "ai_scenario_hint": intent.get("scenario_hint", ""),
+                "ai_subtype_hint": intent.get("subtype_hint", ""),
+                "ai_short_title": redact_text(summary.get("short_title", "")),
+                "ai_summary": redact_text(summary.get("plain_summary", "")),
+                "ai_top_steps": [redact_text(s) for s in summary.get("top_3_steps", [])],
+                "ai_clarifying_question": redact_text(
+                    summary.get("clarifying_question", "")
+                    or intent.get("suggested_clarifying_question", "")
+                ),
+            })
+
+    # Deterministic SOP knowledge-base match — always computed, AI hints used
+    # only when present. Scrubbed once more against real secrets as defense.
+    sop_match = compose_sop_match(
+        question,
+        context,
+        lang=answer.language,
+        audience=audience,
+        staff_access_token=staff_access_token,
+        deterministic_answer=answer,
+        scenario_hint=str(intent.get("scenario_hint", "")),
+        subtype_hint=str(intent.get("subtype_hint", "")),
+    )
+    out["sop_match"] = _scrub(sop_match)
     return out

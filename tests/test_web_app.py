@@ -127,9 +127,10 @@ def test_root_and_agent_serve_bilingual_ui():
         resp = client.get(path)
         assert resp.status_code == 200
         body = resp.text
-        assert "English" in body
-        assert "中文" in body
-        assert "Get SOP Guidance" in body
+        # The language switch was removed; the UI still ships both languages
+        # (English chrome + Chinese copy strings) and adapts answers to the query.
+        assert "Get guidance" in body       # English CTA
+        assert "获取指导" in body             # Chinese copy still bundled
         assert "Site Operations Assistant" in body
         assert "/static/ALLCPR.webp" in body
         assert 'id="q"' in body
@@ -788,6 +789,33 @@ def test_ui_quick_check_exists():
         assert s in body
 
 
+def test_ui_activity_log_includes_readiness_checks_in_purple():
+    body = TestClient(web_app.app).get("/agent").text
+    # The activity log merges quick readiness checks + staff inspections in too.
+    assert "/api/student-site-checks?limit=50" in body
+    assert "/api/inspection-logs?limit=50" in body
+    # Readiness / inspection entries get the purple "readiness" treatment + badge.
+    assert "isReadinessKind" in body
+    assert ".log-card.readiness" in body
+    assert "log-kind" in body
+    assert "readinessKind" in body
+    # purple accent colour wired in
+    assert "#7c3aed" in body
+
+
+def test_ui_has_sop_knowledge_base_and_ai_summary_labels():
+    body = TestClient(web_app.app).get("/agent").text
+    # AI-assisted summary card (EN + ZH) and the deterministic SOP knowledge-base
+    # fallback card (EN + ZH) must both be wired into the UI.
+    for s in ("AI-assisted summary · SOP-backed", "AI 辅助整理 · SOP 来源支持",
+              "SOP knowledge base · SOP-backed", "AI 整理后的 SOP 智能知识库 · 基于 SOP",
+              "Searching SOP knowledge base…", "正在查询 SOP 知识库…"):
+        assert s in body
+    # the SOP fallback is fetched even when AI is off
+    assert "data.sop_assist_pending" in body
+    assert "sopMatchHTML" in body
+
+
 def test_ui_quick_check_modal_has_no_staff_only_content():
     body = TestClient(web_app.app).get("/agent").text
     quick = _quick_slice(body)
@@ -1004,6 +1032,65 @@ def test_ai_summary_cannot_override_deterministic_review(monkeypatch):
     assert ask["needs_human_review"] is True
     summ = client.post(_AI_SUMMARY, json=q).json()
     assert "needs_human_review" not in summ
+
+
+# ---- SOP knowledge-base match (deterministic; works with AI off) -----------
+def test_ask_sets_sop_assist_pending_for_weak_query_when_ai_off(monkeypatch):
+    # A messy question the classifier cannot route (scenario "unknown") should
+    # flag sop_assist_pending so the client fetches the SOP knowledge-base match,
+    # even though AI is off and /ask never touches the model.
+    _throw_if_called(monkeypatch)
+    d = TestClient(web_app.app).post(
+        _ASK, json={"question": "camera seems off", "language": "en"}
+    ).json()
+    assert d["ai_pending"] is False
+    assert d["sop_assist_pending"] is True
+
+
+def test_ask_no_sop_assist_for_strong_query_when_ai_off(monkeypatch):
+    # A confidently-routed question already has a full answer — no second card.
+    _throw_if_called(monkeypatch)
+    d = TestClient(web_app.app).post(
+        _ASK, json={"question": "power outage", "language": "en"}
+    ).json()
+    assert d["sop_assist_pending"] is False
+
+
+def test_ai_summary_returns_sop_match_when_ai_off(monkeypatch):
+    _throw_if_called(monkeypatch)
+    d = TestClient(web_app.app).post(
+        _AI_SUMMARY, json={"question": "i cant get the practice session going", "language": "en"}
+    ).json()
+    assert d["ai_used"] is False          # AI never ran
+    assert "sop_match" in d
+    m = d["sop_match"]
+    assert m["found"] is True
+    assert m["steps"]                      # step-by-step, not just images
+    assert m["needs_human_review"] is True  # paraphrase match → confirm with staff
+
+
+def test_ai_summary_sop_match_never_leaks_passcode(monkeypatch):
+    _throw_if_called(monkeypatch)
+    secrets = ai.sensitive_values()
+    assert secrets, "expected at least one sensitive value in the source refs"
+    for q in ("the door is locked", "wifi password", "the little screen thing is frozen"):
+        d = TestClient(web_app.app).post(_AI_SUMMARY, json={"question": q}).json()
+        blob = _json.dumps(d, ensure_ascii=False)
+        for secret in secrets:
+            assert secret not in blob, (q, secret)
+
+
+def test_ai_summary_includes_sop_match_when_ai_on(monkeypatch):
+    _enable_ai(monkeypatch)
+    intent = {"normalized_question": "camera not working", "confidence": "low"}
+    summary = {"short_title": "Camera", "plain_summary": "Save evidence and escalate.",
+               "top_3_steps": ["Check camera", "Save photo", "Escalate"], "clarifying_question": ""}
+    monkeypatch.setattr(ai, "_complete", _fake_complete(intent=intent, summary=summary))
+    d = TestClient(web_app.app).post(
+        _AI_SUMMARY, json={"question": "camera seems off", "language": "en"}
+    ).json()
+    assert d["ai_used"] is True
+    assert "sop_match" in d and d["sop_match"]["found"] is True
 
 
 def test_ai_onboarding_scoring_still_server_authoritative(monkeypatch):

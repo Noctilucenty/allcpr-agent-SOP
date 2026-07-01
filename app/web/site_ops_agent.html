@@ -237,6 +237,14 @@
 	  .log-status.escalated{background:var(--red-soft);border-color:var(--red-line);color:#8a1417}
 	  .log-status.resolved{background:var(--green-soft);border-color:var(--green-line);color:var(--green)}
 	  .log-status.watching{background:var(--amber-soft);border-color:var(--amber-line);color:var(--amber)}
+	  /* Readiness-check entries (student quick check + staff site inspection) — purple. */
+	  .log-card.readiness{border-color:#e7ddf7}
+	  .log-card.readiness:hover,.log-card.readiness.active{border-color:#7c3aed;box-shadow:0 0 0 1px #e7ddf7 inset}
+	  .log-card.readiness.new{background:#f6f1fe;border-color:#e7ddf7}
+	  .log-card.readiness .log-dot{background:#7c3aed}
+	  .log-kind{border:1px solid #e7ddf7;background:#f6f1fe;color:#6d28d9;border-radius:999px;padding:1px 6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+	  .log-status.submitted,.log-status.needs_staff_review{background:#f6f1fe;border-color:#e7ddf7;color:#6d28d9}
+	  .log-status.safety_escalation{background:var(--red-soft);border-color:var(--red-line);color:#8a1417}
 	  .mgr-review{margin-top:2px}
 	  .mgr-row{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 9px;box-shadow:var(--shadow-sm)}
 	  .mgr-row + .mgr-row{margin-top:7px}
@@ -807,6 +815,17 @@
   @keyframes ai-spin{to{transform:rotate(360deg)}}
   @keyframes ac-ai-pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
   .ac-ai-pop{animation:ac-ai-pop .28s ease-out}
+  /* SOP knowledge-base match — a calm teal tint, distinct from the AI indigo. */
+  .ac-sop{background:#f2fbf9;border-color:#c9ece5}
+  .ac-sop .ac-ai-tag{color:#0f766e}
+  .ac-sop.ac-ai-loading .ac-ai-tag{color:#3a9b90}
+  .ac-sop .ai-spin{border-color:#c9ece5;border-top-color:#0f766e}
+  .ac-ai-dont{font-size:12.5px;color:#8a1417;line-height:1.5;margin:9px 0 0}
+  .ac-ai-esc{font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin:6px 0 0}
+  .ac-ai-src{font-size:11.5px;color:var(--muted-2);margin:8px 0 0}
+  .ac-sop-img{margin:9px 0 0}
+  .ac-sop-img img{max-width:100%;border-radius:9px;border:1px solid var(--line);display:block}
+  .ac-sop-img figcaption{font-size:11px;color:var(--muted-2);margin-top:4px}
   .ac-now{margin-bottom:12px}
   .ac-now-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:var(--ink);margin:0 0 10px}
   .ac-now-title svg{width:15px;height:15px;color:var(--red)}
@@ -850,10 +869,6 @@
       <span class="name"><b>All</b>CPR Operations</span>
       <span class="subtitle" data-i18n="tagline">Internal SOP Assistant</span>
     </div>
-    <div class="lang" role="group" aria-label="Language">
-      <button type="button" class="active" data-lang="en">English</button>
-      <button type="button" data-lang="zh">中文</button>
-    </div>
     <button type="button" class="activity-btn" id="activity-btn" aria-label="Activity">
       <span class="act-lock" id="act-lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></span>
       <span class="act-label" data-i18n="activityTitle">Activity</span>
@@ -880,7 +895,7 @@
           <span class="status" id="status"><span class="spin" aria-hidden="true"></span><span id="status-text"></span></span>
           <button class="primary" id="go" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            <span data-i18n="ask">Get SOP Guidance</span>
+            <span data-i18n="ask">Get guidance</span>
           </button>
         </div>
 
@@ -1205,7 +1220,7 @@ const COPY = {
     intro:'Get the next action for site problems, inspections, and staff readiness.',
     describe:'Describe the situation',
     placeholder:'Example: The Smart Manikin tablet is black-screening during a Santa Clara class. What should staff do first?',
-    ask:'Get SOP Guidance',
+    ask:'Get guidance',
     asking:'Checking local SOP sources…',
     quickLabel:'Common incidents',
     advanced:'Site details / optional context',
@@ -1229,6 +1244,15 @@ const COPY = {
 	    logWatching:'Watching',
 	    logEscalated:'Escalated',
 	    logResolved:'Resolved',
+	    logSubmitted:'Submitted',
+	    logNeedsReview:'Needs review',
+	    logSafety:'Safety',
+	    readinessKind:'Readiness check',
+	    readinessCheckLabel:'Class readiness check',
+	    siteInspectionLabel:'Full site inspection',
+	    logCategories:'Reported issues',
+	    logDescription:'Description',
+	    logPhotoTaken:'Photo taken',
 	    addNote:'Add note',
 	    markWatching:'Mark watching',
 	    markEscalated:'Mark escalated',
@@ -1276,6 +1300,11 @@ const COPY = {
     whatToDoNow:'What to do now',
     aiLabel:'AI-assisted summary · SOP-backed',
     aiLoading:'Preparing AI summary…',
+    sopLabel:'SOP knowledge base · SOP-backed',
+    sopLoading:'Searching SOP knowledge base…',
+    sopConfirm:'Possible SOP match — please confirm with staff before acting.',
+    sopNotFound:'I could not find this in the SOP. Please contact staff/supervisor.',
+    sopSourceLabel:'SOP source',
     requiredEvidence:'Required evidence',
     escalateTo:'Escalate to',
     doNot:'Do not',
@@ -1485,7 +1514,7 @@ const COPY = {
     intro:'针对现场问题、巡检和员工准备，给出下一步操作。',
     describe:'描述现场情况',
     placeholder:'示例：Santa Clara 上课时 Smart Manikin 平板黑屏，现场应先怎么处理？',
-    ask:'获取 SOP 指引',
+    ask:'获取指导',
     asking:'正在检索本地 SOP 来源…',
     quickLabel:'常见现场事件',
     advanced:'现场信息 / 可选补充',
@@ -1509,6 +1538,15 @@ const COPY = {
 	    logWatching:'关注中',
 	    logEscalated:'已升级',
 	    logResolved:'已解决',
+	    logSubmitted:'已提交',
+	    logNeedsReview:'待复核',
+	    logSafety:'安全上报',
+	    readinessKind:'就绪检查',
+	    readinessCheckLabel:'上课就绪检查',
+	    siteInspectionLabel:'完整分点巡检',
+	    logCategories:'上报的问题',
+	    logDescription:'描述',
+	    logPhotoTaken:'已拍照',
 	    addNote:'添加备注',
 	    markWatching:'标记关注中',
 	    markEscalated:'标记已升级',
@@ -1549,6 +1587,11 @@ const COPY = {
     whatToDoNow:'现在先做什么',
     aiLabel:'AI 辅助整理 · SOP 来源支持',
     aiLoading:'正在整理 AI 摘要…',
+    sopLabel:'AI 整理后的 SOP 智能知识库 · 基于 SOP',
+    sopLoading:'正在查询 SOP 知识库…',
+    sopConfirm:'可能的 SOP 匹配——执行前请与员工确认。',
+    sopNotFound:'未在 SOP 中找到相关内容，请联系员工/主管。',
+    sopSourceLabel:'SOP 来源',
     requiredEvidence:'必须收集',
     escalateTo:'升级给谁',
     doNot:'不要做',
@@ -2257,6 +2300,37 @@ function aiBannerHTML(d, c){
     ${d.ai_clarifying_question ? `<p class="ac-ai-q">${svg('alert')}<span>${esc(d.ai_clarifying_question)}</span></p>` : ''}
   </div>`;
 }
+/* The "SOP knowledge base" match card — the deterministic, source-backed
+   fallback shown when AI is off (or as the SOP-backed grounding when the match
+   comes purely from retrieval). Built entirely from source-backed fields: issue
+   title, easy steps, do-not list, escalation, source label, one reference image
+   with its caution, and a "confirm with staff" note for low-confidence matches. */
+function sopMatchHTML(m, c){
+  if(!m) return '';
+  if(!m.found){
+    return `<div class="ac-ai ac-sop">
+      <span class="ac-ai-tag">${svg('bolt')}${esc(c.sopLabel)}</span>
+      <p class="ac-ai-q">${svg('alert')}<span>${esc(m.note || c.sopNotFound)}</span></p>
+    </div>`;
+  }
+  const steps = (m.steps || []).slice(0, 7);
+  const dont = (m.do_not || []).slice(0, 4);
+  const escTo = (m.escalate_to || []).slice(0, 3);
+  const srcs = (m.sources || []).map(s => s && s.label).filter(Boolean).slice(0, 3);
+  const img = (m.image_references || [])[0];
+  const note = m.needs_human_review ? (m.note || c.sopConfirm) : '';
+  return `<div class="ac-ai ac-sop">
+    <span class="ac-ai-tag">${svg('bolt')}${esc(c.sopLabel)}</span>
+    ${m.title ? `<p class="ac-ai-title">${esc(m.title)}</p>` : ''}
+    ${m.summary ? `<p class="ac-ai-sum">${esc(m.summary)}</p>` : ''}
+    ${steps.length ? `<ol class="ac-ai-steps">${steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : ''}
+    ${dont.length ? `<p class="ac-ai-dont"><strong>${esc(c.doNot)}:</strong> ${dont.map(x => esc(x)).join('; ')}</p>` : ''}
+    ${escTo.length ? `<p class="ac-ai-esc"><strong>${esc(c.escalateTo)}:</strong> ${escTo.map(x => esc(x)).join('; ')}</p>` : ''}
+    ${img ? `<figure class="ac-sop-img"><img src="${esc(img.path)}" alt="${esc(img.title || '')}" loading="lazy"><figcaption>${esc(img.caution || '')}</figcaption></figure>` : ''}
+    ${srcs.length ? `<p class="ac-ai-src">${esc(c.sopSourceLabel)}: ${srcs.map(x => esc(x)).join(', ')}</p>` : ''}
+    ${note ? `<p class="ac-ai-q">${svg('alert')}<span>${esc(note)}</span></p>` : ''}
+  </div>`;
+}
 function render(data){
   const c = COPY[data.language] || copy();
   const sev = (data.severity || 'info').toLowerCase();
@@ -2380,9 +2454,13 @@ $('#out').addEventListener('click', event => {
 });
 
 function statusLabel(status, c){
-  const map = {open:c.logOpen, watching:c.logWatching, escalated:c.logEscalated, resolved:c.logResolved};
+  const map = {open:c.logOpen, watching:c.logWatching, escalated:c.logEscalated, resolved:c.logResolved,
+    submitted:c.logSubmitted, needs_staff_review:c.logNeedsReview, safety_escalation:c.logSafety};
   return map[status] || status || c.logOpen;
 }
+/* Readiness checks (student quick check + staff site inspection) share the purple
+   treatment so the log tells you at a glance it is a readiness/inspection entry. */
+function isReadinessKind(kind){ return kind === 'readiness' || kind === 'inspection'; }
 
 function fmtTime(iso){
   const d = new Date(iso || Date.now());
@@ -2401,15 +2479,17 @@ function renderLogs(){
     detailEl.innerHTML = '';
     return;
   }
-  listEl.innerHTML = logCache.slice(0, 8).map(log => {
+  listEl.innerHTML = logCache.slice(0, 12).map(log => {
     const active = log.id === selectedLogId ? ' active' : '';
     const fresh = log.id === latestLogId ? ' new' : '';
+    const readiness = isReadinessKind(log.kind) ? ' readiness' : '';
     const site = (!log.site || log.site === 'Unknown site') ? c.unknownSite : log.site;
-    return `<button type="button" class="log-card${active}${fresh}" data-log-id="${esc(log.id)}">
+    return `<button type="button" class="log-card${active}${fresh}${readiness}" data-log-id="${esc(log.id)}">
       <span class="log-meta">
         <span class="log-dot" aria-hidden="true"></span>
         <span>${esc(fmtTime(log.created_at))}</span>
         <span>${esc(site)}</span>
+        ${readiness ? `<span class="log-kind">${esc(c.readinessKind)}</span>` : ''}
         <span>${esc(shortLabel(log.issue_type || log.scenario || ''))}</span>
         <span class="log-status ${esc(log.status || 'open')}">${esc(statusLabel(log.status || 'open', c))}</span>
       </span>
@@ -2427,6 +2507,26 @@ function renderLogDetail(log){
   const c = copy();
   const detailEl = $('#log-detail');
   if(!detailEl) return;
+  // Readiness / inspection entries are read-only here (they are managed in their
+  // own flow); show the reported facts, no incident status/note actions.
+  if(isReadinessKind(log.kind)){
+    const d = log._detail || log;
+    const isStudent = log.kind === 'readiness';
+    const cats = (d.issue_categories || d.problems_found || []);
+    const site = (!d.site || d.site === 'Unknown site') ? c.unknownSite : d.site;
+    const listBlk = (items) => items.length ? `<ul class="ld-list">${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+    detailEl.innerHTML = `<p class="ld-title">${esc(log.issue_type || '')}</p>
+      <div class="ld-grid">
+        <span class="ld-k">${esc(c.location)}</span><span class="ld-v">${esc(site)}</span>
+        <span class="ld-k">${esc(c.classTime)}</span><span class="ld-v">${esc(d.class_time || '—')}</span>
+        <span class="ld-k">${esc(c.guidanceGenerated)}</span><span class="ld-v">${esc(fmtTime(d.created_at))} · ${esc(statusLabel(d.status || 'submitted', c))}</span>
+        ${isStudent ? `<span class="ld-k">${esc(c.logPhotoTaken)}</span><span class="ld-v">${esc(d.photo_taken ? c.yes : c.no)}</span>` : ''}
+      </div>
+      ${cats.length ? `<p class="ld-sub">${esc(c.logCategories)}</p>${listBlk(cats)}` : ''}
+      ${d.description ? `<p class="ld-sub">${esc(c.logDescription)}</p><p class="ld-v">${esc(d.description)}</p>` : ''}`;
+    detailEl.classList.add('open');
+    return;
+  }
   const first = (log.first_action || []).slice(0, 3);
   const ev = (log.evidence_requested || []).slice(0, 3);
   const contacts = (log.contacts || []).slice(0, 3);
@@ -2456,11 +2556,44 @@ function renderLogDetail(log){
   detailEl.classList.add('open');
 }
 
+/* Normalize a student quick readiness check into a log card (kind 'readiness'). */
+function normalizeReadiness(r){
+  const c = copy();
+  const cats = (r.issue_categories || []).join(', ');
+  return {
+    id: r.id, kind: 'readiness', created_at: r.created_at,
+    site: r.site, class_time: r.class_time,
+    issue_type: c.readinessCheckLabel, status: r.status,
+    question: r.description || cats || c.readinessCheckLabel,
+    _detail: r,
+  };
+}
+/* Normalize a staff full site inspection into a log card (kind 'inspection'). */
+function normalizeInspection(r){
+  const c = copy();
+  return {
+    id: r.id, kind: 'inspection', created_at: r.created_at,
+    site: r.site, class_time: r.class_time || '',
+    issue_type: c.siteInspectionLabel, status: r.status,
+    question: r.summary || c.siteInspectionLabel,
+    _detail: r,
+  };
+}
 async function loadLogs(highlightId=''){
   try{
-    const resp = await fetch(API_BASE + '/api/incident-logs?limit=50');
-    if(!resp.ok) throw new Error('HTTP ' + resp.status);
-    logCache = await resp.json();
+    const getJSON = (url) => fetch(API_BASE + url).then(r => r.ok ? r.json() : []).catch(() => []);
+    // Merge incident Q&A logs with readiness checks (student quick check) and
+    // staff site inspections so the activity log shows every kind. Readiness /
+    // inspection entries render purple (see renderLogs / isReadinessKind).
+    const [incidents, readiness, inspections] = await Promise.all([
+      getJSON('/api/incident-logs?limit=50'),
+      getJSON('/api/student-site-checks?limit=50'),
+      getJSON('/api/inspection-logs?limit=50'),
+    ]);
+    logCache = (incidents || []).map(l => Object.assign({kind:'incident'}, l))
+      .concat((readiness || []).map(normalizeReadiness))
+      .concat((inspections || []).map(normalizeInspection))
+      .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
     if(highlightId) latestLogId = highlightId;
     if(highlightId) selectedLogId = highlightId;
     else if(!selectedLogId && logCache[0]) selectedLogId = logCache[0].id;
@@ -2546,7 +2679,7 @@ async function ask(){
     render(data);
     // Optional AI summary: fetch it separately and pop it in on top when ready,
     // so the deterministic instructions never wait on the model.
-    if(data.ai_pending) fetchAiSummary(q, ctx, tok, data.incident_log_id, seq);
+    if(data.ai_pending || data.sop_assist_pending) fetchAiSummary(q, ctx, tok, data.incident_log_id, seq, !!data.ai_pending);
     if(data.incident_log_id) await loadLogs(data.incident_log_id);
   }catch(err){
     if(seq !== askSeq) return;
@@ -2561,13 +2694,15 @@ async function ask(){
    a small "preparing…" chip on top of the card, then replaces it with the banner
    (or removes it silently on failure / when AI returns nothing). A sequence guard
    ignores results from a question the user has since replaced. */
-function fetchAiSummary(q, ctx, tok, logId, seq){
+function fetchAiSummary(q, ctx, tok, logId, seq, aiPending){
   const card = $('#out .ans-card');
   if(!card) return;
   const head = card.querySelector('.ac-head');
   const ph = document.createElement('div');
-  ph.className = 'ac-ai ac-ai-loading';
-  ph.innerHTML = `<span class="ac-ai-tag"><span class="ai-spin" aria-hidden="true"></span>${esc(copy().aiLoading)}</span>`;
+  // AI path → indigo "Preparing AI summary"; SOP-only path → teal "Searching SOP".
+  ph.className = aiPending ? 'ac-ai ac-ai-loading' : 'ac-ai ac-sop ac-ai-loading';
+  const loadingText = aiPending ? copy().aiLoading : copy().sopLoading;
+  ph.innerHTML = `<span class="ac-ai-tag"><span class="ai-spin" aria-hidden="true"></span>${esc(loadingText)}</span>`;
   if(head) head.after(ph); else card.prepend(ph);
 
   const body = {question:q, context:Object.assign({}, ctx, {incident_log_id:logId || ''})};
@@ -2579,7 +2714,9 @@ function fetchAiSummary(q, ctx, tok, logId, seq){
     if(seq !== askSeq){ clear(); return; }
     const cur = $('#out .ans-card');
     const placeholder = cur ? cur.querySelector('.ac-ai-loading') : null;
-    const html = (ai && ai.ai_used) ? aiBannerHTML(ai, copy()) : '';
+    // Prefer the AI-authored banner; fall back to the deterministic SOP match.
+    const html = (ai && ai.ai_used) ? aiBannerHTML(ai, copy())
+      : (ai && ai.sop_match) ? sopMatchHTML(ai.sop_match, copy()) : '';
     if(!html){ if(placeholder) placeholder.remove(); return; }
     const tmp = document.createElement('div'); tmp.innerHTML = html;
     const banner = tmp.firstElementChild;
@@ -2840,6 +2977,7 @@ async function finishInspection(){
     }
     const fin = $('#insp-finish');
     if(fin){ fin.textContent = c.inspClose; fin.dataset.done = '1'; }
+    if(typeof loadLogs === 'function') loadLogs();  // surface it in the activity log (purple)
   }catch(e){
     if(msg){ msg.textContent = c.inspSaveError; msg.className = 'insp-save-msg err'; msg.hidden = false; }
   }
@@ -3069,6 +3207,7 @@ async function submitQuickCheck(){
       msg.hidden = false;
     }
     if(submit){ submit.textContent = c.inspClose; submit.dataset.done = '1'; }
+    if(typeof loadLogs === 'function') loadLogs();  // surface it in the activity log (purple)
   }catch(e){
     if(msg){ msg.textContent = c.quickError; msg.className = 'insp-save-msg err'; msg.hidden = false; }
   }

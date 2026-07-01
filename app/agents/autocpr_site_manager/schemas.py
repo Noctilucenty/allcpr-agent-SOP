@@ -151,6 +151,10 @@ class AgentAnswer(BaseModel):
     # ``ai_pending`` = the deterministic answer was returned fast and an AI summary
     # is being fetched separately (client then calls the ai-summary endpoint).
     ai_pending: bool = False
+    # ``sop_assist_pending`` = even with AI off, the deterministic answer was weak
+    # (unknown / low-confidence / no steps) so the client should fetch the
+    # deterministic SOP knowledge-base match to help with the messy wording.
+    sop_assist_pending: bool = False
     ai_stage: str = ""  # "" | "intent" | "summary" | "both"
     ai_confidence: str = ""  # "" | "low" | "medium" | "high"
     ai_scenario_hint: str = ""
