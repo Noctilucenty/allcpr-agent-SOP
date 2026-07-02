@@ -173,6 +173,11 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "table pre-check", "table precheck", "station pre-check", "station precheck",
         "table/station", "table / station", "桌上", "桌面", "桌子", "训练站",
         "桌上应该有什么", "桌上有什么", "桌面上有什么", "站点桌面",
+        "table looks wrong", "desk looks wrong", "table missing stuff",
+        "what should be on the desk", "desk setup", "desk missing",
+        "bvm missing", "bag-valve-mask missing", "bag valve mask missing",
+        "breathing bag missing", "breathing bag thing missing",
+        "i don't see the breathing bag", "pocket mask missing",
         # inspection order / sequence ("what order do I inspect")
         "what order", "in what order", "which order", "inspection order",
         "order do i inspect", "order to inspect", "inspect first", "sequence of",
@@ -198,6 +203,11 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "ipad not working", "ipad dead", "ipad not turning on", "ipad not responding",
         "ipad frozen", "app black screen", "app黑屏", "launch app", "opens black",
         "black tab", "reload didn't work", "reload did not work", "reload not working",
+        "camera permission denied", "browser permission denied", "camera blocked",
+        "browser blocking camera", "browser is blocking the camera",
+        "permission denied", "camera permission", "timer reset", "logout reset",
+        "logged out", "unexpected logout", "unexpected reset", "reset to 45",
+        "45 minutes", "timer went back",
         "平板没反应", "设备打不开", "设备没反应", "设备不工作", "设备黑屏",
         "can't pair", "cant pair", "can't connect", "cant connect", "won't pair",
         "connection failed", "device disconnected", "manikin not connected",
@@ -260,6 +270,9 @@ _RULES: List[Tuple[str, Tuple[str, ...]]] = [
         "学生到了", "学生已到", "无法开课", "开不了课", "课开不了", "上不了课",
         "课程开始不了", "课程不能开始", "课没法开始",
         # casual class-start wording
+        "student can't start", "student cannot start", "students can't start",
+        "students cannot start", "student can't start class",
+        "student cannot start class",
         "students waiting", "students are waiting", "class can't run",
         "class cannot run", "can't run class", "cannot run the class",
         "class delayed", "学员在等", "学员在等待", "学生在等", "不能上课",
@@ -362,6 +375,8 @@ def classify(question: str, context: Optional[Dict[str, Any]] = None) -> str:
     toward ``zip_site_evaluation`` rather than ``unknown``.
     """
     text = (question or "").lower()
+    if any(term in text for term in ("wifi password", "wi-fi password", "wifi passcode", "wi-fi passcode")):
+        return "venue_access_issue"
     matched = ""
     for scenario, keywords in _RULES:
         for kw in keywords:

@@ -29,6 +29,7 @@ from typing import Any, Dict, List, Optional
 
 from .scenarios import SCENARIOS
 from .schemas import AgentAnswer
+from .icpis_sop import safe_ai_context
 from .sop_operational_refs import load_operational_ref_payload
 
 # ---------------------------------------------------------------------------
@@ -45,7 +46,8 @@ ALLOWED_SCENARIOS = set(SCENARIOS)
 ALLOWED_SUBTYPES = {
     # Smart Manikin sub-issues
     "ipad_pad_power_or_open", "bluetooth_connection", "training_no_data",
-    "black_screen_app_restart", "completion_photo", "wrong_room_floor",
+    "black_screen_app_restart", "camera_browser_permission",
+    "timer_logout_reset", "completion_photo", "wrong_room_floor",
     # general sub-issues
     "passcode_needed", "code_failed", "wrong_course", "not_on_roster",
     "certificate_issue", "fix_failed",
@@ -204,6 +206,7 @@ def _intent_user(question: str, context: Optional[Dict[str, Any]]) -> str:
         "message": str(question or "")[:1200],
         "known_site": ctx.get("site") or ctx.get("location") or "",
         "known_class_time": ctx.get("class_time") or "",
+        "redacted_sop_context": safe_ai_context(),
     }, ensure_ascii=False)
 
 
@@ -284,6 +287,7 @@ def _summary_input(answer: AgentAnswer) -> Dict[str, Any]:
         "escalate_to": list(answer.contacts[:4]),
         "do_not": list(answer.do_not_decide_without_approval[:5]),
         "source_labels": list(answer.source_status[:5]),
+        "redacted_sop_context": safe_ai_context(),
         "language": answer.language,
         # a NOTE that a passcode is locked — never the value itself
         "passcode_locked_note": bool(locked_passcode),

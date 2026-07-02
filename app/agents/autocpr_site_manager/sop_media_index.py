@@ -280,6 +280,15 @@ def _query_tags(question: str, scenario: str) -> set[str]:
         "aed",
         "bvm",
         "pocket",
+        "bag",
+        "valve",
+        "app",
+        "tab",
+        "login",
+        "continue",
+        "session",
+        "submit",
+        "pass",
         "巡检",
         "器材",
         "摆放",
@@ -299,10 +308,17 @@ def find_relevant_sop_media(question: str, scenario: str, top_k: int = 3) -> Lis
     """
     if scenario not in SCENARIO_TAGS:
         return []
+    # Section 21 access/wayfinding images must not be suggested publicly or sent
+    # through AI-assisted cards. Access details stay in deterministic staff-gated
+    # operational references only.
+    if scenario == "venue_access_issue":
+        return []
 
     query_tags = _query_tags(question, scenario)
     matches = []
     for item in build_media_index():
+        if item.contains_access_info or not item.safe_to_show_to_students:
+            continue
         item_tags = set(item.tags)
         if scenario not in item.related_scenarios:
             continue
@@ -317,4 +333,3 @@ def find_relevant_sop_media(question: str, scenario: str, top_k: int = 3) -> Lis
 
     matches.sort(key=lambda pair: (-pair[0], pair[1].source_file, pair[1].id))
     return [item for score, item in matches[:top_k] if score >= 4]
-

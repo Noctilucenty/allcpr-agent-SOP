@@ -1,23 +1,24 @@
 {
-  "title": "Smart Manikin 专员分点巡检 SOP",
-  "title_en": "Smart Manikin Site Representative Inspection SOP",
-  "applies_to": "Smart Manikin 专员 / Site Representative",
-  "date": "June 29 2026",
+  "title": "ALLCPR Smart Manikin / AUTOCPR / ICPIS SOP",
+  "title_en": "Staff Full Site Inspection Workflow",
+  "applies_to": "Staff / Site Representative / ICPIS",
+  "date": "2026-07-01",
+  "version": "Gosvea-2026-SOP-Auto CPR-ICPIS-01",
   "source_status": "official SOP source",
-  "source_file": "Smart Manikin 专员分点巡检 SOP.docx",
-  "purpose_en": "Standardize the daily/site inspection workflow for the Smart Manikin Learning Station so site hygiene, equipment, supplies, and environment meet ALLCPR operating standards, with unified inspection records.",
-  "purpose_zh": "标准化 Smart Manikin Learning Station 的日常/分点巡检工作流程，确保现场卫生、设备、耗材与环境符合 ALLCPR 运营标准，并形成统一的巡检记录。",
+  "source_file": "AutoCPR  ICPIS Only SOP 20260701.docx",
+  "purpose_en": "Inspect, prepare, document, and escalate Smart Manikin site issues safely and consistently.",
+  "purpose_zh": "Inspect, prepare, document, and escalate Smart Manikin site issues safely and consistently.",
   "record_form_en": "Weekly Site Check Report",
-  "record_form_zh": "每周分点巡检表",
-  "related_file": "Weekly Site Check Report / 每周分点巡检表",
+  "record_form_zh": "Weekly Site Check Report",
+  "related_file": "ICPIS Weekly Site Check Report",
   "frequency": {
     "en": [
       "Each site should be inspected at least once per week.",
-      "Increase inspection frequency if ALLCPR sends notice, students complain, or there is an on-site abnormality."
+      "Increase frequency if ALLCPR notifies, students complain, or there is a site abnormality."
     ],
     "zh": [
-      "每个分点至少每周巡检一次。",
-      "如果 ALLCPR 发出通知、学员投诉或现场出现异常，应增加巡检频率。"
+      "Each site should be inspected at least once per week.",
+      "Increase frequency if ALLCPR notifies, students complain, or there is a site abnormality."
     ]
   },
   "pre_check_photos": {
@@ -40,38 +41,28 @@
   },
   "site_checklist": {
     "en": [
-      "Hygiene: check overall cleanliness, remove trash, keep the floor clean.",
-      "Trash: empty the trash can and replace the trash bag if needed.",
-      "Disinfection: confirm disinfecting supplies are enough for one week and disinfect all teaching equipment.",
-      "Equipment: check Smart Manikin, iPad, AED Pads, BVM, Pocket Mask, etc. are complete, normal, and in standard positions.",
-      "Power: check the iPad and Smart Manikin are connected to power cables.",
-      "Access: check door access, Lockbox, or Access Code are normal.",
-      "Camera: confirm the camera is online.",
-      "Network: confirm Wi-Fi is normal.",
-      "Signage: check signs are complete and clear.",
-      "Safety: check visible water/electric/equipment safety hazards."
+      "Cleanliness: check overall hygiene, empty trash, replace the bag if needed, and keep the floor clean.",
+      "Supplies: disinfecting supplies are enough for one week; wipes, gloves, and mask adaptors are stocked.",
+      "Equipment: Smart Manikin, iPad, AED Pads, BVM, and Pocket Mask are complete, working, and in standard positions.",
+      "Power: iPad / tablet is present and charging; iPad and Smart Manikin are connected to power cables.",
+      "Access / camera / Wi-Fi / signage / safety: door access normal, camera online/not blocked, Wi-Fi normal, signs clear, no visible water/electric/equipment hazards."
     ],
     "zh": [
       "卫生：检查整体清洁，清理垃圾，保持地面干净。",
-      "垃圾：倒空垃圾桶，必要时更换垃圾袋。",
-      "消毒：确认消毒用品够用一周，并对所有教学设备进行消毒。",
-      "设备：检查 Smart Manikin、iPad、AED Pads、BVM、Pocket Mask 等是否齐全、正常并摆放在标准位置。",
-      "供电：检查 iPad 与 Smart Manikin 是否已连接电源线。",
-      "门禁：检查门禁、Lockbox 或 Access Code 是否正常。",
-      "摄像头：确认摄像头在线。",
-      "网络：确认 Wi-Fi 正常。",
-      "路牌：检查指示牌/路牌是否完整清晰。",
-      "安全：检查可见的水/电/设备安全隐患。"
+      "耗材：确认消毒用品够用一周；湿巾、手套、面罩转接头充足。",
+      "设备：检查 Smart Manikin、iPad、AED Pads、BVM、Pocket Mask 是否齐全、正常并摆放在标准位置。",
+      "供电：iPad / tablet 在现场并在充电；iPad 与 Smart Manikin 已连接电源线。",
+      "门禁 / 摄像头 / Wi-Fi / 路牌 / 安全：门禁正常、摄像头在线且未遮挡、Wi-Fi 正常、指示清楚、无可见水/电/设备安全隐患。"
     ]
   },
   "on_site_handling": {
     "en": [
-      "If an issue can be fixed on site, fix it immediately.",
-      "If an issue cannot be fixed on site, take photos and report to ALLCPR promptly."
+      "If an issue can be safely fixed on site, fix it and document what you did.",
+      "If it cannot be fixed on site, take photos and report to ALLCPR promptly."
     ],
     "zh": [
-      "如果问题可以现场解决，立即处理。",
-      "如果问题无法现场解决，拍照并及时上报 ALLCPR。"
+      "If an issue can be safely fixed on site, fix it and document what you did.",
+      "If it cannot be fixed on site, take photos and report to ALLCPR promptly."
     ]
   },
   "post_check_photos": {
@@ -80,7 +71,7 @@
       "Keep photo angles as consistent as possible with the before photos.",
       "Whole room",
       "Smart Manikin area",
-      "Supplies / consumables area",
+      "Supplies area",
       "Door or signage",
       "If an issue was fixed, take a photo of the corrected result."
     ],
@@ -96,79 +87,105 @@
   },
   "weekly_site_check_report": {
     "en": [
-      "Site check results",
-      "Problems found",
-      "Actions taken",
-      "Whether ALLCPR support is needed",
-      "Everything must be truthful and complete."
+      "Header: site name, site address, ICPIS / inspector name, inspection date, inspection time.",
+      "Site is clean",
+      "Trash has been removed",
+      "Disinfecting wipes / supplies are available",
+      "Smart Manikin is in place",
+      "iPad / tablet is present and charging",
+      "AED pads / BVM / pocket mask are present",
+      "Door / lockbox / access code works",
+      "Camera is online and not blocked",
+      "Wi-Fi appears normal",
+      "Signs / instructions are clear",
+      "Required photos: room overview, Smart Manikin area, supplies area, entrance/signage.",
+      "Issues found: no/minor/urgent issue, description, action taken, ALLCPR support yes/no.",
+      "Local promotion update and weekly confirmation."
     ],
     "zh": [
-      "现场检查结果",
-      "发现的问题",
-      "已采取的处理",
-      "是否需要 ALLCPR 支持",
-      "所有内容必须真实、完整。"
+      "Header: site name, site address, ICPIS / inspector name, inspection date, inspection time.",
+      "Site is clean",
+      "Trash has been removed",
+      "Disinfecting wipes / supplies are available",
+      "Smart Manikin is in place",
+      "iPad / tablet is present and charging",
+      "AED pads / BVM / pocket mask are present",
+      "Door / lockbox / access code works",
+      "Camera is online and not blocked",
+      "Wi-Fi appears normal",
+      "Signs / instructions are clear",
+      "Required photos: room overview, Smart Manikin area, supplies area, entrance/signage.",
+      "Issues found: no/minor/urgent issue, description, action taken, ALLCPR support yes/no.",
+      "Local promotion update and weekly confirmation."
     ]
   },
   "upload_materials": {
     "en": [
-      "Upload to the corresponding site Google Drive folder.",
+      "Upload to the corresponding per-site Google Drive folder.",
       "Before photos",
       "After photos",
       "Completed Weekly Site Check Report",
       "Issue photos, if any",
-      "Recommended: same day after inspection."
+      "Recommended: same day after inspection.",
+      "The app records upload completed but does not manage Google Drive; confirm correct folder with staff."
     ],
     "zh": [
-      "上传到对应分点的 Google Drive 文件夹。",
-      "巡检前照片",
-      "巡检后照片",
-      "已填写的每周分点巡检表",
-      "问题照片（如有）",
-      "建议：巡检当天完成上传。"
+      "Upload to the corresponding per-site Google Drive folder.",
+      "Before photos",
+      "After photos",
+      "Completed Weekly Site Check Report",
+      "Issue photos, if any",
+      "Recommended: same day after inspection.",
+      "The app records upload completed but does not manage Google Drive; confirm correct folder with staff."
     ]
   },
   "do_not_repair": {
     "en": [
-      "Do not dismantle or repair Smart Manikin, iPad, camera, access control, or similar equipment without authorization.",
+      "Do not dismantle or repair Smart Manikin, iPad, camera, access control, electrical, outlet, or network equipment without authorization.",
       "If an issue cannot be solved on site, take photos and report to ALLCPR immediately.",
-      "Inspection records and photos must be real and complete. Do not use old photos or fake/replacement photos."
+      "Inspection records and photos must be real and complete. Do not use old or staged photos."
     ],
     "zh": [
-      "未经授权不得拆卸或维修 Smart Manikin、iPad、摄像头、门禁或类似设备。",
-      "如果问题无法现场解决，拍照并立即上报 ALLCPR。",
-      "巡检记录和照片必须真实、完整，不得使用历史照片或补拍/替代照片。"
+      "Do not dismantle or repair Smart Manikin, iPad, camera, access control, electrical, outlet, or network equipment without authorization.",
+      "If an issue cannot be solved on site, take photos and report to ALLCPR immediately.",
+      "Inspection records and photos must be real and complete. Do not use old or staged photos."
     ]
   },
   "equipment_placement": {
-    "source_note_en": "Equipment placement diagram on page 3. Use only source-backed visual labels; no image analysis or guessing beyond visible labels.",
-    "source_note_zh": "第 3 页器材摆放图。仅使用来源支持的可见标签，不对图片内容进行分析或超出可见标签的猜测。",
+    "source_note_en": "Figure 1 is a source-backed layout reference only; no image analysis or repair inference.",
+    "source_note_zh": "Figure 1 is a source-backed layout reference only; no image analysis or repair inference.",
     "en": [
-      "Training equipment: iPad, Manikins, AED Training Pads (1 set for both Adult & Infant).",
-      "Keep the manikins plugged in throughout the course (per the diagram label).",
-      "Consumables: tissues, disinfecting wipes, disposable gloves, mask adaptors, optional face shield.",
-      "Rescue breathing equipment: Pocket Mask; BVM optional (use if mask adaptors are unavailable).",
-      "Keep the Smart Manikin / iPad setup in the standard position.",
-      "Check the Smart Manikin / iPad power cable."
+      "iPad",
+      "manikins",
+      "AED Training Pads",
+      "Keep manikins plugged in throughout the course",
+      "Keep Smart Manikin / iPad in standard position",
+      "Check power cables",
+      "tissues / simulated gauze",
+      "disinfecting wipes",
+      "disposable gloves",
+      "mask adaptors",
+      "face shield optional",
+      "Pocket Mask",
+      "Bag-Valve Mask / BVM optional; use if mask adaptors are unavailable"
     ],
     "zh": [
-      "训练设备：iPad、Manikins、AED Training Pads（成人与婴儿共用一套）。",
-      "全程保持 Manikins 插电（依据图示标签）。",
-      "耗材：纸巾、消毒湿巾、一次性手套、面罩转接头、可选面屏。",
-      "急救通气设备：Pocket Mask；BVM 可选（无面罩转接头时使用）。",
-      "保持 Smart Manikin / iPad 摆放在标准位置。",
-      "检查 Smart Manikin / iPad 电源线。"
+      "训练设备：iPad、Manikins、AED Training Pads。",
+      "全程保持 Manikins 插电。",
+      "耗材：纸巾 / 模拟纱布、消毒湿巾、一次性手套、Mask adaptors、Face shield（可选）。",
+      "急救通气设备：Pocket Mask；Bag-Valve Mask / BVM 可选。",
+      "保持 Smart Manikin / iPad 标准位置并检查电源线。"
     ]
   },
   "table_station_precheck": {
-    "intro_en": "Before moving anything, take before photos, then use the table/station placement reference (page-3 diagram) to compare and confirm each item on the table.",
-    "intro_zh": "移动任何东西前，先拍巡检前照片，然后用桌面/训练站摆放参考（第 3 页图）逐项对比并确认桌上的每件物品。",
+    "intro_en": "Before moving anything, take before photos, then use the table/station placement reference to compare and confirm each item.",
+    "intro_zh": "Before moving anything, take before photos, then use the table/station placement reference to compare and confirm each item.",
     "if_problem_en": "If an item is missing or has a problem: mark it Missing/Problem, take a photo if safe, write a short note, include it in the Weekly Site Check Report, and report to ALLCPR if it cannot be fixed on site. Do not invent a replacement or repair, and do not dismantle equipment.",
     "if_problem_zh": "如某项缺失或有问题：标记为缺失/问题，安全时拍照，写简短说明，写入每周分点巡检表；无法现场解决的上报 ALLCPR。不要臆造替代品或维修，也不要拆卸设备。",
     "en": [
       "iPad present",
       "Smart Manikin / manikins present",
-      "AED Training Pads present (1 set for both Adult & Infant)",
+      "AED Training Pads present",
       "Consumables area present",
       "Tissues / simulated gauze present if supplied",
       "Disinfecting wipes present",
@@ -176,15 +193,15 @@
       "Mask adaptors present",
       "Face shield present if supplied / optional",
       "Pocket Mask present",
-      "BVM / Bag-Valve-Mask present (use if mask adaptors are unavailable)",
+      "BVM / Bag-Valve-Mask present",
       "iPad connected to power",
-      "Smart Manikin connected to power (keep plugged in throughout the course)",
+      "Smart Manikin connected to power",
       "Items in standard placement / not scattered"
     ],
     "zh": [
       "iPad 在现场",
       "Smart Manikin / 假人在现场",
-      "AED Training Pads 在现场（成人与婴儿共用一套）",
+      "AED Training Pads 在现场",
       "耗材区域在现场",
       "纸巾 / 模拟纱布如有配置应在现场",
       "消毒湿巾在现场",
@@ -192,16 +209,16 @@
       "Mask adaptors 在现场",
       "Face shield 如有配置应在现场",
       "Pocket Mask 在现场",
-      "BVM / 球囊面罩在现场（无面罩转接头时使用）",
+      "BVM / 球囊面罩在现场",
       "iPad 已连接电源",
-      "Smart Manikin 已连接电源（全程保持插电）",
+      "Smart Manikin 已连接电源",
       "物品按标准位置摆放，没有明显散乱"
     ]
   },
   "acknowledgement": {
     "title_en": "Important inspection reminder",
-    "title_zh": "巡检前重要提醒",
-    "body_en": "Before photos must be taken before any cleaning or organizing. After photos must be taken after the site is fully arranged. Inspection records and photos must be real and complete. Do not use old photos or staged replacement photos. Failure to follow this may make the inspection record invalid and require review or explanation to ALLCPR.",
-    "body_zh": "巡检前照片必须在开始清洁或整理前拍摄；巡检后照片必须在完成整理后拍摄。巡检记录和照片必须真实、完整，不得补拍或使用历史照片代替。未按要求完成可能导致巡检记录无效，并需要重新审核或向 ALLCPR 说明。"
+    "title_zh": "Important inspection reminder",
+    "body_en": "Before photos must be taken before any cleaning or organizing. After photos must be taken after the site is fully arranged. Inspection records and photos must be real and complete. Do not use old or staged replacement photos.",
+    "body_zh": "Before photos must be taken before any cleaning or organizing. After photos must be taken after the site is fully arranged. Inspection records and photos must be real and complete. Do not use old or staged replacement photos."
   }
 }

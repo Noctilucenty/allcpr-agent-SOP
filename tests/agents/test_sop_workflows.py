@@ -23,6 +23,7 @@ PKG = PROJECT_ROOT / "app" / "agents" / "autocpr_site_manager"
 AUDIT_JSON = PKG / "sop_library_audit.json"
 AUDIT_MD = SOP_LIBRARY / "AUDIT.md"
 WORKFLOWS_JSON = PKG / "sop_workflows.json"
+ICPIS_STRUCTURED_JSON = PKG / "icpis_sop_structured.json"
 
 
 def _secret_tokens():
@@ -65,7 +66,12 @@ def test_3_audit_includes_every_library_file():
             # skip OS metadata / dotfiles (.DS_Store) and Word temp-lock files (~$...)
             # plus gitignored LOCAL-only credential/work-copy docs — they aren't
             # committed SOP documents
-            if p.is_file() and not p.name.startswith((".", "~$")) and ".LOCAL." not in p.name
+            if (
+                p.is_file()
+                and not p.name.startswith((".", "~$"))
+                and ".LOCAL." not in p.name
+                and "Staff Only SOP" not in p.name
+            )
         }
     missing = on_disk - audited
     assert not missing, f"audit is missing files: {sorted(missing)}"
@@ -115,11 +121,25 @@ def test_7_workflows_file_and_module_exist():
     assert sop_workflows.list_workflows(), "workflows must load"
 
 
+def test_icpis_structured_source_exists_and_is_redacted():
+    assert ICPIS_STRUCTURED_JSON.exists()
+    payload = json.loads(ICPIS_STRUCTURED_JSON.read_text(encoding="utf-8"))
+    assert payload["version"] == "Gosvea-2026-SOP-Auto CPR-ICPIS-01"
+    assert payload["source_name"] == "AutoCPR ICPIS SOP 20260701"
+    assert payload["staff_only_source"] is True
+    assert payload["redacted_for_repo"] is True
+    assert payload["raw_section_21_included"] is False
+    blob = json.dumps(payload, ensure_ascii=False)
+    assert not any(code in blob for code in PASSCODES)
+    for forbidden in ("DoBeUSA", "DoBesince2016", "/Users/noctilucenteasteliq"):
+        assert forbidden not in blob
+
+
 def test_8_full_inspection_has_ordered_steps():
     full = sop_workflows.full_inspection_workflow()
     assert full is not None
     steps = full["steps"]
-    assert len(steps) >= 10
+    assert len(steps) == 12
     # every step is a proper ordered tutorial entry
     for s in steps:
         assert s.get("id")
@@ -129,6 +149,12 @@ def test_8_full_inspection_has_ordered_steps():
             assert key in s
     assert full.get("requires_staff_pin") is True
     assert "student" in full.get("not_for", [])
+    assert steps[0]["title_en"] == "Arrive and pause before touching setup"
+    assert steps[1]["title_en"] == "Take before photos first"
+    assert steps[2]["title_en"] == "Table / station pre-check"
+    assert steps[9]["title_en"] == "Complete the Weekly Site Check Report"
+    assert steps[10]["title_en"] == "Upload / report completion"
+    assert steps[11]["title_en"] == "Final log"
 
 
 def _step_index(steps, needle):
@@ -210,7 +236,9 @@ def test_15_student_quick_check_excludes_report_and_upload():
     quick = sop_workflows.student_quick_check_workflow()
     assert quick is not None
     assert quick.get("report_only") is True
+    assert quick.get("no_pin_needed") is True
     assert "student" in quick.get("applies_to", [])
+    assert len(quick.get("steps", [])) == 7
     excludes = " ".join(quick.get("excludes", [])).lower()
     assert "weekly site check report" in excludes
     assert "google drive upload" in excludes
@@ -224,6 +252,33 @@ def test_15_student_quick_check_excludes_report_and_upload():
     assert not any(code in json.dumps(quick, ensure_ascii=False) for code in PASSCODES)
 
 
+def test_table_station_setup_structured_source_has_required_items_and_caution():
+    payload = json.loads(ICPIS_STRUCTURED_JSON.read_text(encoding="utf-8"))
+    setup = payload["sections"]["table_station_setup"]
+    blob = json.dumps(setup, ensure_ascii=False).lower()
+    for item in (
+        "ipad", "manikins", "aed training pads", "consumables",
+        "tissues / simulated gauze", "disinfecting wipes", "disposable gloves",
+        "mask adaptors", "face shield optional", "pocket mask", "bvm",
+        "power cables", "standard position",
+    ):
+        assert item in blob
+    assert "do not repair or dismantle" in setup["caution"].lower()
+
+
+def test_troubleshooting_structured_source_keeps_sop_boundaries():
+    payload = json.loads(ICPIS_STRUCTURED_JSON.read_text(encoding="utf-8"))
+    sections = payload["sections"]
+    assert "No documented power" in json.dumps(sections["tablet_power"], ensure_ascii=False)
+    assert "Reload / refresh once" in json.dumps(sections["black_screen_app_load"], ensure_ascii=False)
+    assert "source-recorded manikin restart" in json.dumps(sections["bluetooth_connection"], ensure_ascii=False)
+    assert "No documented device-session permission" in json.dumps(sections["camera_browser_permission"], ensure_ascii=False)
+    assert "operate breakers" in json.dumps(sections["facility_power"], ensure_ascii=False)
+    assert "Never reveal or guess codes" in json.dumps(sections["access_issue"], ensure_ascii=False)
+    assert "ALLCPR support to confirm" in json.dumps(sections["timer_logout_reset"], ensure_ascii=False)
+    assert "Promise or decide outcome" in json.dumps(sections["escalation_matrix"], ensure_ascii=False)
+
+
 # ---- Part 4: inspection reference image metadata ---------------------------
 
 def test_16_inspection_reference_has_metadata_and_caution():
@@ -233,6 +288,8 @@ def test_16_inspection_reference_has_metadata_and_caution():
     for field in ("title", "image_path", "source", "use_for", "related_steps", "caution"):
         assert field in r, f"reference missing {field}"
     assert "do not repair" in r["caution"].lower()
+    assert r["safe_to_show_to_students"] is True
+    assert r["contains_access_info"] is False
     assert any("table_station_precheck" in s for s in r["related_steps"])
     # via the live endpoint too
     client = TestClient(app)
@@ -253,7 +310,14 @@ def _before_photos_first(step, zh):
 
 
 def test_17_qa_table_returns_ordered_table_guidance():
-    for q, zh in (("what should be on the table", False), ("桌上应该有什么", True)):
+    for q, zh in (
+        ("what should be on the table", False),
+        ("what should be on the desk", False),
+        ("breathing bag thing missing", False),
+        ("BVM missing", False),
+        ("Pocket Mask missing", False),
+        ("桌上应该有什么", True),
+    ):
         a = answer_question(q)
         assert a.scenario == "smart_manikin_site_inspection"
         assert a.issue_subtype == "table_station_precheck"
@@ -314,6 +378,21 @@ def test_20_ipad_no_battery_returns_step_by_step():
             assert "repair" in low or "reset" in low
     # a genuine building outage still routes to electricity_outage
     assert answer_question("教室没电了").scenario == "electricity_outage"
+
+
+def test_new_troubleshooting_routes_match_icpis_sop():
+    cases = [
+        ("black tab", "black_screen_app_restart", ("reload", "no documented fix", "escalate")),
+        ("camera permission denied", "camera_browser_permission", ("permission", "exact error", "escalate")),
+        ("timer reset to 45 minutes", "timer_logout_reset", ("confirm", "normal", "ALLCPR")),
+    ]
+    for q, subissue, tokens in cases:
+        a = answer_question(q, {"lang": "en"})
+        assert a.scenario == "smart_manikin_troubleshooting"
+        assert a.smart_manikin_subissue == subissue
+        blob = " ".join(a.steps + a.do_not_decide_without_approval + a.contacts)
+        for token in tokens:
+            assert token.lower() in blob.lower()
 
 
 def test_19_qa_does_not_expose_passcodes():

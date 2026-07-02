@@ -64,6 +64,12 @@ class SopMediaItem(BaseModel):
     description: str
     tags: List[str] = []
     related_scenarios: List[str] = []
+    what_it_shows: str = ""
+    when_to_show: str = ""
+    related_steps: List[str] = []
+    caution: str = ""
+    safe_to_show_to_students: bool = True
+    contains_access_info: bool = False
 
 
 class OperationalReferenceItem(BaseModel):

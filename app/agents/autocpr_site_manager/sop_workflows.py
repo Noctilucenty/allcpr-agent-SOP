@@ -114,10 +114,13 @@ def build_inspection_reference(lang: str = "en") -> List[Dict[str, Any]]:
                     "Compare the actual station before moving anything.",
                 ),
                 "related_steps": [
-                    "smart_manikin_full_site_inspection#step_3_table_station_precheck",
-                    "smart_manikin_full_site_inspection#step_6_equipment_function_placement",
+                    ref.get("related_workflow_step")
+                    or "smart_manikin_full_site_inspection#step_3_table_station_precheck",
                 ],
                 "caution": caution,
+                "when_to_show": ref.get("when_to_show") or data.get("when_to_show", ""),
+                "safe_to_show_to_students": data.get("safe_to_show_to_students", True),
+                "contains_access_info": data.get("contains_access_info", False),
             }
         )
     # Always guarantee at least the source-backed caption, even if the media index

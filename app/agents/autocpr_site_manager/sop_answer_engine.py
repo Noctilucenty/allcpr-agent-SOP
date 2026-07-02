@@ -55,6 +55,8 @@ _SUBISSUE_ANCHORS: Dict[str, str] = {
     _sub.BLUETOOTH_CONNECTION: "bluetooth won't connect",
     _sub.TRAINING_NO_DATA: "training no data",
     _sub.BLACK_SCREEN_APP_RESTART: "app restart lost progress",
+    _sub.CAMERA_BROWSER_PERMISSION: "camera permission denied",
+    _sub.TIMER_LOGOUT_RESET: "timer reset",
     _sub.COMPLETION_PHOTO: "completion photo",
     _sub.WRONG_ROOM_FLOOR: "manikin room/floor issue",
 }
@@ -83,7 +85,10 @@ _EXTRA_ROUTE_TERMS: Dict[str, Tuple[str, ...]] = {
         "what should be on the table", "what's on the desk", "on the desk",
         "on the table", "missing from the table", "table missing",
         "nothing on the desk", "desk missing", "桌上少东西", "桌上应该有什么",
-        "少东西", "缺东西",
+        "少东西", "缺东西", "table looks wrong", "desk looks wrong",
+        "equipment placement", "bvm missing", "breathing bag missing",
+        "breathing bag thing missing", "i don't see the breathing bag",
+        "pocket mask missing",
     ),
     "smart_manikin_troubleshooting": (
         "camera", "camera off", "camera not working", "camera broken",

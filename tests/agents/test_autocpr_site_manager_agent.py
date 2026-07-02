@@ -97,9 +97,8 @@ def test_electricity_outage_answer_structure():
     # escalation + human review wording
     assert any("主管" in c for c in ans.contacts)
     assert prompts.HUMAN_REVIEW_REQUIRED in ans.answer
-    # clearly labeled as general operations guidance, not official SOP
-    assert prompts.SS_GENERAL in ans.source_status
-    assert prompts.NEEDS_OFFICIAL_SOP in ans.source_status
+    # now sourced from the July 2026 ICPIS SOP.
+    assert prompts.SS_OFFICIAL in ans.source_status
 
 
 def test_english_electricity_outage_answer_is_english_and_labeled():
@@ -107,7 +106,7 @@ def test_english_electricity_outage_answer_is_english_and_labeled():
     assert ans.language == "en"
     assert ans.scenario == "electricity_outage"
     assert "Immediate safety check" in ans.answer
-    assert "general operations guidance, not official SOP" in ans.answer
+    assert "official SOP source" in ans.answer
     assert "Human review required" in ans.answer
     assert "upload/save photos or screenshots" in ans.answer
     assert "如果安全" not in ans.answer
@@ -117,7 +116,7 @@ def test_chinese_electricity_outage_answer_is_chinese_and_labeled():
     ans = answer_question("停电了怎么办？")
     assert ans.language == "zh"
     assert "立即安全检查" in ans.answer
-    assert "非官方 SOP" in ans.answer
+    assert "official SOP source" in ans.answer
     assert "需人工复核" in ans.answer
 
 
@@ -198,6 +197,8 @@ def test_english_smart_manikin_black_screen_preserves_source_limits():
         ("PAD connected but TRAINING receives no data", "training_no_data", True),
         ("蓝牙连不上", "bluetooth_connection", True),
         ("黑屏", "black_screen_app_restart", False),
+        ("camera permission denied", "camera_browser_permission", False),
+        ("timer reset to 45 minutes", "timer_logout_reset", False),
         ("完成照片怎么拍", "completion_photo", True),
         ("找不到房间", "wrong_room_floor", True),
     ],
@@ -269,7 +270,7 @@ def test_source_log_count_not_in_main_smart_steps():
     main = " ".join(ans.steps).lower()
     assert "source log count" not in main
     refs = " ".join(item.value for ref in ans.operational_references for item in ref.items)
-    assert "4" in refs
+    assert "Section 9" in ans.answer or "power" in refs.lower()
 
 
 def test_smart_manikin_question_returns_sop_image_when_media_exists():
@@ -440,14 +441,10 @@ def test_trusted_passcode_only_for_matching_access_site(monkeypatch):
     assert "6285" not in joined_power
 
 
-def test_venue_access_returns_sop_images_when_media_exists():
-    media = build_media_index()
+def test_venue_access_does_not_return_public_access_images():
     ans = answer_question("门打不开怎么办？")
     assert ans.scenario == "venue_access_issue"
-    if media:
-        assert ans.sop_images
-    for item in ans.sop_images:
-        assert item.url.startswith("/static/sop_media/")
+    assert ans.sop_images == []
 
 
 def test_electricity_outage_does_not_return_random_smart_manikin_image():
@@ -471,10 +468,19 @@ def test_sop_media_index_exposes_web_paths_not_local_paths():
     """The committed index must serve web URLs and never leak local machine paths
     (absolute paths, /Users/<name>/..., or username tokens in tags)."""
     items = build_media_index()
+    assert {item.id for item in items} == {
+        "equipment_placement_diagram",
+        "station_floor_setup",
+        "tablet_home_two_modules",
+        "app_login_screen",
+        "app_bls_session_example",
+    }
     leaky = {"users", "desktop", "developer", "private", "home", "noctilucenteasteliq"}
     for item in items:
         assert item.url.startswith("/static/sop_media/")
         assert not item.source_file.startswith("/")
+        assert item.safe_to_show_to_students is True
+        assert item.contains_access_info is False
         assert "Users" not in item.source_file and ":\\" not in item.source_file
         assert not leaky.intersection({t.lower() for t in item.tags})
         for tag in item.tags:
@@ -490,10 +496,10 @@ def test_no_media_match_response_still_works():
 
 # --- common-knowledge labeling ----------------------------------------------
 
-def test_common_knowledge_clearly_labeled_not_official():
+def test_power_network_access_are_now_official_icpis_sop():
     for q in ("停电了怎么办？", "教室没网怎么办？", "门打不开怎么办？"):
         ans = answer_question(q)
-        assert prompts.SS_GENERAL in ans.source_status
+        assert prompts.SS_OFFICIAL in ans.source_status
 
 
 # --- attachments: acknowledged, never claimed-as-analyzed --------------------

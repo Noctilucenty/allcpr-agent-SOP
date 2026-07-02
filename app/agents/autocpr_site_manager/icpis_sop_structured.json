@@ -1,0 +1,818 @@
+{
+  "version": "Gosvea-2026-SOP-Auto CPR-ICPIS-01",
+  "source_name": "AutoCPR ICPIS SOP 20260701",
+  "source_document_name": "AutoCPR  ICPIS Only SOP 20260701.docx",
+  "staff_only_source": true,
+  "redacted_for_repo": true,
+  "language": "English only",
+  "created_from_local_staff_only_docx": true,
+  "raw_section_21_included": false,
+  "sensitive_content_excluded": [
+    "live site access codes",
+    "lockbox codes",
+    "Wi-Fi passwords",
+    "staff PINs",
+    "site access photos",
+    "wayfinding photos",
+    "raw Section 21 content"
+  ],
+  "sections": {
+    "safety_rules": {
+      "purpose": "Inspect, prepare, document, and escalate Smart Manikin site issues safely and consistently.",
+      "scope": [
+        "ALLCPR Smart Manikin Learning Station site inspection and readiness workflows.",
+        "AUTOCPR Training Center / ICPIS staff workflows, quick readiness checks, troubleshooting, escalation, and reference-only site/travel workflows.",
+        "Section 21 site access directory is staff-only and redacted from committed structured files."
+      ],
+      "core_rules": [
+        "Check the site, clean lightly when allowed, document what you find, and report issues.",
+        "Take before photos before cleaning, moving, fixing, or organizing anything.",
+        "Do not repair, open, rewire, dismantle, or force equipment, doors, locks, keypads, lockboxes, or electrical/network infrastructure.",
+        "Do not guess, reveal, or share access codes, lockbox codes, Wi-Fi passwords, staff PINs, or access photos.",
+        "Do not use old, staged, or replacement photos as inspection evidence.",
+        "Escalate safety, access, lease, refund, insurance, cost, legal, facility-power, and unresolved technical issues.",
+        "Staff never self-approve refunds, reschedules, compensation, leases, cost commitments, insurance terms, legal decisions, or safety exceptions."
+      ]
+    },
+    "staff_full_site_inspection": {
+      "applies_to": [
+        "staff",
+        "site_representative",
+        "ICPIS"
+      ],
+      "not_for": [
+        "student"
+      ],
+      "requires_staff_pin": true,
+      "record_form": "Weekly Site Check Report",
+      "steps": [
+        {
+          "id": "step_1_arrive_and_pause",
+          "step_number": 1,
+          "title": "Arrive and pause before touching setup",
+          "check": "Look at the whole room and the Smart Manikin station first. Do not clean, move, fix, or organize anything yet.",
+          "evidence": "None yet; prepare to photograph the site in its found state."
+        },
+        {
+          "id": "step_2_before_photos",
+          "step_number": 2,
+          "title": "Take before photos first",
+          "check": "Photograph the site before any cleaning or organizing: whole room; Smart Manikin area; supplies / consumables area; door or signage; any abnormal / problem area.",
+          "evidence": "Before photos of the required areas."
+        },
+        {
+          "id": "step_3_table_station_precheck",
+          "step_number": 3,
+          "title": "Table / station pre-check",
+          "check": "Before moving anything, compare the station to Figure 1 and confirm iPad, Smart Manikin(s), AED Training Pads, consumables area, tissues/simulated gauze if supplied, disinfecting wipes, disposable gloves, mask adaptors, optional face shield, Pocket Mask, BVM, iPad power, Smart Manikin power, and standard placement / not scattered.",
+          "evidence": "Mark each item Present / Missing / Problem and photograph any missing or problem item if safe."
+        },
+        {
+          "id": "step_4_cleanliness_check",
+          "step_number": 4,
+          "title": "Cleanliness check",
+          "check": "Check overall hygiene. Empty trash and replace the bag if needed. Keep the floor clean and clear visible mess.",
+          "evidence": "Cleanliness status recorded as OK / fixed / problem."
+        },
+        {
+          "id": "step_5_supplies_check",
+          "step_number": 5,
+          "title": "Supplies check",
+          "check": "Confirm disinfecting supplies are enough for one week. Disinfect teaching equipment. Note low or missing consumables such as wipes, gloves, and mask adaptors.",
+          "evidence": "Supplies status and low/missing consumables recorded."
+        },
+        {
+          "id": "step_6_equipment_check",
+          "step_number": 6,
+          "title": "Equipment check",
+          "check": "Check Smart Manikin, iPad, AED Pads, BVM, and Pocket Mask are complete and working. Confirm iPad and Smart Manikin are connected to power and equipment is in the standard position.",
+          "evidence": "Equipment status recorded; photo of broken or unresponsive device if safe."
+        },
+        {
+          "id": "step_7_access_camera_wifi_signage_safety",
+          "step_number": 7,
+          "title": "Access / camera / Wi-Fi / signage / safety checks",
+          "check": "Check door access status, camera online status, Wi-Fi status, signs/instructions, and visible water/electric/equipment hazards. Do not expose codes in the workflow.",
+          "evidence": "Access / camera / Wi-Fi / signage / safety status recorded."
+        },
+        {
+          "id": "step_8_safe_only_fixes",
+          "step_number": 8,
+          "title": "Safe-only fixes",
+          "check": "If an issue can be safely fixed on site, fix it and document what you did. If not, take photos and report promptly.",
+          "evidence": "Action taken recorded; before/after photos of the fix if any."
+        },
+        {
+          "id": "step_9_after_photos",
+          "step_number": 9,
+          "title": "Take after photos",
+          "check": "After inspection and cleaning are complete, photograph the site again from similar angles: whole room; Smart Manikin area; supplies area; door or signage; corrected result if an issue was fixed.",
+          "evidence": "After photos of the required areas."
+        },
+        {
+          "id": "step_10_weekly_site_check_report",
+          "step_number": 10,
+          "title": "Complete the Weekly Site Check Report",
+          "check": "Fill the Weekly Site Check Report fields: header, weekly status items, required photos, issues found, local promotion update, and weekly confirmation.",
+          "evidence": "Completed Weekly Site Check Report, truthful and complete."
+        },
+        {
+          "id": "step_11_upload_report_completion",
+          "step_number": 11,
+          "title": "Upload / report completion",
+          "check": "Upload before photos, after photos, the completed report, and issue photos to the correct per-site Google Drive folder. The app records upload completed but does not manage Google Drive.",
+          "evidence": "Upload/report completion recorded; confirm correct folder with staff when needed."
+        },
+        {
+          "id": "step_12_final_log",
+          "step_number": 12,
+          "title": "Final log",
+          "check": "Set final status: completed if no unresolved issue remains, needs_support if unresolved issue remains, or safety_escalation for safety issues. Include missing/problem counts.",
+          "evidence": "Final status recorded with missing/problem counts."
+        }
+      ],
+      "do_not": [
+        "Do not clean, move, fix, or organize before before photos.",
+        "Do not repair, dismantle, rewire, force doors, guess codes, or use old/staged photos.",
+        "Do not self-approve safety, access, lease, refund, insurance, cost, or legal decisions."
+      ]
+    },
+    "student_quick_class_readiness": {
+      "who": [
+        "students",
+        "anyone starting a class"
+      ],
+      "type": "report-only",
+      "no_pin_needed": true,
+      "report_only": true,
+      "students_do": [
+        "Report visible problems.",
+        "Use only simple safe checks.",
+        "Submit a quick report for staff review."
+      ],
+      "students_do_not": [
+        "Do not force entry or use staff-only access.",
+        "Do not move, reset, repair, or dismantle equipment.",
+        "Do not handle the Weekly Site Check Report, Google Drive upload, passcodes, lockbox codes, cleaning duties, or supply duties."
+      ],
+      "quick_7_point_check": [
+        "Can you enter?",
+        "Does the room look safe and usable?",
+        "Can you see the Smart Manikin / iPad station?",
+        "Does the iPad/app open?",
+        "Does the Smart Manikin look connected/usable?",
+        "Anything missing, dirty, or broken?",
+        "Submit quick report for staff review."
+      ]
+    },
+    "table_station_setup": {
+      "steps": [
+        "Take before photos first.",
+        "Compare the station to the reference image.",
+        "Check the table layout and required items are all present.",
+        "Check the tablet / iPad is present and charging.",
+        "Check the manikin / equipment placement matches the standard.",
+        "Check supplies: consumables, disinfecting items, and rescue-breathing items.",
+        "Photograph any missing or broken item.",
+        "Report the issue in the Weekly Site Check Report."
+      ],
+      "standard_station_includes": {
+        "training_equipment": [
+          "iPad",
+          "manikins",
+          "AED Training Pads"
+        ],
+        "power": [
+          "Keep manikins plugged in throughout the course",
+          "Keep Smart Manikin / iPad in standard position",
+          "Check power cables"
+        ],
+        "consumables": [
+          "tissues / simulated gauze",
+          "disinfecting wipes",
+          "disposable gloves",
+          "mask adaptors",
+          "face shield optional"
+        ],
+        "rescue_breathing_equipment": [
+          "Pocket Mask",
+          "Bag-Valve Mask / BVM optional; use if mask adaptors are unavailable"
+        ]
+      },
+      "caution": "Reference only; do not repair or dismantle equipment."
+    },
+    "tablet_power": {
+      "use_for": [
+        "iPad no battery",
+        "tablet dead",
+        "won't charge",
+        "won't power on"
+      ],
+      "steps": [
+        "Confirm visible charging / power connection.",
+        "Confirm tablet / iPad is connected to power.",
+        "Wait briefly for a charging or power indicator.",
+        "If still unusable, take photo evidence of the screen, cable, and power/charging state.",
+        "Mark / report the station or device as not ready.",
+        "Include the issue in the inspection / Weekly Site Check Report."
+      ],
+      "do_not": [
+        "Do not open the device.",
+        "Do not repair, dismantle, replace parts, or handle unsafe electrical parts.",
+        "Do not invent reset/calibration steps."
+      ],
+      "escalation": [
+        "Escalate to ALLCPR support/staff and engineer/vendor; notify supervisor if class is affected."
+      ],
+      "source_section": "Section 7",
+      "documented_fix_status": "No documented power fix is recorded for tablet/iPad power, battery, charging, or power-on issues."
+    },
+    "black_screen_app_load": {
+      "use_for": [
+        "Launch App opens black tab",
+        "app won't load",
+        "screen is black",
+        "app self-restarted and lost progress"
+      ],
+      "steps": [
+        "Reload / refresh once and wait.",
+        "If fixed, continue and note it.",
+        "If not fixed, record issue; no documented fix is recorded.",
+        "Save photo/video of black screen or restart, exact time, course step, and power/display/Bluetooth/tablet-PAD status."
+      ],
+      "do_not": [
+        "Do not invent browser/device repair steps.",
+        "Do not try undocumented reset/recovery/calibration."
+      ],
+      "escalation": [
+        "Escalate to engineer/vendor; notify supervisor if class is affected."
+      ],
+      "source_section": "Section 8"
+    },
+    "bluetooth_connection": {
+      "use_for": [
+        "Bluetooth won't connect",
+        "manikin cannot connect",
+        "PAD connected but training shows no data"
+      ],
+      "steps": [
+        "Identify the issue: will not connect vs connected but no training data.",
+        "Keep manikin and PAD powered with power strip.",
+        "If still will not connect while plugged in, use only the source-recorded manikin restart step.",
+        "Remember: when powered-but-unplugged, PAD may show connected but TRAINING receives no data.",
+        "If unresolved, save photo/video of connected/no-data state and exact symptom/time."
+      ],
+      "do_not": [
+        "Do not dismantle.",
+        "Do not invent unsupported reset, calibration, permission, Wi-Fi, or browser fixes."
+      ],
+      "escalation": [
+        "Document and escalate to engineer/vendor; notify supervisor if class is affected."
+      ],
+      "source_section": "Section 9"
+    },
+    "camera_browser_permission": {
+      "use_for": [
+        "camera permission denied",
+        "browser is blocking the camera"
+      ],
+      "steps": [
+        "Check browser/camera permission only if the SOP supports it for the situation, such as a basic in-app permission prompt.",
+        "If unresolved, capture the exact error text / screenshot."
+      ],
+      "do_not": [
+        "Do not reinstall, re-flash, change devices, or perform unsupported technical fixes."
+      ],
+      "escalation": [
+        "Document and escalate to engineer/vendor / tech support; notify supervisor if class is affected."
+      ],
+      "source_section": "Section 10",
+      "documented_fix_status": "No documented device-session permission fix is recorded beyond a basic supported in-app permission prompt."
+    },
+    "wifi_internet": {
+      "use_for": [
+        "wifi not working",
+        "internet down",
+        "platform loading failure"
+      ],
+      "steps": [
+        "Confirm scope: one device, room/building network, or course/platform.",
+        "If authorized, confirm site network device has power; otherwise contact venue/property/tech.",
+        "Capture Wi-Fi/network errors, loading failures, and exact error text."
+      ],
+      "do_not": [
+        "Do not change unauthorized network equipment.",
+        "Do not promise restore/refund/reschedule/compensation before approval."
+      ],
+      "escalation": [
+        "Escalate venue/property for site-network; supervisor/tech for platform/system."
+      ],
+      "source_section": "Section 11A"
+    },
+    "facility_power": {
+      "use_for": [
+        "power outage",
+        "facility power",
+        "outlet issue"
+      ],
+      "steps": [
+        "Safety first: confirm no fire, smoke, burning smell, shock, injury, or unsafe dark-room movement.",
+        "Confirm scope: one room, whole building, or surrounding area.",
+        "Ask venue/property to inspect/reset authorized electrical equipment and estimate restore time.",
+        "Prepare escalation packet: outage start time, class/site, affected headcount, evidence, venue response, and whether class can continue."
+      ],
+      "do_not": [
+        "Do not handle unsafe electrical parts.",
+        "Do not operate breakers.",
+        "Do not rewire or repair outlets.",
+        "Do not promise restore/refund/reschedule/compensation before approval."
+      ],
+      "escalation": [
+        "Escalate to venue/property and supervisor."
+      ],
+      "source_section": "Section 11B"
+    },
+    "access_issue": {
+      "use_for": [
+        "doors not working",
+        "locked out",
+        "keypad won't open",
+        "can't get in"
+      ],
+      "steps": [
+        "Do not force doors, locks, keypads, or lockboxes.",
+        "Confirm location / room if safe.",
+        "Document arrival time and every attempt.",
+        "Report to ALLCPR staff / supervisor.",
+        "Mark site/session not ready if access is blocked.",
+        "Never reveal or guess codes."
+      ],
+      "do_not": [
+        "Do not force doors/locks/keypads/lockboxes.",
+        "Do not reveal, guess, or share codes."
+      ],
+      "escalation": [
+        "If access fails, contact venue/property, then supervisor if class delayed."
+      ],
+      "source_section": "Section 12"
+    },
+    "timer_logout_reset": {
+      "use_for": [
+        "timer reset",
+        "logout reset",
+        "unexpected logout",
+        "unexpected reset"
+      ],
+      "steps": [
+        "Treat unexpected logout/reset/timer behavior like Section 8.",
+        "Document the behavior and escalate.",
+        "Escalate to ALLCPR support to confirm whether expected before telling students it is normal."
+      ],
+      "do_not": [
+        "Do not invent a fix.",
+        "Do not call it normal unless ALLCPR confirms it."
+      ],
+      "escalation": [
+        "ALLCPR support / supervisor."
+      ],
+      "source_section": "Section 13"
+    },
+    "missing_supplies_dirty_damaged": {
+      "use_for": [
+        "missing supplies",
+        "dirty station",
+        "damaged equipment",
+        "manikin broken",
+        "BVM missing",
+        "Pocket Mask missing"
+      ],
+      "steps": [
+        "Take photo evidence.",
+        "Note exact item missing, damaged, or dirty.",
+        "Do safe-only cleanup if SOP allows.",
+        "Report in Weekly Site Check Report and to ALLCPR if it cannot be fixed on site."
+      ],
+      "do_not": [
+        "Do not repair or dismantle damaged equipment."
+      ],
+      "escalation": [
+        "Escalate anything you cannot restock or safely resolve."
+      ],
+      "source_section": "Section 14"
+    },
+    "weekly_site_check_report": {
+      "header": [
+        "site name",
+        "site address",
+        "ICPIS / inspector name",
+        "inspection date",
+        "inspection time"
+      ],
+      "weekly_site_status_items": [
+        "Site is clean",
+        "Trash has been removed",
+        "Disinfecting wipes / supplies are available",
+        "Smart Manikin is in place",
+        "iPad / tablet is present and charging",
+        "AED pads / BVM / pocket mask are present",
+        "Door / lockbox / access code works",
+        "Camera is online and not blocked",
+        "Wi-Fi appears normal",
+        "Signs / instructions are clear"
+      ],
+      "required_photos": [
+        "room overview",
+        "Smart Manikin area",
+        "supplies area",
+        "entrance/signage"
+      ],
+      "issues_found": [
+        "no issue / minor issue / urgent issue",
+        "issue description",
+        "action taken",
+        "need ALLCPR support yes/no"
+      ],
+      "local_promotion_update": [
+        "local promotion/articles/Eventbrite/community posts/partner outreach this week",
+        "promotion details",
+        "link/result"
+      ],
+      "weekly_confirmation": "Site checked, cleaned, and reviewed for basic operation readiness; add name and date.",
+      "upload_destination": "Per-site Google Drive folder, not managed by app; workflow records upload completed and needs staff confirmation of correct folder.",
+      "do_not": [
+        "Do not leave report incomplete.",
+        "Do not enter false info.",
+        "Do not upload old/staged photos."
+      ]
+    },
+    "new_site_assessment_reference": {
+      "reference_only": true,
+      "not_default_ui": true,
+      "core_principle": "Region first, then site; information first, then judgment.",
+      "stages": [
+        "ZipCode screening",
+        "Potential ZipCode confirmation",
+        "L1 site collection",
+        "Visit list confirmation",
+        "Field assessment",
+        "Analysis sheet update within 24h",
+        "BD review",
+        "Virtual course & site test",
+        "Management approval",
+        "Equipment purchase & renovation prep",
+        "Opening date & official ad launch",
+        "Pre-open acceptance, system test, opening"
+      ],
+      "site_scoring_bands": [
+        ">=85 Priority Candidate",
+        "75-84.9 Management Review",
+        "65-74.9 Hold / Compare",
+        "<65 Reject"
+      ],
+      "open_site_test_threshold": "CPS ads 3 days including weekday and weekend; Google Ads 7 days; >5 signups in a week or 10 total may open, otherwise management decides.",
+      "hard_elimination_conditions": [
+        "Access control cannot be installed or students cannot enter in a controlled way.",
+        "Camera cannot be installed or cover entrance and equipment area.",
+        "Wi-Fi/network cannot meet equipment needs and cannot be fixed by installing network.",
+        "Clear evening/weekend student-entry safety risk.",
+        "Landlord/property uncooperative or limits access/camera/signage/equipment placement.",
+        "Educational/training use not allowed or lease terms block operation.",
+        "Room size, flow, or environment clearly unsuitable for independent student training."
+      ],
+      "do_not": [
+        "Do not self-approve lease, cost, renovation, equipment purchase, insurance, liability, safety, or operations decisions."
+      ]
+    },
+    "business_trip_reference": {
+      "reference_only": true,
+      "not_default_ui": true,
+      "process": [
+        "trip request",
+        "approval",
+        "pre-trip checklist",
+        "daily log/evidence",
+        "trip report",
+        "expense package",
+        "follow-up"
+      ],
+      "mileage": {
+        "eligibility": "More than 20 miles one way.",
+        "reimbursed_miles": "Only miles beyond the first 20 each way.",
+        "rate": "$0.20 per eligible mile",
+        "submit_via": "Ramp",
+        "deadline": "30 days"
+      }
+    },
+    "escalation_matrix": [
+      {
+        "issue_type": "iPad / tablet power or battery",
+        "staff_can_do": "Confirm on charge; save evidence; mark not ready.",
+        "staff_must_not_do": "Open, repair, replace parts, handle unsafe electrical parts.",
+        "escalate_when": "Will not power on/charge after confirming power."
+      },
+      {
+        "issue_type": "Black tab / app won't load",
+        "staff_can_do": "Reload/refresh once and wait; save evidence.",
+        "staff_must_not_do": "Invent browser/device repair or reset steps.",
+        "escalate_when": "Reload does not fix it."
+      },
+      {
+        "issue_type": "Bluetooth / manikin connection",
+        "staff_can_do": "Keep manikin + PAD powered; source-recorded restart only.",
+        "staff_must_not_do": "Dismantle; invent reset/calibration/permission fixes.",
+        "escalate_when": "Still not connecting / no data."
+      },
+      {
+        "issue_type": "Camera / browser permission",
+        "staff_can_do": "Check basic in-app permission prompt; capture error text.",
+        "staff_must_not_do": "Perform unsupported technical fixes.",
+        "escalate_when": "Still blocked."
+      },
+      {
+        "issue_type": "Wi-Fi / internet",
+        "staff_can_do": "Confirm scope; capture error evidence; authorized power check only.",
+        "staff_must_not_do": "Change unauthorized network equipment.",
+        "escalate_when": "Site network or platform down."
+      },
+      {
+        "issue_type": "Facility power / outage",
+        "staff_can_do": "Confirm safety/scope; ask venue to inspect/reset; build packet.",
+        "staff_must_not_do": "Operate breakers; rewire/repair outlets.",
+        "escalate_when": "Outage affects class."
+      },
+      {
+        "issue_type": "Door / access issue",
+        "staff_can_do": "Confirm location; record attempts; mark session not ready.",
+        "staff_must_not_do": "Force doors/locks; guess or share codes.",
+        "escalate_when": "Access blocked / class delayed."
+      },
+      {
+        "issue_type": "Missing supplies",
+        "staff_can_do": "Restock what you have; note and photograph.",
+        "staff_must_not_do": "Make a student responsible for staff restocking.",
+        "escalate_when": "Cannot restock on site."
+      },
+      {
+        "issue_type": "Damaged equipment",
+        "staff_can_do": "Photograph; note exact item; mark not ready.",
+        "staff_must_not_do": "Repair or dismantle.",
+        "escalate_when": "Any damage."
+      },
+      {
+        "issue_type": "Refund / cost / insurance / lease / safety / legal",
+        "staff_can_do": "Collect evidence; prepare escalation packet.",
+        "staff_must_not_do": "Promise or decide outcome.",
+        "escalate_when": "Always."
+      }
+    ],
+    "troubleshooting_index": [
+      {
+        "user_says": "iPad no battery",
+        "category": "§7 Tablet power",
+        "route": "tablet_power"
+      },
+      {
+        "user_says": "tablet dead",
+        "category": "§7 Tablet power",
+        "route": "tablet_power"
+      },
+      {
+        "user_says": "black tab",
+        "category": "§8 App load",
+        "route": "black_screen_app_load"
+      },
+      {
+        "user_says": "app won't load",
+        "category": "§8 App load",
+        "route": "black_screen_app_load"
+      },
+      {
+        "user_says": "manikin not connecting",
+        "category": "§9 Bluetooth",
+        "route": "bluetooth_connection"
+      },
+      {
+        "user_says": "PAD connected but no training data",
+        "category": "§9 Bluetooth",
+        "route": "bluetooth_connection"
+      },
+      {
+        "user_says": "camera permission denied",
+        "category": "§10 Camera/browser",
+        "route": "camera_browser_permission"
+      },
+      {
+        "user_says": "student can't start",
+        "category": "§5 Readiness / §8",
+        "route": "student_quick_class_readiness"
+      },
+      {
+        "user_says": "table missing stuff",
+        "category": "§6 / §14",
+        "route": "table_station_setup"
+      },
+      {
+        "user_says": "what should be on the desk",
+        "category": "§6 Station setup",
+        "route": "table_station_setup"
+      },
+      {
+        "user_says": "BVM missing",
+        "category": "§6 / §14",
+        "route": "table_station_setup"
+      },
+      {
+        "user_says": "Pocket Mask missing",
+        "category": "§6 / §14",
+        "route": "table_station_setup"
+      },
+      {
+        "user_says": "wifi not working",
+        "category": "§11 Wi-Fi/internet",
+        "route": "wifi_internet"
+      },
+      {
+        "user_says": "power outage",
+        "category": "§11 Facility power",
+        "route": "facility_power"
+      },
+      {
+        "user_says": "doors not working",
+        "category": "§12 Access",
+        "route": "access_issue"
+      },
+      {
+        "user_says": "timer reset",
+        "category": "§13 Timer/logout/reset",
+        "route": "timer_logout_reset"
+      },
+      {
+        "user_says": "logout reset",
+        "category": "§13 Timer/logout/reset",
+        "route": "timer_logout_reset"
+      },
+      {
+        "user_says": "missing supplies",
+        "category": "§14 Supplies",
+        "route": "missing_supplies_dirty_damaged"
+      },
+      {
+        "user_says": "manikin broken",
+        "category": "§14 Damage",
+        "route": "missing_supplies_dirty_damaged"
+      },
+      {
+        "user_says": "lockbox code",
+        "category": "§21 Site Access",
+        "route": "staff_only_access_logic"
+      },
+      {
+        "user_says": "wifi password",
+        "category": "§21 Site Access",
+        "route": "staff_only_access_logic"
+      }
+    ],
+    "safe_figures": [
+      {
+        "image_id": "equipment_placement_diagram",
+        "source_section_page": "Section 6 / Figure 1; Smart Manikin site-inspection SOP page 3",
+        "title": "Smart Manikin Figure 1 — equipment placement diagram / standard equipment placement reference",
+        "filename": "65e6ee1a6885.png",
+        "source_file": "SOP_library/images/equipment_placement_diagram.png",
+        "what_it_shows": "Standard Smart Manikin table/station placement: iPad, manikins, AED Training Pads, consumables, Pocket Mask, and BVM.",
+        "when_to_show": "Table / station pre-check, equipment placement, supplies check, and desk/table layout questions.",
+        "related_workflow_step": "smart_manikin_full_site_inspection#step_3_table_station_precheck",
+        "caution": "Reference only; do not repair or dismantle equipment.",
+        "safe_to_show_to_students": true,
+        "contains_access_info": false,
+        "related_scenarios": [
+          "smart_manikin_site_inspection"
+        ],
+        "tags": [
+          "equipment",
+          "placement",
+          "diagram",
+          "table",
+          "station",
+          "ipad",
+          "manikin",
+          "aed",
+          "bvm",
+          "pocket",
+          "mask",
+          "supplies"
+        ]
+      },
+      {
+        "image_id": "station_floor_setup",
+        "source_section_page": "Section 6 / Figure 2; Quick Start Guide",
+        "title": "Smart Manikin Figure 2 — Example floor setup",
+        "filename": "af1ee0f438f7.jpg",
+        "source_file": "SOP_library/images/station_floor_setup.jpg",
+        "what_it_shows": "Example floor setup with manikin, BVM, pocket mask, AED pads, and tablet stand.",
+        "when_to_show": "Station layout, equipment placement, and rescue-breathing item questions.",
+        "related_workflow_step": "smart_manikin_full_site_inspection#step_3_table_station_precheck",
+        "caution": "Reference only; do not repair or dismantle equipment.",
+        "safe_to_show_to_students": true,
+        "contains_access_info": false,
+        "related_scenarios": [
+          "smart_manikin_site_inspection"
+        ],
+        "tags": [
+          "floor",
+          "setup",
+          "station",
+          "manikin",
+          "bvm",
+          "pocket",
+          "mask",
+          "aed",
+          "tablet"
+        ]
+      },
+      {
+        "image_id": "tablet_home_two_modules",
+        "source_section_page": "Section 5 / Figure 3; Quick Start Guide",
+        "title": "Smart Manikin Figure 3 — Tablet home screen with two training apps",
+        "filename": "2222b15921c8.png",
+        "source_file": "SOP_library/images/tablet_home_two_modules.png",
+        "what_it_shows": "Tablet home screen with Adult and Pediatric First Aid/CPR/AED and BLS Healthcare Provider training apps.",
+        "when_to_show": "Student quick readiness and app launch questions.",
+        "related_workflow_step": "student_quick_class_readiness_check#step_4_ipad_opens",
+        "caution": "Use only to identify the expected app screen; do not change device settings.",
+        "safe_to_show_to_students": true,
+        "contains_access_info": false,
+        "related_scenarios": [
+          "smart_manikin_troubleshooting",
+          "smart_manikin_site_inspection"
+        ],
+        "tags": [
+          "tablet",
+          "tablet_home",
+          "apps",
+          "ipad",
+          "launch",
+          "class",
+          "readiness"
+        ]
+      },
+      {
+        "image_id": "app_login_screen",
+        "source_section_page": "Section 8 / Figure 4; Quick Start Guide",
+        "title": "Smart Manikin Figure 4 — Normal Login / Continue screen",
+        "filename": "9b20b65e320f.png",
+        "source_file": "SOP_library/images/app_login_screen.png",
+        "what_it_shows": "Normal login / Continue screen expected when the app loads correctly.",
+        "when_to_show": "Black tab, app not loading, or login/continue screen questions.",
+        "related_workflow_step": "black_screen_app_load",
+        "caution": "Reference only; if a black tab remains after one reload, document and escalate.",
+        "safe_to_show_to_students": true,
+        "contains_access_info": false,
+        "related_scenarios": [
+          "smart_manikin_troubleshooting"
+        ],
+        "tags": [
+          "login",
+          "continue",
+          "app",
+          "black",
+          "tab",
+          "load",
+          "screen"
+        ]
+      },
+      {
+        "image_id": "app_bls_session_example",
+        "source_section_page": "Section 8 / Figure 5; Quick Start Guide",
+        "title": "Smart Manikin Figure 5 — Example session screen with Bluetooth / Submit / Pass",
+        "filename": "b7ea2e1a3036.png",
+        "source_file": "SOP_library/images/app_bls_session_example.png",
+        "what_it_shows": "Example session screen with Bluetooth, Call Support, Exit, Submit, and Adult / Infant Pass controls.",
+        "when_to_show": "Bluetooth, session, Submit, Pass, and completion evidence questions.",
+        "related_workflow_step": "bluetooth_connection",
+        "caution": "Reference only; do not infer certificate eligibility or repair steps from the image.",
+        "safe_to_show_to_students": true,
+        "contains_access_info": false,
+        "related_scenarios": [
+          "smart_manikin_troubleshooting",
+          "completion_or_certificate_issue"
+        ],
+        "tags": [
+          "session",
+          "bluetooth",
+          "submit",
+          "pass",
+          "adult",
+          "infant",
+          "completion"
+        ]
+      }
+    ],
+    "section_21_site_access_directory": {
+      "staff_only": true,
+      "redacted_for_repo": true,
+      "raw_codes_in_repo": false,
+      "handling": "Live site access codes, lockbox codes, Wi-Fi passwords, staff PINs, and site access/wayfinding photos must stay in staff-gated local credential/access logic and must not be sent to AI payloads."
+    }
+  }
+}

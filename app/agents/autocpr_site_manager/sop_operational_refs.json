@@ -3,7 +3,7 @@
     {
       "id": "venue_access_general",
       "scenario": "venue_access_issue",
-      "title": "Access triage before using any code",
+      "title": "Door / facility access issue",
       "applies_to": [
         "door locked",
         "room access",
@@ -13,60 +13,43 @@
         "door code",
         "gate code",
         "cannot access",
-        "can't get in",
-        "cannot enter",
-        "locked out",
-        "wrong room",
-        "wrong floor",
-        "门打不开",
-        "进不去",
-        "门禁密码",
-        "房间密码",
-        "大门",
-        "走错楼层",
-        "找不到房间"
+        "doors not working"
       ],
-      "source_status": "official SOP source + Smart Manikin source",
-      "priority": 60,
+      "source_status": "official SOP source",
+      "priority": 150,
       "items": [
         {
-          "label": "Confirm matching site",
-          "value": "Confirm the class address, building, floor, and room before using any access note or code.",
+          "label": "Do now",
+          "value": "Confirm the class address, building, floor, and room. Confirm location/room if safe, record arrival time and every attempt, report to ALLCPR staff/supervisor, and mark site/session not ready if blocked.",
           "sensitivity": "normal",
-          "fact_type": "access_note"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Access materials",
-          "value": "Check the site-specific room passcode, gate passcode or lockbox note, and instruction video if a matching site reference is available.",
+          "label": "Codes",
+          "value": "Use only staff-gated deterministic access logic for matching-site codes; never reveal or guess codes in AI or public payloads.",
           "sensitivity": "normal",
-          "fact_type": "access_note"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Passcode availability",
-          "value": "If no listed site-specific trusted passcode matches the actual site/building/room, check the SOP image/reference or contact venue/property.",
-          "sensitivity": "source_needed",
-          "fact_type": "access_code"
+          "label": "Escalate",
+          "value": "Contact venue/property, then supervisor if class delayed.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "If access fails",
-          "value": "Contact venue/property to open or confirm the entry method, record arrival time and attempts, and escalate to a supervisor if class is delayed.",
+          "label": "No matching site",
+          "value": "If no listed site-specific trusted passcode matches, do not guess; contact venue/property and escalate if class is delayed.",
           "sensitivity": "normal",
-          "fact_type": "escalation"
+          "fact_type": "icpis_sop"
         }
       ],
       "media_tags": [
+        "access",
         "door",
-        "keypad",
-        "lockbox",
-        "gate",
-        "building",
-        "room",
-        "access"
+        "lockbox"
       ],
       "do_not": [
-        "Do not force the door.",
-        "Do not guess passcodes from images.",
-        "Do not share access codes outside internal operations."
+        "Do not force doors, locks, keypads, or lockboxes. Do not reveal, guess, or share codes."
       ]
     },
     {
@@ -348,129 +331,101 @@
     {
       "id": "smart_manikin_ipad_power_open_no_fix",
       "scenario": "smart_manikin_troubleshooting",
-      "title": "iPad / PAD power, battery, or open issue",
+      "title": "Tablet / iPad power or charging issue",
       "applies_to": [
-        "ipad打不开",
-        "iPad won't open",
-        "iPad won't turn on",
-        "PAD打不开",
-        "tablet won't turn on",
-        "平板打不开",
-        "平板开不了",
-        "pad not opening",
-        "tablet black screen",
         "ipad no battery",
-        "no battery",
-        "ipad battery",
-        "dead battery",
-        "out of battery",
-        "won't charge",
-        "not charging",
-        "ipad no power",
         "tablet dead",
-        "tablet not turning on",
-        "tablet no power",
-        "平板没电",
-        "ipad没电",
-        "没电",
-        "充不进电",
-        "不充电"
+        "won't charge",
+        "won't power on",
+        "no battery",
+        "tablet no power"
       ],
-      "source_status": "Smart Manikin source + needs engineer/vendor confirmation",
-      "priority": 115,
+      "source_status": "official SOP source",
+      "priority": 130,
       "items": [
         {
-          "label": "Source limit",
-          "value": "No documented iPad/PAD open or power-on fix is recorded in the source.",
+          "label": "Documented fix status",
+          "value": "No documented power/battery/device repair fix is recorded.",
           "sensitivity": "normal",
-          "fact_type": "unsupported_fix"
+          "fact_type": "icpis_sop"
         },
         {
           "label": "Do now",
-          "value": "Confirm power/charging state, save photo/video of the screen and power state, then escalate if it does not recover.",
+          "value": "Confirm visible charging/power connection, wait briefly for indicator, photograph screen/cable/power state, mark not ready, report in inspection/Weekly Site Check Report.",
           "sensitivity": "normal",
-          "fact_type": "device_note"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Escalation",
-          "value": "Escalate to engineer/vendor and notify supervisor if class is affected.",
+          "label": "Escalate",
+          "value": "ALLCPR support/staff and engineer/vendor; supervisor if class affected.",
           "sensitivity": "normal",
-          "fact_type": "vendor_escalation"
+          "fact_type": "icpis_sop"
         }
       ],
       "media_tags": [
-        "smart",
-        "manikin",
-        "ipad",
-        "pad",
         "tablet",
-        "power",
-        "screen"
+        "ipad",
+        "power"
       ],
       "do_not": [
-        "Do not invent reset, calibration, disassembly, or root-cause steps.",
-        "Do not claim the source has an iPad/PAD power fix."
+        "Do not open, repair, dismantle, replace parts, handle unsafe electrical parts, or invent reset/calibration steps."
       ]
     },
     {
       "id": "smart_manikin_bluetooth_power",
       "scenario": "smart_manikin_troubleshooting",
-      "title": "Smart Manikin Bluetooth / power fix",
+      "title": "Bluetooth / manikin connection issue",
       "applies_to": [
-        "Bluetooth",
-        "power",
-        "power strip",
-        "connect",
-        "won't connect",
-        "PAD",
-        "蓝牙",
-        "插线板",
-        "连不上"
+        "bluetooth",
+        "manikin not connecting",
+        "PAD connected but no training data",
+        "training no data",
+        "connected but no data",
+        "蓝牙连不上",
+        "连不上",
+        "无法连接"
       ],
-      "source_status": "Smart Manikin source",
-      "priority": 100,
+      "source_status": "official SOP source",
+      "priority": 122,
       "items": [
         {
-          "label": "Documented fix",
-          "value": "If Bluetooth will not connect when unplugged, keep the manikin and PAD powered with a power strip.",
+          "label": "Issue split",
+          "value": "Will not connect vs connected but TRAINING receives no data.",
           "sensitivity": "normal",
-          "fact_type": "device_fix"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "If still not connecting",
-          "value": "If it still does not connect while plugged in, use only the source-recorded manikin restart step.",
+          "label": "Documented step",
+          "value": "Keep manikin and PAD powered with power strip; if still will not connect while plugged in, use only the source-recorded manikin restart step.",
           "sensitivity": "normal",
-          "fact_type": "device_fix"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Connected but no data",
-          "value": "When powered-but-unplugged, the PAD may show connected, but TRAINING receives no data.",
+          "label": "No-data note",
+          "value": "When powered-but-unplugged, PAD may show connected but TRAINING receives no data.",
           "sensitivity": "normal",
-          "fact_type": "device_note"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Documented fix did not work?",
-          "value": "Save photo/video evidence, record exact symptom and time, escalate to engineer/vendor, and notify supervisor if class is affected.",
+          "label": "Escalate",
+          "value": "Save connected/no-data evidence and escalate to engineer/vendor; supervisor if class affected.",
           "sensitivity": "normal",
-          "fact_type": "fix_failed"
+          "fact_type": "icpis_sop"
         },
         {
           "label": "Source log count",
-          "value": "4",
+          "value": "Historical source log count omitted from new SOP routing; use Section 9 steps only.",
           "sensitivity": "normal",
-          "fact_type": "source_count"
+          "fact_type": "icpis_sop"
         }
       ],
       "media_tags": [
-        "smart",
-        "manikin",
         "bluetooth",
-        "pad",
-        "tablet",
-        "power"
+        "session",
+        "manikin"
       ],
       "do_not": [
-        "Do not invent unsupported reset, calibration, browser, or permission fixes."
+        "Do not dismantle or invent unsupported reset/calibration/permission/browser/Wi-Fi fixes."
       ]
     },
     {
@@ -478,52 +433,39 @@
       "scenario": "smart_manikin_troubleshooting",
       "title": "PAD connected but TRAINING receives no data",
       "applies_to": [
-        "TRAINING receives no data",
-        "training no data",
         "PAD connected but no data",
-        "connected but training receives no data",
-        "显示 connected 但是没有数据",
-        "训练没数据",
-        "PAD 显示连接但没数据"
+        "training no data",
+        "connected but training receives no data"
       ],
-      "source_status": "Smart Manikin source",
-      "priority": 105,
+      "source_status": "official SOP source",
+      "priority": 124,
       "items": [
         {
-          "label": "Confirm state",
-          "value": "Confirm the PAD shows connected and TRAINING receives no data.",
+          "label": "Documented condition",
+          "value": "PAD may show connected while TRAINING receives no data if powered-but-unplugged.",
           "sensitivity": "normal",
-          "fact_type": "device_note"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Documented step",
-          "value": "Keep the manikin and PAD powered with a power strip.",
+          "label": "Do now",
+          "value": "Confirm connected/no-data state, keep manikin and PAD powered, save evidence.",
           "sensitivity": "normal",
-          "fact_type": "device_fix"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "If still no data",
-          "value": "Save photo/video of connected/no-data state and escalate to engineer/vendor.",
+          "label": "Escalate",
+          "value": "Engineer/vendor if unresolved; supervisor if class affected.",
           "sensitivity": "normal",
-          "fact_type": "fix_failed"
-        },
-        {
-          "label": "Source log count",
-          "value": "4",
-          "sensitivity": "normal",
-          "fact_type": "source_count"
+          "fact_type": "icpis_sop"
         }
       ],
       "media_tags": [
-        "smart",
-        "manikin",
-        "training",
-        "pad",
-        "tablet",
-        "bluetooth"
+        "bluetooth",
+        "session",
+        "training"
       ],
       "do_not": [
-        "Do not invent browser-permission, Wi-Fi, calibration, or unsupported reset fixes."
+        "Do not invent browser-permission, Wi-Fi, or calibration fixes."
       ]
     },
     {
@@ -689,47 +631,45 @@
     {
       "id": "smart_manikin_black_screen_no_fix",
       "scenario": "smart_manikin_troubleshooting",
-      "title": "Black screen / app restart",
+      "title": "Launch App / black screen / page not loading",
       "applies_to": [
-        "black screen",
-        "blank screen",
-        "restart",
-        "self-restart",
-        "progress lost",
-        "黑屏",
-        "自重启",
-        "进度丢失"
+        "black tab",
+        "app won't load",
+        "screen is black",
+        "page not loading",
+        "app self-restarted",
+        "lost progress"
       ],
-      "source_status": "Smart Manikin source + needs engineer/vendor confirmation",
-      "priority": 85,
+      "source_status": "official SOP source",
+      "priority": 125,
       "items": [
         {
-          "label": "Source limit",
-          "value": "The source logs app self-restart / tablet black-screen causing progress loss, but records no fix.",
+          "label": "Documented step",
+          "value": "Reload/refresh once and wait.",
           "sensitivity": "normal",
-          "fact_type": "unsupported_fix"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Escalation",
-          "value": "Collect the exact symptom, timing, screen/photo evidence, power/display/Bluetooth/tablet-PAD status, and escalate to engineer/vendor.",
+          "label": "If not fixed",
+          "value": "Source records the issue but no documented fix; save photo/video, exact time, course step, power/display/Bluetooth/tablet-PAD status.",
           "sensitivity": "normal",
-          "fact_type": "vendor_escalation"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Source log count",
-          "value": "3",
+          "label": "Escalate",
+          "value": "Engineer/vendor; supervisor if class affected.",
           "sensitivity": "normal",
-          "fact_type": "source_count"
+          "fact_type": "icpis_sop"
         }
       ],
       "media_tags": [
-        "smart",
-        "manikin",
-        "tablet",
-        "screen"
+        "black",
+        "screen",
+        "app",
+        "login"
       ],
       "do_not": [
-        "Do not invent an undocumented restart, reset, recovery, calibration, or root-cause fix."
+        "Do not invent browser/device repair, reset, recovery, or calibration steps."
       ]
     },
     {
@@ -911,157 +851,148 @@
     {
       "id": "class_cannot_start_triage",
       "scenario": "class_cannot_start",
-      "title": "Class cannot start triage",
+      "title": "Student/class cannot start quick readiness triage",
       "applies_to": [
-        "class cannot start",
-        "can't start class",
-        "cannot start the class",
-        "class can't begin",
-        "无法开课",
-        "开不了课",
-        "课程无法开始"
+        "student can't start",
+        "class not ready",
+        "station missing",
+        "ipad not opening",
+        "class cannot start"
       ],
-      "source_status": "general operations guidance, not official SOP + needs official SOP source",
-      "priority": 85,
+      "source_status": "official SOP source",
+      "priority": 95,
       "items": [
         {
-          "label": "Find root cause",
-          "value": "Identify the blocking cause first: access, power, internet, instructor, device, roster/check-in, or safety.",
+          "label": "Quick path",
+          "value": "Use the Quick Class Readiness Check for students/light users: report-only, no PIN needed.",
           "sensitivity": "normal",
-          "fact_type": "triage"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Record status",
-          "value": "Record class time, site/room, start-delay time, headcount waiting, and what has already been tried.",
+          "label": "Seven checks",
+          "value": "Can enter; room safe/usable; station visible; iPad/app opens; Smart Manikin usable; missing/dirty/broken; submit report.",
           "sensitivity": "normal",
-          "fact_type": "evidence"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Decision owner",
-          "value": "Supervisor decides class continuation, substitute, reschedule, refund, or customer wording.",
+          "label": "Staff boundary",
+          "value": "No staff duties, Weekly Site Check Report, Google Drive upload, passcodes, repair, reset, or dismantling for students.",
           "sensitivity": "normal",
-          "fact_type": "approval"
+          "fact_type": "icpis_sop"
         }
       ],
-      "media_tags": [],
+      "media_tags": [
+        "quick",
+        "readiness",
+        "student"
+      ],
       "do_not": [
-        "Do not self-decide cancellation, refund, reschedule, substitute, or compensation.",
-        "Do not promise students an outcome before approval."
+        "Do not give students staff-only access, codes, repair/reset steps, Weekly Report, upload, cleaning, or supply duties."
       ]
     },
     {
       "id": "power_outage_handling",
       "scenario": "electricity_outage",
-      "title": "Power outage handling",
+      "title": "Facility power / outage handling",
       "applies_to": [
         "power outage",
-        "power goes out",
         "power went out",
-        "power is out",
-        "power's out",
-        "no power",
+        "facility power",
+        "outlet dead",
         "no electricity",
-        "breaker",
-        "lights out",
-        "power still",
-        "still no power",
-        "still no electricity",
         "停电",
         "没电",
-        "电闸",
-        "跳闸",
-        "还是没电"
+        "断电",
+        "power still no power",
+        "still no power",
+        "power goes out",
+        "power go out",
+        "power is out",
+        "power out"
       ],
-      "source_status": "general operations guidance, not official SOP + needs official SOP source",
-      "priority": 85,
+      "source_status": "official SOP source",
+      "priority": 100,
       "items": [
         {
           "label": "Safety first",
-          "value": "Confirm no fire, smoke, burning smell, shock risk, injury, or unsafe dark-room movement before collecting photos.",
+          "value": "No fire, smoke, burning smell, shock, injury, or unsafe dark-room movement before collecting evidence.",
           "sensitivity": "normal",
-          "fact_type": "safety"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Confirm scope",
-          "value": "Check whether power is out in one room, the whole building, or the surrounding area.",
+          "label": "Do now",
+          "value": "Confirm scope; ask venue/property to inspect/reset authorized electrical equipment and estimate restore time.",
           "sensitivity": "normal",
-          "fact_type": "triage"
-        },
-        {
-          "label": "Venue/property",
-          "value": "Ask venue/property to inspect or reset authorized electrical equipment and provide estimated restore time.",
-          "sensitivity": "normal",
-          "fact_type": "venue_contact"
+          "fact_type": "icpis_sop"
         },
         {
           "label": "Escalation packet",
-          "value": "Record outage start time, class/site, affected headcount, evidence, venue response, and whether class can continue.",
+          "value": "Outage start time, class/site, affected headcount, evidence, venue response, whether class can continue.",
           "sensitivity": "normal",
-          "fact_type": "evidence"
+          "fact_type": "icpis_sop"
         }
       ],
-      "media_tags": [],
+      "media_tags": [
+        "power",
+        "outage"
+      ],
       "do_not": [
-        "Do not operate breakers or repair electrical equipment yourself.",
-        "Do not promise restore time, refund, reschedule, or compensation before approval."
+        "Do not handle unsafe electrical parts, operate breakers, rewire/repair outlets, or promise refund/reschedule/compensation before approval."
       ]
     },
     {
       "id": "internet_outage_handling",
       "scenario": "internet_outage",
-      "title": "Internet / platform outage handling",
+      "title": "Wi-Fi / internet handling",
       "applies_to": [
+        "wifi not working",
+        "wi-fi",
         "internet down",
-        "no internet",
-        "no wifi",
-        "Wi-Fi",
-        "wifi",
         "platform not loading",
-        "router",
-        "no network",
-        "internet still",
+        "loading failure",
+        "没网",
+        "断网",
+        "网络故障",
+        "internet still down",
         "still no internet",
         "still no wifi",
-        "still down",
-        "断网",
-        "没网",
-        "网络故障",
-        "平台加载失败",
-        "加载失败",
-        "还是没网"
+        "wifi still down"
       ],
-      "source_status": "general operations guidance, not official SOP + needs official SOP source",
-      "priority": 85,
+      "source_status": "official SOP source",
+      "priority": 100,
       "items": [
         {
-          "label": "Confirm scope",
-          "value": "Determine whether the issue affects one device, the whole room/building network, or the course/platform.",
+          "label": "Scope",
+          "value": "One device vs room/building network vs course/platform.",
           "sensitivity": "normal",
-          "fact_type": "triage"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Basic authorized check",
-          "value": "If authorized, confirm the site network device has power; otherwise contact venue/property or tech support.",
+          "label": "Do now",
+          "value": "If authorized, confirm site network device has power; otherwise contact venue/property/tech.",
           "sensitivity": "normal",
-          "fact_type": "network_note"
+          "fact_type": "icpis_sop"
         },
         {
           "label": "Evidence",
-          "value": "Capture screenshots of Wi-Fi/network errors, platform loading failures, and exact error text.",
+          "value": "Wi-Fi/network errors, loading failures, exact error text.",
           "sensitivity": "normal",
-          "fact_type": "evidence"
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Escalation",
-          "value": "Contact venue/property for site-network issues and supervisor/tech for platform/system issues.",
+          "label": "Escalate",
+          "value": "Venue/property for site network; supervisor/tech for platform/system.",
           "sensitivity": "normal",
-          "fact_type": "escalation"
+          "fact_type": "icpis_sop"
         }
       ],
-      "media_tags": [],
+      "media_tags": [
+        "wifi",
+        "internet",
+        "network"
+      ],
       "do_not": [
-        "Do not change unauthorized network equipment.",
-        "Do not self-decide refund, reschedule, or customer compensation."
+        "Do not change unauthorized network equipment or promise refund/reschedule/compensation before approval."
       ]
     },
     {
@@ -1119,35 +1050,169 @@
     {
       "id": "approval_prep_refund_reschedule",
       "scenario": "escalation_guidance",
-      "title": "Refund / reschedule approval prep",
+      "title": "Refund / cost / insurance / lease / safety / legal approval boundary",
       "applies_to": [
         "refund",
         "reschedule",
-        "cancel",
         "compensation",
-        "approval",
-        "退款",
-        "改期",
-        "取消",
-        "补偿"
+        "cost",
+        "insurance",
+        "lease",
+        "legal",
+        "safety"
       ],
-      "source_status": "general operations guidance, not official SOP + needs official SOP source",
-      "priority": 75,
+      "source_status": "official SOP source",
+      "priority": 90,
       "items": [
         {
-          "label": "Prepare for approval",
-          "value": "Collect site/location, class date/time, affected student count, incident start/end, evidence, what staff already tried, and whether class could continue.",
-          "sensitivity": "normal"
+          "label": "Do now",
+          "value": "Collect evidence and prepare escalation packet.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
         },
         {
-          "label": "Decision owner",
-          "value": "Supervisor or the official approval path decides refund, reschedule, cancellation, compensation, and wording.",
-          "sensitivity": "normal"
+          "label": "Approval boundary",
+          "value": "Supervisor / official approval path decides outcome.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
         }
       ],
-      "media_tags": [],
+      "media_tags": [
+        "approval",
+        "refund",
+        "legal"
+      ],
       "do_not": [
-        "Do not promise a refund amount, reschedule time, cancellation, or compensation before approval."
+        "Do not promise or decide refund, reschedule, compensation, lease, cost, insurance, legal, or safety outcomes."
+      ]
+    },
+    {
+      "id": "smart_manikin_camera_browser_permission",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "Camera / browser permission issue",
+      "applies_to": [
+        "camera permission denied",
+        "browser blocking camera",
+        "permission denied"
+      ],
+      "source_status": "official SOP source",
+      "priority": 118,
+      "items": [
+        {
+          "label": "Documented boundary",
+          "value": "No documented device-session permission repair is recorded beyond a basic supported in-app permission prompt.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Do now",
+          "value": "Check a basic in-app permission prompt only when supported, capture exact error text/screenshot.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Escalate",
+          "value": "Engineer/vendor / tech support; supervisor if class affected.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        }
+      ],
+      "media_tags": [
+        "camera",
+        "browser",
+        "permission"
+      ],
+      "do_not": [
+        "Do not reinstall, re-flash, change devices, or invent browser-permission/Wi-Fi/calibration fixes."
+      ]
+    },
+    {
+      "id": "smart_manikin_timer_logout_reset",
+      "scenario": "smart_manikin_troubleshooting",
+      "title": "Timer / logout / reset behavior",
+      "applies_to": [
+        "timer reset",
+        "logout reset",
+        "45 minutes",
+        "unexpected logout",
+        "unexpected reset"
+      ],
+      "source_status": "official SOP source",
+      "priority": 116,
+      "items": [
+        {
+          "label": "Documented boundary",
+          "value": "Source does not document timer/logout/reset as intended behavior.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Do now",
+          "value": "Treat unexpected logout/reset/timer behavior like Section 8: document and escalate.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Escalate",
+          "value": "ALLCPR support must confirm whether expected before anyone tells students it is normal.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        }
+      ],
+      "media_tags": [
+        "timer",
+        "logout",
+        "reset"
+      ],
+      "do_not": [
+        "Do not invent a fix or call it normal without staff confirmation."
+      ]
+    },
+    {
+      "id": "missing_supplies_dirty_damaged",
+      "scenario": "smart_manikin_site_inspection",
+      "title": "Missing supplies / dirty station / damaged equipment",
+      "applies_to": [
+        "missing supplies",
+        "dirty station",
+        "damaged equipment",
+        "manikin broken",
+        "BVM missing",
+        "Pocket Mask missing",
+        "breathing bag missing",
+        "table missing stuff"
+      ],
+      "source_status": "official SOP source",
+      "priority": 105,
+      "items": [
+        {
+          "label": "Do now",
+          "value": "Take photo evidence, note exact missing/damaged/dirty item, do safe-only cleanup if allowed.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Report",
+          "value": "Include in Weekly Site Check Report and ALLCPR if it cannot be fixed on site.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Table items",
+          "value": "Check iPad, manikins, AED Training Pads, consumables, tissues/simulated gauze, wipes, gloves, mask adaptors, optional face shield, Pocket Mask, BVM, and power cables.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        }
+      ],
+      "media_tags": [
+        "equipment",
+        "supplies",
+        "bvm",
+        "pocket",
+        "mask"
+      ],
+      "do_not": [
+        "Do not repair or dismantle damaged equipment."
       ]
     }
   ]

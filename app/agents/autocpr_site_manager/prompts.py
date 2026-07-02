@@ -90,12 +90,12 @@ def has_missing_data_trigger(text: str) -> bool:
 # Language-neutral per-scenario metadata (severity, exact phrases, source status).
 SCENARIO_META: Dict[str, Dict[str, object]] = {
     "site_operations_general": {"severity": "medium", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
-    "electricity_outage": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
-    "internet_outage": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
-    "venue_access_issue": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, SS_MANIKIN, NEEDS_OFFICIAL_SOP]},
+    "electricity_outage": {"severity": "high", "phrases": [], "source_status": [SS_OFFICIAL]},
+    "internet_outage": {"severity": "high", "phrases": [], "source_status": [SS_OFFICIAL]},
+    "venue_access_issue": {"severity": "high", "phrases": [], "source_status": [SS_OFFICIAL, SS_MANIKIN]},
     "smart_manikin_troubleshooting": {"severity": "medium", "phrases": [NEEDS_VENDOR], "source_status": [SS_MANIKIN, NEEDS_VENDOR]},
     "smart_manikin_site_inspection": {"severity": "low", "phrases": [], "source_status": [SS_OFFICIAL]},
-    "class_cannot_start": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
+    "class_cannot_start": {"severity": "high", "phrases": [], "source_status": [SS_OFFICIAL]},
     "instructor_no_show": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
     "student_checkin_issue": {"severity": "medium", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
     "completion_or_certificate_issue": {"severity": "medium", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_MANIKIN, SS_GENERAL, NEEDS_OFFICIAL_SOP]},
@@ -141,18 +141,17 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
     },
     "electricity_outage": {
         "issue_type": "Electricity outage",
-        "lead": "A power outage is a site-operations incident. Ensure personal safety first, then determine scope, notify the venue, record evidence, and let the supervisor decide whether class continues and any reschedule/refund.",
+        "lead": "Facility power/outlet issue: safety first, confirm scope, ask venue/property to inspect or reset authorized electrical equipment, collect the escalation packet, and let the supervisor decide class continuation or refund/reschedule.",
         "immediate_safety_check": [
             "Confirm people are safe: anyone injured? any smell of smoke/burning? shock risk?",
             "If there is danger (fire, smoke, shock, injury) → handle as safety_or_emergency and call 911.",
             "Move carefully in the dark — watch aisles, steps, and equipment.",
         ],
         "steps": [
-            "Confirm the scope: this room only / whole building / whole area (check the hallway, other rooms, nearby shops).",
-            "If only this room tripped: if safe and allowed, ask the venue/property to reset it — do NOT operate the breaker yourself.",
-            "Record the outage start time and the affected classes/times.",
-            "Notify the venue/property contact to confirm cause and estimated restore time.",
-            "Assess whether class can continue (devices/tablet need power): if it may restore soon ask waiting students to hold, otherwise wait for the supervisor's reschedule/refund decision.",
+            "Confirm scope: one room, the whole building, or the surrounding area.",
+            "Ask venue/property to inspect or reset authorized electrical equipment and estimate restore time.",
+            "Prepare the escalation packet: outage start time, class/site, affected headcount, evidence, venue response, and whether class can continue.",
+            "Notify the supervisor if class is affected and wait for approval before any refund/reschedule/compensation wording.",
         ],
         "information_to_collect": [
             "Outage scope (room/building/area).",
@@ -162,7 +161,6 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
         ],
         "evidence_requested": [
             "When safe: photo/video of the dark room or outage scene.",
-            "Only if safe and allowed: photo of the breaker/power area (do not operate it).",
             "Venue/property communication screenshot or message.",
             "The affected class time and location.",
             SAFE_PHOTO_NOTE_EN,
@@ -178,7 +176,7 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
         ],
         "do_not_decide_without_approval": [
             "Do not self-decide a refund/reschedule/compensation amount.",
-            "Do not operate or repair electrical equipment yourself.",
+            "Do not operate breakers, rewire, repair outlets, or handle unsafe electrical parts.",
             "Do not promise a restore time or compensation.",
         ],
         "next_actions": [
@@ -189,14 +187,14 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
     },
     "internet_outage": {
         "issue_type": "Internet or Wi-Fi outage",
-        "lead": "Network outage handling: confirm scope and whether it affects class/device, try basic recovery, record evidence, and escalate if needed. Note: a Smart Manikin session runs over the Bluetooth PAD↔manikin link; some sites have no Wi-Fi.",
+        "lead": "Wi-Fi/internet issue: separate one-device, room/building network, and course/platform problems; capture exact errors; escalate to venue/property for site network or supervisor/tech for platform/system.",
         "immediate_safety_check": ["A network outage usually has no personal-safety risk; if combined with a power/safety issue, handle safety first."],
         "steps": [
             "Confirm scope: one device / the whole room / the whole building.",
-            "Basic checks (if safe and authorized): confirm the router/network device has power; power-cycle the router only if it belongs to this site and you're authorized.",
-            "Determine which part is affected: general internet/platform loading vs only device pairing.",
+            "If authorized, confirm the site network device has power; otherwise contact venue/property or tech support.",
+            "Capture Wi-Fi/network errors, loading failures, and the exact error text.",
             "Record the start time and the affected class.",
-            "If it's the venue's network → contact venue/property; if it's the platform/system → escalate to supervisor/tech.",
+            "Escalate venue/property for site-network issues; escalate supervisor/tech for platform/system issues.",
         ],
         "information_to_collect": ["Outage scope and start time.", "Affected class, time, headcount.", "The exact error message or symptom."],
         "evidence_requested": [
@@ -207,22 +205,22 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
         ],
         "contacts": ["Venue/property (site network).", "Supervisor / tech (platform or system)."],
         "customer_communication": ["Honestly say it's being investigated; reschedule/refund wording needs supervisor or official SOP confirmation."],
-        "do_not_decide_without_approval": ["Do not self-decide a refund/reschedule.", "Do not change network equipment that isn't this site's or that you're not authorized to touch."],
+        "do_not_decide_without_approval": ["Do not self-decide a refund/reschedule.", "Do not change unauthorized network equipment or promise restoration/refund/reschedule/compensation before approval."],
         "next_actions": ["Determine scope, do basic checks, and capture error screenshots.", "Contact the right owner; if class is blocked → human review required."],
     },
     "venue_access_issue": {
         "issue_type": "Venue access / room-entry issue",
-        "lead": "Door/room-entry issue: first verify the address and room, the door/gate passcode and instruction video, contact the venue, and record arrival time and attempts; if you still can't get in, escalate to a supervisor.",
+        "lead": "Door/facility access issue: do not force doors, locks, keypads, or lockboxes. Confirm location if safe, document arrival time and attempts, use only staff-gated matching-site access logic, and escalate if access is blocked.",
         "immediate_safety_check": [
             "If locked outside with weather/safety risk, get people to a safe spot first.",
             "Do not force a door or climb in — that risks injury and legal exposure.",
         ],
         "steps": [
             "Verify the class's address, floor, and room number are correct (check the assignment).",
-            "Check for a room passcode / gate passcode / lockbox and the instruction video (per the site's own materials).",
-            "After-hours main-gate entry: use the site-provided gate video + passcode (only what the site files support).",
+            "Use only the staff-gated deterministic access panel for matching-site codes; never reveal, guess, or ask AI for codes.",
             "Contact the venue/property to open or confirm the entry method.",
-            "Record arrival time, the entry attempts, and the contact log.",
+            "Record arrival time, every entry attempt, and the contact log.",
+            "Mark the site/session not ready if access remains blocked.",
         ],
         "information_to_collect": ["Class address, floor, room, arrival time.", "Entry methods already tried (passcode/lockbox/contacting venue).", "Headcount waiting."],
         "evidence_requested": [
@@ -236,8 +234,8 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
         "customer_communication": ["Honestly say you're arranging entry; do not promise a specific reschedule/refund."],
         "do_not_decide_without_approval": [
             "Do not force entry or damage the lock.",
+            "Do not guess or share codes.",
             "Do not self-decide a refund/reschedule.",
-            "If access rights / key ownership are unclear → needs official SOP source / venue confirmation.",
         ],
         "next_actions": ["Verify the room + passcode/video materials and contact the venue.", "Record arrival time and attempts; if still no entry → human review required."],
     },
@@ -324,14 +322,14 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
     },
     "class_cannot_start": {
         "issue_type": "Class cannot start",
-        "lead": "Class can't start: first find the root cause (power/internet/access/device/instructor no-show/roster), handle it via the matching section, reassure waiting students, record impact, and let a supervisor decide on reschedule/refund.",
+        "lead": "Class cannot start: run the report-only Quick Class Readiness Check for students/light users, identify the blocking issue, record impact, and escalate staff-only or approval decisions.",
         "immediate_safety_check": ["Confirm no people/device/venue safety risk."],
         "steps": [
-            "Locate the root cause: power / network / access / device / instructor / roster / other.",
-            "Switch to the matching SOP section to handle the root cause.",
-            "Record the affected start time, headcount, and wait time.",
-            "Reassure waiting students with confirmed info only (no reschedule/refund promise).",
-            "If not quickly solvable → escalate to a supervisor for reschedule/refund/compensation.",
+            "Use the Quick Class Readiness Check: can enter, room safe/usable, station visible, iPad/app opens, Smart Manikin usable, anything missing/dirty/broken, submit quick report.",
+            "Keep it report-only for students: no PIN, no passcodes, no Weekly Site Check Report, no Google Drive upload, no repair/reset/dismantle.",
+            "Identify the blocking issue and switch staff handling to the matching SOP section.",
+            "Record affected start time, headcount, wait time, and evidence.",
+            "If not quickly solvable, escalate to a supervisor for approval decisions.",
         ],
         "information_to_collect": ["Root-cause category and the specific symptom.", "Class time/place/headcount.", "What was tried and the result."],
         "evidence_requested": ["Root-cause-specific photos/screenshots (per the matching section).", "Students-arrived / arrival-time record.", SAFE_PHOTO_NOTE_EN],

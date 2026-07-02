@@ -72,6 +72,11 @@ _RULES = [
         "table pre-check", "table precheck", "station pre-check", "station precheck",
         "table/station", "table / station", "桌上", "桌面", "桌子", "训练站",
         "桌上应该有什么", "桌上有什么", "桌面上有什么", "站点桌面",
+        "what should be on the desk", "what's on the desk", "whats on the desk",
+        "desk setup", "table looks wrong", "desk looks wrong", "table missing stuff",
+        "bvm missing", "bag-valve-mask missing", "bag valve mask missing",
+        "breathing bag missing", "breathing bag thing missing",
+        "i don't see the breathing bag", "pocket mask missing",
     )),
     (INSPECTION_ORDER, (
         "what order", "in what order", "which order", "inspection order",
