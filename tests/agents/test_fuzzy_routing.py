@@ -70,6 +70,13 @@ FUZZY_CASES = [
     ("change date", "escalation_guidance"),
     ("改时间", "escalation_guidance"),
     ("取消课程", "escalation_guidance"),
+    # I2) business trip / mileage reimbursement
+    ("do i get reimbursed over mileage ?", "business_trip_process"),
+    ("mileage reimbursement", "business_trip_process"),
+    ("paid back for driving miles", "business_trip_process"),
+    ("expense package", "business_trip_process"),
+    ("里程报销", "business_trip_process"),
+    ("差旅报销", "business_trip_process"),
     # J) certificate / completion
     ("certificate missing", "completion_or_certificate_issue"),
     ("didn't receive certificate", "completion_or_certificate_issue"),
@@ -99,6 +106,12 @@ FUZZY_CASES = [
     ("supplies missing", "smart_manikin_site_inspection"),
     ("垃圾满了", "smart_manikin_site_inspection"),
     ("房间很脏", "smart_manikin_site_inspection"),
+    # N2) student quick readiness check
+    ("student quick readiness check", "student_site_check"),
+    ("quick class readiness check", "student_site_check"),
+    ("light user report", "student_site_check"),
+    ("学生快速检查", "student_site_check"),
+    ("快速课前检查", "student_site_check"),
     # O) equipment placement
     ("where to put equipment", "smart_manikin_site_inspection"),
     ("where does the ipad go", "smart_manikin_site_inspection"),
@@ -108,6 +121,12 @@ FUZZY_CASES = [
     ("what should I report", "incident_report"),
     ("怎么上报", "escalation_guidance"),
     ("需要报告", "incident_report"),
+    # Q) new-site assessment reference
+    ("new site assessment", "smart_manikin_new_site_assessment"),
+    ("site assessment form", "smart_manikin_new_site_assessment"),
+    ("field assessment form", "smart_manikin_new_site_assessment"),
+    ("新站点评估", "smart_manikin_new_site_assessment"),
+    ("现场考察表", "smart_manikin_new_site_assessment"),
 ]
 
 
@@ -137,7 +156,42 @@ def test_precedence_regressions():
 def test_refund_reschedule_cancel_still_require_approval():
     for q in ("refund", "student wants money back", "change date", "取消课程"):
         ans = answer_question(q, {"lang": "en"})
+        assert ans.scenario == "escalation_guidance"
         assert ans.needs_human_review is True
+
+
+def test_mileage_reimbursement_returns_policy_not_unknown():
+    ans = answer_question("do i get reimbursed over mileage ?", {"lang": "en"})
+    assert ans.scenario == "business_trip_process"
+    assert ans.needs_human_review is True
+    body = ans.answer.lower()
+    assert "more than 20 miles one way" in body
+    assert "beyond the first 20 each way" in body
+    assert "$0.20" in ans.answer
+    assert "ramp" in body
+    assert "30 days" in body
+    assert any(ref.id == "business_trip_mileage_reimbursement" for ref in ans.operational_references)
+
+
+def test_student_quick_check_returns_report_only_steps():
+    ans = answer_question("student quick readiness check", {"lang": "en"})
+    assert ans.scenario == "student_site_check"
+    assert len(ans.steps) == 7
+    assert "staff PIN" in ans.answer
+    assert "Do not move, reset, repair, or dismantle equipment." in ans.do_not_decide_without_approval
+    assert any(ref.id == "student_quick_class_readiness_check" for ref in ans.operational_references)
+
+
+def test_new_site_assessment_returns_thresholds_and_boundaries():
+    ans = answer_question("site assessment form", {"lang": "en"})
+    assert ans.scenario == "smart_manikin_new_site_assessment"
+    assert ans.needs_human_review is True
+    joined = ans.answer
+    assert ">=85 Priority Candidate" in joined
+    assert "75-84.9 Management Review" in joined
+    assert "CPS ads 3 days" in joined
+    assert "Do not self-approve lease" in joined
+    assert any(ref.id == "smart_manikin_new_site_assessment_reference" for ref in ans.operational_references)
 
 
 def test_truly_unsupported_stays_unknown():

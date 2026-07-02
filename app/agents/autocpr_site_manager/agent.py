@@ -153,7 +153,15 @@ def _section(title: str, body: Any) -> str:
     return f"{title}{sep}{body}"
 
 
-def _answer_summary(lang: str, issue_type: str, severity: str, review: bool) -> str:
+def _answer_summary(lang: str, issue_type: str, severity: str, review: bool, scenario: str = "") -> str:
+    if scenario == "business_trip_process":
+        if lang == "zh":
+            return "这是差旅/里程报销参考。按 SOP 里程规则和 Ramp 提交流程处理；任何报销是否批准仍需按审批流程确认。"
+        return "This is a business-trip / mileage reimbursement reference. Use the SOP mileage rule and Ramp submission flow; approval still decides whether a claim is reimbursed."
+    if scenario == "smart_manikin_new_site_assessment":
+        if lang == "zh":
+            return "这是新站点评估参考。按阶段收集资料、完成现场考察与分析表，涉及租约、成本、装修、设备、安全或开业决定时必须管理层审批。"
+        return "This is a new-site assessment reference. Collect the staged evidence, complete field assessment and analysis, and keep lease/cost/renovation/equipment/safety/opening decisions on the management approval path."
     if lang == "zh":
         severity_label = {
             "critical": "紧急",
@@ -318,7 +326,7 @@ class SiteManagerAgent:
             policy_approval_required = scenario_policy_approval_required(scenario, issue_subtype)
 
         attach_ack = _summarize_attachments(context, lang)
-        answer_summary = _answer_summary(lang, issue_type, severity, review)
+        answer_summary = _answer_summary(lang, issue_type, severity, review, scenario)
 
         # ---- compose the human-readable answer -----------------------------
         labels = _LABELS[lang]

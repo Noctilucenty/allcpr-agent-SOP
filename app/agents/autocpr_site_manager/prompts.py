@@ -93,6 +93,7 @@ SCENARIO_META: Dict[str, Dict[str, object]] = {
     "electricity_outage": {"severity": "high", "phrases": [], "source_status": [SS_OFFICIAL]},
     "internet_outage": {"severity": "high", "phrases": [], "source_status": [SS_OFFICIAL]},
     "venue_access_issue": {"severity": "high", "phrases": [], "source_status": [SS_OFFICIAL, SS_MANIKIN]},
+    "student_site_check": {"severity": "low", "phrases": [], "source_status": [SS_OFFICIAL]},
     "smart_manikin_troubleshooting": {"severity": "medium", "phrases": [NEEDS_VENDOR], "source_status": [SS_MANIKIN, NEEDS_VENDOR]},
     "smart_manikin_site_inspection": {"severity": "low", "phrases": [], "source_status": [SS_OFFICIAL]},
     "class_cannot_start": {"severity": "high", "phrases": [], "source_status": [SS_OFFICIAL]},
@@ -103,6 +104,8 @@ SCENARIO_META: Dict[str, Dict[str, object]] = {
     "incident_report": {"severity": "medium", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
     "escalation_guidance": {"severity": "high", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_GENERAL, NEEDS_OFFICIAL_SOP]},
     "site_opening_reference": {"severity": "low", "phrases": [], "source_status": [SS_OFFICIAL, SS_EXTRACTED]},
+    "smart_manikin_new_site_assessment": {"severity": "medium", "phrases": [], "source_status": [SS_OFFICIAL]},
+    "business_trip_process": {"severity": "medium", "phrases": [], "source_status": [SS_OFFICIAL]},
     "dashboard_metric_explanation": {"severity": "low", "phrases": [], "source_status": [SS_EXTRACTED]},
     "zip_site_evaluation": {"severity": "low", "phrases": [DATA_NOT_PROVIDED, NEEDS_OFFICIAL_SOP], "source_status": [SS_EXTRACTED, DATA_NOT_PROVIDED, NEEDS_OFFICIAL_SOP]},
     "course_type_recommendation": {"severity": "low", "phrases": [NEEDS_OFFICIAL_SOP], "source_status": [SS_EXTRACTED, NEEDS_OFFICIAL_SOP]},
@@ -238,6 +241,30 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
             "Do not self-decide a refund/reschedule.",
         ],
         "next_actions": ["Verify the room + passcode/video materials and contact the venue.", "Record arrival time and attempts; if still no entry → human review required."],
+    },
+    "student_site_check": {
+        "issue_type": "Student quick class-readiness check",
+        "lead": "Student quick check is report-only and does not require a staff PIN. Students/light users do simple visible checks, report problems to staff, and do not perform staff duties or repairs.",
+        "immediate_safety_check": ["If the room looks unsafe or someone is hurt, stop and contact staff/emergency help instead of continuing the check."],
+        "steps": [
+            "Can you enter?",
+            "Does the room look safe and usable?",
+            "Can you see the Smart Manikin / iPad station?",
+            "Does the iPad/app open?",
+            "Does the Smart Manikin look connected/usable?",
+            "Is anything missing, dirty, or broken?",
+            "Submit a quick report for staff review.",
+        ],
+        "information_to_collect": ["Site/class time if known.", "Which quick-check point failed.", "Short description of the visible issue."],
+        "evidence_requested": ["Photo/video only if safe and allowed.", SAFE_PHOTO_NOTE_EN],
+        "contacts": ["ALLCPR staff / supervisor reviews the submitted quick report."],
+        "customer_communication": [],
+        "do_not_decide_without_approval": [
+            "Students/light users do not force entry or use staff-only access.",
+            "Do not move, reset, repair, or dismantle equipment.",
+            "Do not handle Weekly Site Check Report, Google Drive upload, passcodes, lockbox codes, cleaning duties, or supply duties.",
+        ],
+        "next_actions": ["Run the 7 visible checks.", "Submit the quick report if anything is missing, dirty, broken, unsafe, or blocked."],
     },
     "smart_manikin_troubleshooting": {
         "issue_type": "Smart Manikin / training device issue",
@@ -474,6 +501,68 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
         "customer_communication": [], "do_not_decide_without_approval": [],
         "next_actions": ["Screen ZIPs with the dashboard's ZIP layer; on-site, score with the Field Assessment Form + scoring sheet.", "See the site-opening appendix in sop.md."],
     },
+    "smart_manikin_new_site_assessment": {
+        "issue_type": "Smart Manikin new-site assessment",
+        "lead": (
+            "New-site assessment reference: region first, then site; information first, then judgment. Follow the staged workflow from ZIP screening through "
+            "field assessment, analysis update, BD review, virtual-course/site test, management approval, prep, official ad launch, and pre-open acceptance. "
+            "Scoring bands: >=85 Priority Candidate; 75-84.9 Management Review; 65-74.9 Hold / Compare; <65 Reject. Test-before-open threshold: CPS ads 3 days "
+            "including weekday and weekend; Google Ads 7 days; >5 signups in a week or 10 total may open, otherwise management decides."
+        ),
+        "immediate_safety_check": ["Reject or escalate any site with a clear evening/weekend student-entry safety risk."],
+        "steps": [
+            "Screen ZIPs and confirm potential ZIPs before collecting sites.",
+            "Collect L1 sites and confirm the visit list.",
+            "Complete the Field Assessment Form / site visit assessment.",
+            "Update the analysis sheet within 24 hours, then send for BD review.",
+            "Run the virtual-course and site test, then route management approval before purchase/renovation/opening decisions.",
+        ],
+        "information_to_collect": [
+            "ZIP/city, candidate address, access method, camera/network feasibility, safety/access risks.",
+            "Field-assessment notes and scoring inputs.",
+            "Analysis-sheet update timestamp and BD/management review status.",
+        ],
+        "evidence_requested": ["Field Assessment Form.", "Analysis sheet update.", "Photos/notes from the site visit when safe.", SAFE_PHOTO_NOTE_EN],
+        "contacts": ["BD reviewer.", "Management approver for lease, cost, renovation, equipment purchase, safety, or opening decisions."],
+        "customer_communication": [],
+        "do_not_decide_without_approval": [
+            "Do not self-approve lease, cost, renovation, equipment purchase, insurance, liability, safety, or operations decisions.",
+            "Do not override hard elimination conditions without management review.",
+            "Hard elimination includes blocked access/camera/network feasibility, unsafe evening/weekend entry, uncooperative landlord/property, forbidden training use, or unsuitable room/flow/environment.",
+        ],
+        "next_actions": ["Use the staged assessment workflow and update the analysis sheet within 24 hours.", "Escalate lease/cost/safety/opening decisions for management approval."],
+    },
+    "business_trip_process": {
+        "issue_type": "Business trip / mileage reimbursement",
+        "lead": (
+            "Business-trip reference: mileage reimbursement is source-backed only for travel more than 20 miles one way. The reimbursed miles are only the "
+            "miles beyond the first 20 each way, at $0.20 per eligible mile. Submit through Ramp within 30 days, and follow the trip request / approval / "
+            "expense-package process."
+        ),
+        "immediate_safety_check": [],
+        "steps": [
+            "Confirm this is an approved business trip or site-visit workflow.",
+            "Check mileage eligibility: more than 20 miles one way.",
+            "Calculate eligible mileage only beyond the first 20 miles each way.",
+            "Use the source rate: $0.20 per eligible mile.",
+            "Submit the expense package through Ramp within 30 days.",
+        ],
+        "information_to_collect": [
+            "Trip purpose and approval status.",
+            "Starting point, destination/site, date, and one-way mileage.",
+            "Mileage calculation showing the non-reimbursed first 20 miles each way.",
+            "Receipts/evidence required by the expense package.",
+        ],
+        "evidence_requested": ["Trip request/approval record.", "Mileage route evidence and expense package documents."],
+        "contacts": ["Supervisor / trip approver.", "Expense/Ramp approver if the claim or documentation is unclear."],
+        "customer_communication": [],
+        "do_not_decide_without_approval": [
+            "Do not self-approve the trip, reimbursement, or any expense outside the stated policy.",
+            "Do not promise reimbursement for mileage that does not meet the more-than-20-miles-one-way rule.",
+            "Do not invent gas, parking, toll, or other expense rules if the source does not state them.",
+        ],
+        "next_actions": ["Confirm approval status and mileage.", "Prepare the Ramp expense package within 30 days."],
+    },
     "dashboard_metric_explanation": {
         "issue_type": "Dashboard metric explanation",
         "lead": (
@@ -561,7 +650,8 @@ GUIDANCE_EN: Dict[str, Dict[str, object]] = {
         "issue_type": "Unknown",
         "lead": (
             "I can handle site-operations incidents (power, internet, access, Smart Manikin, class can't start, instructor no-show, check-in, completion/"
-            "certificate, safety, incident report, escalation) plus site-opening/selection, dashboard, and course-tilt reference questions. I couldn't "
+            "certificate, safety, incident report, escalation), student quick checks, site assessment/opening, business trip/reimbursement, dashboard, "
+            "and course-tilt reference questions. I couldn't "
             "confidently classify this one — please add details or have a person confirm."
         ),
         "immediate_safety_check": [], "steps": [], "information_to_collect": [], "evidence_requested": [], "contacts": [],
@@ -648,6 +738,30 @@ GUIDANCE_ZH: Dict[str, Dict[str, object]] = {
         "customer_communication": ["如实告知学员正在联系开门；不要承诺具体改期/退费。"],
         "do_not_decide_without_approval": ["不要强行进入或破坏门锁。", "不要自行决定退费/改期。", "具体门禁权限/钥匙归属若不确定 → 需场地方/官方确认。"],
         "next_actions": ["核对房间与密码/视频资料并联系场地方。", "记录到场时间与尝试；无法进入 → human review required。"],
+    },
+    "student_site_check": {
+        "issue_type": "学生快速上课准备检查 / Student quick readiness",
+        "lead": "学生/轻用户快速检查是 report-only，不需要 staff PIN。只做简单可见检查，发现问题提交给 staff review；不承担员工职责、不维修。",
+        "immediate_safety_check": ["如果房间不安全或有人受伤，停止检查并联系员工/紧急协助。"],
+        "steps": [
+            "能否进入？",
+            "房间看起来是否安全、可使用？",
+            "能否看到 Smart Manikin / iPad station？",
+            "iPad/app 是否能打开？",
+            "Smart Manikin 看起来是否连接/可使用？",
+            "是否有缺失、脏污或损坏？",
+            "提交 quick report 给员工审核。",
+        ],
+        "information_to_collect": ["站点/上课时间（如知道）。", "哪一个快速检查点失败。", "可见问题的简短描述。"],
+        "evidence_requested": ["仅在安全且允许时拍照/录像。", SAFE_PHOTO_NOTE],
+        "contacts": ["ALLCPR staff / supervisor 审核提交的 quick report。"],
+        "customer_communication": [],
+        "do_not_decide_without_approval": [
+            "学生/轻用户不要强行进入或使用 staff-only access。",
+            "不要移动、重置、维修或拆卸设备。",
+            "不要处理 Weekly Site Check Report、Google Drive 上传、passcodes、lockbox codes、清洁职责或补货职责。",
+        ],
+        "next_actions": ["完成 7 个可见检查点。", "如果缺失、脏污、损坏、不安全或无法开始，提交 quick report。"],
     },
     "smart_manikin_troubleshooting": {
         "issue_type": "Smart Manikin / 训练设备问题",
@@ -831,6 +945,59 @@ GUIDANCE_ZH: Dict[str, Dict[str, object]] = {
         "customer_communication": [], "do_not_decide_without_approval": [],
         "next_actions": ["区域筛选用仪表盘 ZIP 层；现场用考察表 + 选址评分表打分。", "详见 sop.md 的开点参考附录。"],
     },
+    "smart_manikin_new_site_assessment": {
+        "issue_type": "Smart Manikin 新站点评估 / New-site assessment",
+        "lead": "新站点评估参考：先区域、后场地；先信息、后判断。按阶段从 ZipCode screening、Potential ZipCode confirmation、L1 site collection、visit list confirmation、field assessment、24h 内更新 analysis sheet、BD review、virtual course & site test、management approval、采购/装修准备、official ad launch 到 pre-open acceptance。评分分档：>=85 Priority Candidate；75-84.9 Management Review；65-74.9 Hold / Compare；<65 Reject。开点测试门槛：CPS ads 3 天（含工作日与周末）、Google Ads 7 天；一周 >5 报名或累计 10 可开，否则管理层决定。",
+        "immediate_safety_check": ["如果存在明显晚间/周末学员进入安全风险，应拒绝或上报。"],
+        "steps": [
+            "先筛 ZIP 并确认 potential ZIP，再收集场地。",
+            "收集 L1 sites 并确认 visit list。",
+            "完成 Field Assessment Form / site visit assessment。",
+            "24 小时内更新 analysis sheet，然后进入 BD review。",
+            "完成 virtual-course 和 site test；采购、装修、开业等决定走 management approval。",
+        ],
+        "information_to_collect": [
+            "ZIP/城市、候选地址、进入方式、摄像头/网络可行性、安全/门禁风险。",
+            "现场考察记录与评分输入。",
+            "analysis sheet 更新时间与 BD/management review 状态。",
+        ],
+        "evidence_requested": ["Field Assessment Form。", "Analysis sheet update。", "安全时的现场照片/记录。", SAFE_PHOTO_NOTE],
+        "contacts": ["BD reviewer。", "租约、成本、装修、设备采购、安全或开业决定由 management approver 审批。"],
+        "customer_communication": [],
+        "do_not_decide_without_approval": [
+            "不要自行批准租约、成本、装修、设备采购、保险、责任、安全或运营决定。",
+            "不要在未管理层复核时覆盖 hard elimination conditions。",
+            "硬性淘汰包括门禁/摄像头/网络可行性受阻、晚间/周末进入不安全、landlord/property 不配合、培训用途不允许、房间/动线/环境不适合。",
+        ],
+        "next_actions": ["按阶段评估并在 24 小时内更新 analysis sheet。", "租约/成本/安全/开业决定走 management approval。"],
+    },
+    "business_trip_process": {
+        "issue_type": "差旅 / 里程报销 / Business trip mileage",
+        "lead": "差旅参考：里程报销仅在单程超过 20 miles 时有 SOP 来源支持；可报销里程只计算每个方向超过前 20 miles 的部分，标准为每个 eligible mile $0.20。通过 Ramp 提交，期限为 30 天，并按出差申请 / 审批 / expense package 流程处理。",
+        "immediate_safety_check": [],
+        "steps": [
+            "确认这是已审批的 business trip 或 site-visit 流程。",
+            "确认里程资格：单程超过 20 miles。",
+            "只计算每个方向超过前 20 miles 的 eligible mileage。",
+            "使用来源标准：每个 eligible mile $0.20。",
+            "在 30 天内通过 Ramp 提交 expense package。",
+        ],
+        "information_to_collect": [
+            "出差目的与审批状态。",
+            "起点、目的地/站点、日期、单程里程。",
+            "里程计算，标明每个方向前 20 miles 不计入报销。",
+            "expense package 要求的收据/证据。",
+        ],
+        "evidence_requested": ["出差申请/审批记录。", "路线里程证据与 expense package 文件。"],
+        "contacts": ["主管 / 出差审批人。", "如 claim 或文件不清楚，联系费用/Ramp 审批人。"],
+        "customer_communication": [],
+        "do_not_decide_without_approval": [
+            "不要自行批准出差、报销或政策外费用。",
+            "不符合单程超过 20 miles 规则的里程，不要承诺可报销。",
+            "来源未说明 gas、parking、toll 或其他费用规则时，不要自行编造。",
+        ],
+        "next_actions": ["确认审批状态与里程。", "在 30 天内准备并提交 Ramp expense package。"],
+    },
     "dashboard_metric_explanation": {
         "issue_type": "仪表盘指标解释 / Dashboard metric",
         "lead": "仪表盘分两层：历史 ALLCPR 层（真实 Enrollware/运营证据）与建模全国层（每个 US ZIP 的公开数据估计）。建模=估计、历史=已验证，不要把建模当成已验证。ZIP 详情面板含 11 类富集、分数、白话总结、建议动作与风险标记。",
@@ -889,7 +1056,7 @@ GUIDANCE_ZH: Dict[str, Dict[str, object]] = {
     },
     "unknown": {
         "issue_type": "未识别 / Unknown",
-        "lead": "我可以处理 管点/现场运营事件（停电、断网、门禁、Smart Manikin、课程无法开始、老师未到、签到、完课/证书、安全、事件记录、升级），以及开点/选址、仪表盘、课程倾向等参考问题。这条没能确定归类，请补充信息或交人工确认。",
+        "lead": "我可以处理 管点/现场运营事件（停电、断网、门禁、Smart Manikin、课程无法开始、老师未到、签到、完课/证书、安全、事件记录、升级）、学生快速检查、新站点评估/开点、差旅/报销、仪表盘、课程倾向等参考问题。这条没能确定归类，请补充信息或交人工确认。",
         "immediate_safety_check": [], "steps": [], "information_to_collect": [], "evidence_requested": [], "contacts": [],
         "customer_communication": [], "do_not_decide_without_approval": [],
         "next_actions": ["补充站点、班级时间、具体现象，或指明要问的 SOP 步骤。", "若属政策/客户决定，转主管。"],

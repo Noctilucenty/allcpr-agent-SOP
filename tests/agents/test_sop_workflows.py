@@ -15,6 +15,7 @@ from fastapi.testclient import TestClient
 
 from app.agents.autocpr_site_manager import answer_question
 from app.agents.autocpr_site_manager import sop_workflows
+from app.agents.autocpr_site_manager.scenarios import SCENARIOS
 from web_app import app
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -119,6 +120,15 @@ def test_6_business_trip_forms_not_wired_into_inspection():
 def test_7_workflows_file_and_module_exist():
     assert WORKFLOWS_JSON.exists()
     assert sop_workflows.list_workflows(), "workflows must load"
+
+
+def test_all_workflow_scenarios_are_routable_contract_labels():
+    missing = {
+        wf["scenario"]
+        for wf in sop_workflows.list_workflows()
+        if wf.get("scenario") and wf["scenario"] not in SCENARIOS
+    }
+    assert missing == set()
 
 
 def test_icpis_structured_source_exists_and_is_redacted():

@@ -1,6 +1,178 @@
 {
   "references": [
     {
+      "id": "business_trip_mileage_reimbursement",
+      "scenario": "business_trip_process",
+      "title": "Business trip mileage reimbursement policy",
+      "applies_to": [
+        "business trip",
+        "short term business trip",
+        "mileage",
+        "mileage reimbursement",
+        "reimbursed mileage",
+        "reimburse mileage",
+        "reimbursed for mileage",
+        "paid back for driving",
+        "driving miles",
+        "eligible miles",
+        "expense package",
+        "Ramp",
+        "travel reimbursement",
+        "site visit expense",
+        "差旅",
+        "出差",
+        "里程报销",
+        "差旅报销",
+        "报销里程",
+        "报销路费"
+      ],
+      "source_status": "official SOP source",
+      "priority": 140,
+      "items": [
+        {
+          "label": "Eligibility",
+          "value": "Mileage reimbursement eligibility starts only when travel is more than 20 miles one way.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Reimbursed miles",
+          "value": "Only miles beyond the first 20 each way are reimbursed.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Rate",
+          "value": "$0.20 per eligible mile.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Submit",
+          "value": "Submit through Ramp within 30 days as part of the expense package.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Process",
+          "value": "Follow the trip request, approval, pre-trip checklist, daily log/evidence, trip report, expense package, and follow-up process.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        }
+      ],
+      "media_tags": [
+        "business_trip",
+        "mileage",
+        "expense"
+      ],
+      "do_not": [
+        "Do not self-approve or claim outside the stated policy.",
+        "Do not invent gas, parking, toll, or other expense rules if the source does not state them."
+      ]
+    },
+    {
+      "id": "student_quick_class_readiness_check",
+      "scenario": "student_site_check",
+      "title": "Student quick class-readiness check",
+      "applies_to": [
+        "student quick check",
+        "student quick readiness",
+        "quick class readiness check",
+        "student site check",
+        "light user report",
+        "class readiness report",
+        "report-only check",
+        "学生快速检查",
+        "快速课前检查",
+        "学员站点检查"
+      ],
+      "source_status": "official SOP source",
+      "priority": 130,
+      "items": [
+        {
+          "label": "Scope",
+          "value": "Student quick check is report-only, no staff PIN required.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Seven checks",
+          "value": "Can you enter; room safe/usable; station visible; iPad/app opens; Smart Manikin looks usable; anything missing/dirty/broken; submit quick report.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Staff review",
+          "value": "Visible problems are submitted for staff review; students/light users do not perform staff-only duties.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        }
+      ],
+      "media_tags": [
+        "student_quick_check",
+        "readiness"
+      ],
+      "do_not": [
+        "Do not force entry or use staff-only access.",
+        "Do not move, reset, repair, or dismantle equipment.",
+        "Do not handle Weekly Site Check Report, Google Drive upload, passcodes, lockbox codes, cleaning duties, or supply duties."
+      ]
+    },
+    {
+      "id": "smart_manikin_new_site_assessment_reference",
+      "scenario": "smart_manikin_new_site_assessment",
+      "title": "Smart Manikin new-site assessment reference",
+      "applies_to": [
+        "new site assessment",
+        "site assessment form",
+        "field assessment form",
+        "site visit assessment",
+        "analysis sheet",
+        "BD review",
+        "hard elimination",
+        "site scoring bands",
+        "新站点评估",
+        "现场考察表",
+        "硬性淘汰"
+      ],
+      "source_status": "official SOP source",
+      "priority": 130,
+      "items": [
+        {
+          "label": "Core principle",
+          "value": "Region first, then site; information first, then judgment.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Stages",
+          "value": "ZipCode screening; potential ZipCode confirmation; L1 site collection; visit list confirmation; field assessment; analysis sheet update within 24h; BD review; virtual course & site test; management approval; equipment purchase & renovation prep; opening date & official ad launch; pre-open acceptance, system test, opening.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Scoring bands",
+          "value": ">=85 Priority Candidate; 75-84.9 Management Review; 65-74.9 Hold / Compare; <65 Reject.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        },
+        {
+          "label": "Open-site test threshold",
+          "value": "CPS ads 3 days including weekday and weekend; Google Ads 7 days; >5 signups in a week or 10 total may open, otherwise management decides.",
+          "sensitivity": "normal",
+          "fact_type": "icpis_sop"
+        }
+      ],
+      "media_tags": [
+        "new_site_assessment",
+        "field_assessment"
+      ],
+      "do_not": [
+        "Do not self-approve lease, cost, renovation, equipment purchase, insurance, liability, safety, or operations decisions.",
+        "Do not override hard elimination conditions without management review."
+      ]
+    },
+    {
       "id": "venue_access_general",
       "scenario": "venue_access_issue",
       "title": "Door / facility access issue",

@@ -327,6 +327,9 @@ def test_outages_return_only_matching_operational_refs():
         ("unsafe injury on site", "safety_or_emergency", "safety_emergency_handling"),
         ("generate incident report template", "incident_report", "incident_report_template"),
         ("need reschedule approval", "escalation_guidance", "approval_prep_refund_reschedule"),
+        ("do i get reimbursed over mileage ?", "business_trip_process", "business_trip_mileage_reimbursement"),
+        ("student quick readiness check", "student_site_check", "student_quick_class_readiness_check"),
+        ("site assessment form", "smart_manikin_new_site_assessment", "smart_manikin_new_site_assessment_reference"),
     ],
 )
 def test_audited_incident_types_return_operational_refs(question, scenario, expected_ref):
